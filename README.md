@@ -1,4 +1,4 @@
-system-library
+system-charts
 ============
 
 Rancher 2.0 system library charts.
