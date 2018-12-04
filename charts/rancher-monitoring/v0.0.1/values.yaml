@@ -70,7 +70,7 @@ alertmanager:
   enabled: false
   apiGroup: "monitoring.coreos.com"
   image:
-    repository: quay.io/prometheus/alertmanager
+    repository: prom/alertmanager
     tag: v0.15.2
   nodeSelector:
     beta.kubernetes.io/os: linux
@@ -172,7 +172,7 @@ exporter-node:
   enabled: false
   apiGroup: "monitoring.coreos.com"
   image:
-    repository: quay.io/prometheus/node-exporter
+    repository: prom/node-exporter
     tag: v0.16.0
   nodeSelector:
     beta.kubernetes.io/os: linux
@@ -190,6 +190,10 @@ grafana:
   image:
     repository: grafana/grafana
     tag: 5.3.0
+    inits:
+      tools:
+        repository: rancher/prometheus-auth
+        tag: v0.1.0
   nodeSelector:
     beta.kubernetes.io/os: linux
   persistence:
@@ -211,12 +215,12 @@ prometheus:
     ## Reference to one or more secrets to be used when pulling images
     ##
     pullSecrets: []
-    repository: quay.io/prometheus/prometheus
-    tag: v2.4.3
+    repository: prom/prometheus
+    tag: v2.5.0
     inits:
       tools:
-        repository: maiwj/curl
-        tag: 7.56.1-r0
+        repository: rancher/prometheus-auth
+        tag: v0.1.0
   nodeSelector:
     beta.kubernetes.io/os: linux
   persistence:
@@ -230,43 +234,44 @@ prometheus:
   ##
   serviceAccountName: ""
   sidecarsSpec:
-    - args:
-      - --log.debug
-      - agent
-      - start
-      - --agent.proxy-url
-      - http://localhost:9090
-      - --listen.address
-      - $(POD_IP):9090
-      env:
-      - name: POD_IP
-        valueFrom:
-          fieldRef:
-            fieldPath: status.podIP
-      image: maiwj/prometheus-auth:0.1.0
-      livenessProbe:
-        failureThreshold: 6
-        httpGet:
-          path: /-/healthy
-          port: web
-          scheme: HTTP
-        periodSeconds: 5
-        successThreshold: 1
-        timeoutSeconds: 3
-      name: prometheus-agent
-      ports:
-      - containerPort: 9090
-        name: web
-        protocol: TCP
-      readinessProbe:
-        failureThreshold: 120
-        httpGet:
-          path: /-/ready
-          port: web
-          scheme: HTTP
-        periodSeconds: 5
-        successThreshold: 1
-        timeoutSeconds: 3
+  - command:
+    - prometheus-auth
+    args:
+    - agent
+    - start
+    - --agent.proxy-url
+    - http://localhost:9090
+    - --listen.address
+    - $(POD_IP):9090
+    env:
+    - name: POD_IP
+      valueFrom:
+        fieldRef:
+          fieldPath: status.podIP
+    image: rancher/prometheus-auth:v0.1.0
+    livenessProbe:
+      failureThreshold: 6
+      httpGet:
+        path: /-/healthy
+        port: web
+        scheme: HTTP
+      periodSeconds: 5
+      successThreshold: 1
+      timeoutSeconds: 3
+    name: prometheus-agent
+    ports:
+    - containerPort: 9090
+      name: web
+      protocol: TCP
+    readinessProbe:
+      failureThreshold: 120
+      httpGet:
+        path: /-/ready
+        port: web
+        scheme: HTTP
+      periodSeconds: 5
+      successThreshold: 1
+      timeoutSeconds: 3
   listenLocal: true
   serviceMonitorsSelector:
     matchExpressions:
