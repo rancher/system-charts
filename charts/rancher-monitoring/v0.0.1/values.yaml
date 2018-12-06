@@ -218,20 +218,11 @@ grafana:
       requests:
         memory: 50Mi
         cpu: 50m
-    watcher:
-      limits:
-        memory: 50Mi
-        cpu: 50m
-      requests:
-        memory: 50Mi
-        cpu: 50m
   persistence:
     enabled: false
     storageClass: ""
     accessMode: "ReadWriteOnce"
     size: 50Gi
-  adminUser: "admin"
-  adminPassword: "admin"
   ## Already exist ServiceAccount
   ##
   serviceAccountName: ""

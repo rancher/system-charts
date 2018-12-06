@@ -48,6 +48,14 @@ spec:
         resources:
 {{ toYaml .Values.resources.inits | indent 10 }}
         {{- end }}
+        - name: grafana-dashboards
+          mountPath: /var/lib/grafana/rancher-dashboards
+        - name: grafana-provisionings
+          mountPath: /usr/share/grafana/conf/provisioning/dashboards/rancher-dashboards.yaml
+          subPath: dashboards.yaml
+        - name: grafana-provisionings
+          mountPath: /usr/share/grafana/conf/provisioning/datasources/rancher-datasources.yaml
+          subPath: datasources.yaml
       containers:
       - name: grafana
         image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
@@ -56,16 +64,6 @@ spec:
           value: "true"
         - name: GF_AUTH_ANONYMOUS_ENABLED
           value: "true"
-        - name: GF_SECURITY_ADMIN_USER
-          valueFrom:
-            secretKeyRef:
-              name: {{ template "app.fullname" . }}
-              key: user
-        - name: GF_SECURITY_ADMIN_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: {{ template "app.fullname" . }}
-              key: password
 {{- if .Values.extraVars }}
 {{ toYaml .Values.extraVars | indent 8 }}
 {{- end }}
@@ -95,36 +93,6 @@ spec:
         resources:
 {{ toYaml .Values.resources.core | indent 10 }}
         {{- end }}
-      - name: grafana-watcher
-        image: {{ .Values.grafanaWatcher.repository }}:{{ .Values.grafanaWatcher.tag }}
-        args:
-          - '--grafana-url=http://127.0.0.1:3000'
-          - '--watch-dir=/var/grafana-dashboards'
-          {{- range .Values.dashboardConfigmaps }}
-          - '--watch-dir=/var/additional-dashboards/{{ . }}'
-          {{- end }}
-        env:
-        - name: GRAFANA_USER
-          valueFrom:
-            secretKeyRef:
-              name: {{ template "app.fullname" . }}
-              key: user
-        - name: GRAFANA_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: {{ template "app.fullname" . }}
-              key: password
-        {{- if and .Values.resources .Values.resources.watcher }}
-        resources:
-{{ toYaml .Values.resources.watcher | indent 10 }}
-        {{- end }}
-        volumeMounts:
-          - name: grafana-dashboards
-            mountPath: /var/grafana-dashboards
-    {{- range .Values.dashboardConfigmaps }}
-          - name: {{ . }}
-            mountPath: /var/additional-dashboards/{{ . }}
-    {{- end }}
       - name: grafana-proxy
         image: {{ .Values.grafanaProxy.repository }}:{{ .Values.grafanaProxy.tag }}
         args:
@@ -182,8 +150,6 @@ spec:
       - name: grafana-dashboards
         configMap:
           name: {{ template "app.dashboards.fullname" . }}
-      {{- range .Values.dashboardConfigmaps }}
-        - name: {{ . }}
-          configMap:
-            name: {{ . }}
-      {{- end }}
+      - name: grafana-provisionings
+        configMap:
+          name: {{ template "app.provisionings.fullname" . }}
