@@ -61,8 +61,6 @@ spec:
 {{- if .Values.extraVars }}
 {{ toYaml .Values.extraVars | indent 8 }}
 {{- end }}
-        securityContext:
-          fsGroup: 472
         volumeMounts:
         - name: grafana-storage
           mountPath: /var/lib/grafana
