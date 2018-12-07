@@ -17,7 +17,7 @@ data:
       "access": "proxy",
       "basicAuth": false,
       "editable": false,
-      "isDefault:": true,
+      "isDefault": true,
       "name": "Rancher-Monitoring",
       "type": "prometheus",
       "url": "{{ .Values.prometheusDatasourceURL }}"
