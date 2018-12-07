@@ -143,6 +143,8 @@ spec:
       tolerations:
 {{ toYaml .Values.tolerations | indent 8 }}
     {{- end }}
+      securityContext:
+        fsGroup: 472
       volumes:
       - name: grafana-static-hooks
         configMap:
