@@ -30,6 +30,10 @@ spec:
           subPath: copy-datasource-plugin-json.sh
         - name: grafana-static-contents
           mountPath: /host
+        {{- if and .Values.resources .Values.resources.inits }}
+        resources:
+{{ toYaml .Values.resources.inits | indent 10 }}
+        {{- end }}
       - name: grafana-init-plugin-json-modify
         image: {{ .Values.image.inits.tools.repository }}:{{ .Values.image.inits.tools.tag }}
         command:
@@ -40,6 +44,10 @@ spec:
           subPath: modify-datasource-plugin-json.sh
         - name: grafana-static-contents
           mountPath: /host
+        {{- if and .Values.resources .Values.resources.inits }}
+        resources:
+{{ toYaml .Values.resources.inits | indent 10 }}
+        {{- end }}
       containers:
       - name: grafana
         image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
@@ -83,9 +91,9 @@ spec:
           timeoutSeconds: 1
           successThreshold: 1
           failureThreshold: 10
-        {{- if .Values.resources }}
+        {{- if and .Values.resources .Values.resources.core }}
         resources:
-{{ toYaml .Values.resources | indent 12 }}
+{{ toYaml .Values.resources.core | indent 10 }}
         {{- end }}
       - name: grafana-watcher
         image: {{ .Values.grafanaWatcher.repository }}:{{ .Values.grafanaWatcher.tag }}
@@ -106,9 +114,9 @@ spec:
             secretKeyRef:
               name: {{ template "app.fullname" . }}
               key: password
-        {{- if .Values.grafanaWatcher.resources }}
+        {{- if and .Values.resources .Values.resources.watcher }}
         resources:
-{{ toYaml .Values.grafanaWatcher.resources | indent 12 }}
+{{ toYaml .Values.resources.watcher | indent 10 }}
         {{- end }}
         volumeMounts:
           - name: grafana-dashboards
@@ -132,6 +140,10 @@ spec:
         volumeMounts:
         - mountPath: /nginx/
           name: grafana-nginx
+        {{- if and .Values.resources .Values.resources.proxy }}
+        resources:
+{{ toYaml .Values.resources.proxy | indent 10 }}
+        {{- end }}
     {{- if .Values.nodeSelector }}
       nodeSelector:
     {{ toYaml .Values.nodeSelector | indent 4 }}

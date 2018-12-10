@@ -196,6 +196,35 @@ grafana:
         tag: v0.1.0
   nodeSelector:
     beta.kubernetes.io/os: linux
+  resources:
+    inits:
+      limits:
+        memory: 50Mi
+        cpu: 50m
+      requests:
+        memory: 50Mi
+        cpu: 50m
+    core:
+      limits:
+        memory: 200Mi
+        cpu: 200m
+      requests:
+        memory: 100Mi
+        cpu: 100m
+    proxy:
+      limits:
+        memory: 100Mi
+        cpu: 100m
+      requests:
+        memory: 50Mi
+        cpu: 50m
+    watcher:
+      limits:
+        memory: 50Mi
+        cpu: 50m
+      requests:
+        memory: 50Mi
+        cpu: 50m
   persistence:
     enabled: false
     storageClass: ""
