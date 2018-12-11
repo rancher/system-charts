@@ -20,14 +20,6 @@ spec:
         chart: {{ template "app.version" . }}
         release: {{ .Release.Name }}
     spec:
-      tolerations:
-      - operator: "Exists"
-      - key: "node-role.kubernetes.io/master"
-        operator: "Exists"
-      - key: "node-role.kubernetes.io/etcd"
-        operator: "Exists"
-      - key: "node-role.kubernetes.io/controlplane"
-        operator: "Exists"
       containers:
         - name: exporter-node
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
