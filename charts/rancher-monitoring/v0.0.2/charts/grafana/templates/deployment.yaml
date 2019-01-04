@@ -1,0 +1,189 @@
+apiVersion: {{ template "deployment_api_version" . }}
+kind: Deployment
+metadata:
+  labels:
+    app: {{ template "app.name" . }}
+    chart: {{ template "app.version" . }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+  name: {{ template "app.fullname" . }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ template "app.name" . }}
+      chart: {{ template "app.version" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "app.name" . }}
+        chart: {{ template "app.version" . }}
+        release: {{ .Release.Name }}
+    spec:
+      initContainers:
+      - name: grafana-init-plugin-json-copy
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        volumeMounts:
+        - name: grafana-static-hooks
+          mountPath: /run.sh
+          subPath: copy-datasource-plugin-json.sh
+        - name: grafana-static-contents
+          mountPath: /host
+        {{- if and .Values.resources .Values.resources.inits }}
+        resources:
+{{ toYaml .Values.resources.inits | indent 10 }}
+        {{- end }}
+      - name: grafana-init-plugin-json-modify
+        image: {{ .Values.image.inits.tools.repository }}:{{ .Values.image.inits.tools.tag }}
+        command:
+        - /usr/bin/modify-datasource-plugin-json.sh
+        volumeMounts:
+        - name: grafana-static-hooks
+          mountPath: /usr/bin/modify-datasource-plugin-json.sh
+          subPath: modify-datasource-plugin-json.sh
+        - name: grafana-static-contents
+          mountPath: /host
+        {{- if and .Values.resources .Values.resources.inits }}
+        resources:
+{{ toYaml .Values.resources.inits | indent 10 }}
+        {{- end }}
+      containers:
+      - name: grafana
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        env:
+        - name: GF_AUTH_BASIC_ENABLED
+          value: "true"
+        - name: GF_AUTH_ANONYMOUS_ENABLED
+          value: "true"
+        - name: GF_SECURITY_ADMIN_USER
+          valueFrom:
+            secretKeyRef:
+              name: {{ template "app.fullname" . }}
+              key: user
+        - name: GF_SECURITY_ADMIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ template "app.fullname" . }}
+              key: password
+{{- if .Values.extraVars }}
+{{ toYaml .Values.extraVars | indent 8 }}
+{{- end }}
+        volumeMounts:
+        - name: grafana-storage
+          mountPath: /var/lib/grafana
+        - name: grafana-static-contents
+          mountPath: /usr/share/grafana/public/app/plugins/datasource/prometheus/plugin.json
+          subPath: grafana/plugin.json
+      {{- if .Values.mountGrafanaConfig }}
+        - name: grafana-config
+          mountPath: /etc/grafana
+      {{- end }}
+        ports:
+        - name: web
+          containerPort: 3000
+          protocol: TCP
+        readinessProbe:
+          httpGet:
+            path: /api/health
+            port: 3000
+          periodSeconds: 1
+          timeoutSeconds: 1
+          successThreshold: 1
+          failureThreshold: 10
+        {{- if and .Values.resources .Values.resources.core }}
+        resources:
+{{ toYaml .Values.resources.core | indent 10 }}
+        {{- end }}
+      - name: grafana-watcher
+        image: {{ .Values.grafanaWatcher.repository }}:{{ .Values.grafanaWatcher.tag }}
+        args:
+          - '--grafana-url=http://127.0.0.1:3000'
+          - '--watch-dir=/var/grafana-dashboards'
+          {{- range .Values.dashboardConfigmaps }}
+          - '--watch-dir=/var/additional-dashboards/{{ . }}'
+          {{- end }}
+        env:
+        - name: GRAFANA_USER
+          valueFrom:
+            secretKeyRef:
+              name: {{ template "app.fullname" . }}
+              key: user
+        - name: GRAFANA_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ template "app.fullname" . }}
+              key: password
+        {{- if and .Values.resources .Values.resources.watcher }}
+        resources:
+{{ toYaml .Values.resources.watcher | indent 10 }}
+        {{- end }}
+        volumeMounts:
+          - name: grafana-dashboards
+            mountPath: /var/grafana-dashboards
+    {{- range .Values.dashboardConfigmaps }}
+          - name: {{ . }}
+            mountPath: /var/additional-dashboards/{{ . }}
+    {{- end }}
+      - name: grafana-proxy
+        image: {{ .Values.grafanaProxy.repository }}:{{ .Values.grafanaProxy.tag }}
+        args:
+        - nginx
+        - -g
+        - daemon off;
+        - -c
+        - /nginx/nginx.conf
+        ports:
+        - name: http
+          containerPort: 80
+          protocol: TCP
+        volumeMounts:
+        - mountPath: /nginx/
+          name: grafana-nginx
+        {{- if and .Values.resources .Values.resources.proxy }}
+        resources:
+{{ toYaml .Values.resources.proxy | indent 10 }}
+        {{- end }}
+    {{- if .Values.nodeSelector }}
+      nodeSelector:
+    {{ toYaml .Values.nodeSelector | indent 4 }}
+    {{- end }}
+    {{- if .Values.enabledRBAC }}
+      serviceAccountName: {{ .Values.serviceAccountName }}
+    {{- end }}
+    {{- if .Values.tolerations }}
+      tolerations:
+{{ toYaml .Values.tolerations | indent 8 }}
+    {{- end }}
+      securityContext:
+        fsGroup: 472
+      volumes:
+      - name: grafana-static-hooks
+        configMap:
+          name: {{ template "app.hooks.fullname" . }}
+          defaultMode: 0777
+      - name: grafana-static-contents
+        emptyDir: {}
+      - name: grafana-storage
+        {{- if or .Values.storageSpec .Values.persistence.enabled }}
+        persistentVolumeClaim:
+          claimName: {{ template "app.fullname" . }}
+        {{- else }}
+        emptyDir: {}
+        {{- end }}
+      - name: grafana-nginx
+        configMap:
+          defaultMode: 438
+          items:
+          - key: nginx.conf
+            mode: 438
+            path: nginx.conf
+          name: {{ template "app.nginx.fullname" . }}
+      - name: grafana-dashboards
+        configMap:
+          name: {{ template "app.dashboards.fullname" . }}
+      {{- range .Values.dashboardConfigmaps }}
+        - name: {{ . }}
+          configMap:
+            name: {{ . }}
+      {{- end }}
