@@ -11,8 +11,62 @@ metadata:
 {{- end }}
   name: {{ .Release.Name }}
 spec:
-{{- if .Values.listenLocal }}
+{{- if .Values.securityContext }}
+  securityContext:
+{{ toYaml .Values.securityContext | indent 4 }}
+{{- end }}
+{{- if eq .Values.level "cluster" }}
   listenLocal: true
+  containers:
+  - name: prometheus-agent
+    command:
+    - prometheus-auth
+    {{- if and .Values.auth .Values.auth.args }}
+    args:
+{{ toYaml .Values.auth.args | indent 6 }}
+    {{- end }}
+    {{- if and .Values.auth .Values.auth.env }}
+    env:
+{{ toYaml .Values.auth.env | indent 6 }}
+    {{- end }}
+    image: {{ .Values.image.auth.repository }}:{{ .Values.image.auth.tag }}
+    ports:
+    - containerPort: 9090
+      name: web
+      protocol: TCP
+    - containerPort: 9190
+      name: profile
+      protocol: TCP
+    livenessProbe:
+      failureThreshold: 6
+      httpGet:
+        path: /-/healthy
+        port: web
+        scheme: HTTP
+      periodSeconds: 5
+      successThreshold: 1
+      timeoutSeconds: 3
+    readinessProbe:
+      failureThreshold: 120
+      httpGet:
+        path: /-/ready
+        port: web
+        scheme: HTTP
+      periodSeconds: 5
+      successThreshold: 1
+      timeoutSeconds: 3
+    {{- if and .Values.resources .Values.resources.auth }}
+    resources:
+{{ toYaml .Values.resources.auth | indent 6 }}
+    {{- end }}
+{{- if .Values.sidecarsSpec }}
+{{ toYaml .Values.sidecarsSpec | indent 2 }}
+{{- end }}
+{{- else }} 
+  {{- if .Values.sidecarsSpec }}
+  containers:
+{{ toYaml .Values.sidecarsSpec | indent 2 }}
+  {{- end }}
 {{- end }}
   podMetadata:
     labels:
@@ -27,7 +81,7 @@ spec:
   alerting:
     alertmanagers:
 {{ toYaml .Values.alertingEndpoints | indent 6 }}
-{{- else }}
+{{- else if not (include "additional-alertmanager-configs.yaml" .) }}
   alerting:
     alertmanagers:
       - namespace: {{ .Release.Namespace }}
@@ -49,8 +103,10 @@ spec:
   paused: {{ .Values.paused }}
   replicas: {{ .Values.replicaCount }}
   logLevel:  {{ .Values.logLevel }}
+{{- if and .Values.resources .Values.resources.core }}
   resources:
-{{ toYaml .Values.resources | indent 4 }}
+{{ toYaml .Values.resources.core | indent 4 }}
+{{- end }}
   retention: "{{ .Values.retention }}"
 {{- if .Values.routePrefix }}
   routePrefix: "{{ .Values.routePrefix }}"
@@ -60,19 +116,15 @@ spec:
 {{ toYaml .Values.secrets | indent 4 }}
 {{- end }}
 {{- if .Values.enabledRBAC }}
-  serviceAccountName: {{ .Values.serviceAccountName }}
+  serviceAccountName: {{ default (default (include "app.fullname" .) .Values.serviceAccountName) .Values.serviceAccountNameOverride }}
 {{- end }}
 {{- if .Values.serviceMonitorNamespaceSelector }}
   serviceMonitorNamespaceSelector:
 {{ toYaml .Values.serviceMonitorNamespaceSelector | indent 4 }}
 {{- end }}
+{{- if .Values.serviceMonitorSelector }}
   serviceMonitorSelector:
-{{- if .Values.serviceMonitorsSelector }}
-{{ toYaml .Values.serviceMonitorsSelector | indent 4 }}
-{{- else }}
-    matchLabels:
-      source: rancher-monitoring
-      release: {{ .Release.Name }}
+{{ toYaml .Values.serviceMonitorSelector | indent 4 }}
 {{- end }}
 {{- if .Values.remoteRead }}
   remoteRead:
@@ -86,13 +138,9 @@ spec:
   ruleNamespaceSelector:
 {{ toYaml .Values.ruleNamespaceSelector | indent 4 }}
 {{- end }}
+{{- if .Values.ruleSelector }}
   ruleSelector:
-{{- if .Values.rulesSelector }}
-{{ toYaml .Values.rulesSelector | indent 4 }}
-{{- else }}
-    matchLabels:
-      source: rancher-monitoring
-      release: {{ .Release.Name }}
+{{ toYaml .Values.ruleSelector | indent 4 }}
 {{- end }}
 {{- if or .Values.storageSpec .Values.persistence.enabled }}
   storage:
@@ -126,19 +174,13 @@ spec:
   tolerations:
 {{ toYaml .Values.tolerations | indent 4 }}
 {{- end }}
-  imagePullSecrets: 
-{{ toYaml .Values.image.pullSecrets | indent 4 }}
-{{- if and .Values.additionalScrapeConfigsEnabled .Values.additionalScrapeConfigs  }}
+{{- if (include "additional-scrape-configs.yaml" .) }}
   additionalScrapeConfigs:
     name: {{ template "app.fullname" . }}-additional-scrape-configs
     key: additional-scrape-configs.yaml
 {{- end }}
-{{- if and .Values.additionalAlertManagerConfigsEnabled .Values.additionalAlertManagerConfigs }}
+{{- if (include "additional-alertmanager-configs.yaml" .) }}
   additionalAlertManagerConfigs:
     name: {{ template "app.fullname" . }}-additional-alertmanager-configs
     key: additional-alertmanager-configs.yaml
-{{- end }}
-{{- if .Values.sidecarsSpec }}
-  containers:
-{{ toYaml .Values.sidecarsSpec | indent 4 }}
 {{- end }}

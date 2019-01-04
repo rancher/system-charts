@@ -8,12 +8,6 @@ serviceAccountName: ""
 ##
 apiGroup: "monitoring.coreos.com"
 
-## Expertor listens on where and exports on host
-##
-ports: 
-  metrics:
-    port: 8080
-
 # Default values for kube-state-metrics.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
@@ -22,6 +16,14 @@ replicaCount: 1
 image:
   repository: quay.io/coreos/kube-state-metrics
   tag: v1.4.0
+
+resources:
+  limits:
+    cpu: 100m
+    memory: 200Mi
+  requests:
+    cpu: 100m
+    memory: 130Mi
 
 ## Node Selector to constrain pods to run on particular nodes
 ## Ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
@@ -37,7 +39,6 @@ tolerations: {}
   #    value: "value"
   #    effect: "NoSchedule"
 
-serviceMonitor:
-  ## Custom Labels to be added to ServiceMonitor
-  ##
-  labels: {}
+serviceMonitorLabels: {}
+
+securityContext: {}

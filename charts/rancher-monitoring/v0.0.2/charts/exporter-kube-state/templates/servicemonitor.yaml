@@ -7,22 +7,49 @@ metadata:
     heritage: {{ .Release.Service }}
     release: {{ .Release.Name }}
     source: rancher-monitoring
-    {{- if .Values.serviceMonitor.labels }}
-{{ toYaml .Values.serviceMonitor.labels | indent 4 }}
+    {{- if .Values.serviceMonitorLabels }}
+{{ toYaml .Values.serviceMonitorLabels | indent 4 }}
     {{- end }}
   name: {{ template "app.fullname" . }}
 spec:
-  jobLabel: kube-state
   selector:
     matchLabels:
       app: {{ template "app.name" . }}
       chart: {{ template "app.version" . }}
       release: {{ .Release.Name }}
-      monitoring.cattle.io: "true"
+      {{ .Values.apiGroup }}: "true"
   namespaceSelector:
     matchNames:
-      - {{ .Release.Namespace | quote }}
+    - {{ .Release.Namespace | quote }}
   endpoints:
-  - port: metrics
+  - port: http
     interval: 15s
     honorLabels: true
+    relabelings:
+    - sourceLabels:
+      - __meta_kubernetes_pod_host_ip
+      targetLabel: host_ip
+      action: replace
+      regex: (.+)
+      replacement: $1
+    - sourceLabels:
+      - __meta_kubernetes_pod_node_name
+      targetLabel: node
+      action: replace
+      regex: (.+)
+      replacement: $1
+  - port: http-metrics
+    interval: 30s
+    relabelings:
+    - sourceLabels:
+      - __meta_kubernetes_pod_host_ip
+      targetLabel: host_ip
+      action: replace
+      regex: (.+)
+      replacement: $1
+    - sourceLabels:
+      - __meta_kubernetes_pod_node_name
+      targetLabel: node
+      action: replace
+      regex: (.+)
+      replacement: $1

@@ -7,9 +7,10 @@ metadata:
     chart: {{ template "app.version" . }}
     heritage: {{ .Release.Service }}
     release: {{ .Release.Name }}
-    monitoring.cattle.io: "true"
+    {{ .Values.apiGroup }}: "true"
 spec:
   type: ClusterIP
+  clusterIP: None
   selector:
 {{- if .Values.labels }}
 {{ toYaml .Values.labels | indent 4 }}

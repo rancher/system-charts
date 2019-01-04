@@ -12,13 +12,3 @@ data:
 {{ (.Files.Glob "dashboards/c_*.json").AsConfig | indent 2 }}
 {{- end }}
 {{ (.Files.Glob "dashboards/w_*.json").AsConfig | indent 2 }}
-  prometheus-datasource.json: |+
-    {
-      "access": "proxy",
-      "basicAuth": false,
-      "editable": false,
-      "isDefault": true,
-      "name": "Rancher-Monitoring",
-      "type": "prometheus",
-      "url": "{{ .Values.prometheusDatasourceURL }}"
-    }

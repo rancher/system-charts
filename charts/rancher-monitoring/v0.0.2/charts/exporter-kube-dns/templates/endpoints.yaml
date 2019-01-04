@@ -1,29 +1,5 @@
 {{- if .Values.endpoints }}
 apiVersion: v1
-kind: Service
-metadata:
-  labels:
-    app: {{ template "app.name" . }}
-    chart: {{ template "app.version" . }}
-    heritage: {{ .Release.Service }}
-    release: {{ .Release.Name }}
-    k8s-app: coredns
-  name: {{ template "app.dnsname" . }}
-spec:
-  type: ClusterIP
-  clusterIP: None
-  ports:
-    - name: dnsmasq-metrics
-      port: {{ .Values.ports.metrics.dnsmasq.port }}
-      protocol: TCP
-      targetPort: {{ .Values.ports.metrics.dnsmasq.port }}
-    - name: skydns-metrics
-      port: {{ .Values.ports.metrics.skydns.port }}
-      protocol: TCP
-      targetPort: {{ .Values.ports.metrics.skydns.port }}
----
-
-apiVersion: v1
 kind: Endpoints
 metadata:
   labels:
@@ -31,17 +7,17 @@ metadata:
     chart: {{ template "app.version" . }}
     heritage: {{ .Release.Service }}
     release: {{ .Release.Name }}
-  name: {{ template "app.dnsname" . }}
+  name: expose-kube-dns-metrics
 subsets:
-  - addresses:
-      {{- range .Values.endpoints }}
-      - ip: {{ . }}
-      {{- end }}
-    ports:
-      - name: dnsmasq-metrics
-        port: {{ .Values.ports.metrics.dnsmasq.port }}
-        protocol: TCP
-      - name: skydns-metrics
-        port: {{ .Values.ports.metrics.skydns.port }}
-        protocol: TCP
+- addresses:
+    {{- range .Values.endpoints }}
+    - ip: {{ . }}
+    {{- end }}
+  ports:
+  - name: {{ .Values.ports.metrics.dnsmasq.name }}
+    port: {{ .Values.ports.metrics.dnsmasq.port }}
+    protocol: {{ .Values.ports.metrics.dnsmasq.protocol }}
+  - name: {{ .Values.ports.metrics.skydns.name }}
+    port: {{ .Values.ports.metrics.skydns.port }}
+    protocol: {{ .Values.ports.metrics.skydns.protocol }}
 {{- end }}

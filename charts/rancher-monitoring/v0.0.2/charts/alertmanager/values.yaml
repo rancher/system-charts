@@ -60,16 +60,16 @@ templates: {}
 ##
 externalUrl: ""
 
-serviceMonitor:
-  ## Custom Labels to be added to ServiceMonitor
-  ##
-  labels: {}
+serviceMonitorLabels: {}
 
 ## Alertmanager container image
 ##
 image:
   repository: quay.io/prometheus/alertmanager
   tag: v0.15.2
+  proxy:
+    repository: nginx
+    tag: 1.15.8-alpine
 
 ## Labels to be added to the Alertmanager
 ##
@@ -100,9 +100,21 @@ replicaCount: 1
 ## Resource limits & requests
 ## Ref: https://kubernetes.io/docs/user-guide/compute-resources/
 ##
-resources: {}
-  # requests:
-  #   memory: 400Mi
+resources:
+  core:
+    limits:
+      memory: 500Mi
+      cpu: 1000m
+    requests:
+      memory: 100Mi
+      cpu: 100m
+  proxy:
+    limits:
+      memory: 100Mi
+      cpu: 100m
+    requests:
+      memory: 50Mi
+      cpu: 50m
 
 ## How long to retain metrics
 ##
@@ -118,46 +130,6 @@ routePrefix: ""
 ## Ref: https://github.com/coreos/prometheus-operator/blob/master/Documentation/api.md#prometheusspec
 ##
 secrets: []
-
-service:
-  ## Maintains session affinity.  Should be set to ClientIP for HA setup
-  ## Only options are ClientIP and None.  Do not leave blank.
-  sessionAffinity: None
-
-  ## Annotations to be added to the Service
-  ##
-  annotations: {}
-
-  ## Cluster-internal IP address for Alertmanager Service
-  ##
-  clusterIP: ""
-
-  ## List of external IP addresses at which the Alertmanager Service will be available
-  ##
-  externalIPs: []
-
-  ## Labels to be added to the Service
-  ##
-  labels: {}
-
-  ## External IP address to assign to Alertmanager Service
-  ## Only used if service.type is 'LoadBalancer' and supported by cloud provider
-  ##
-  loadBalancerIP: ""
-
-  ## List of client IPs allowed to access Alertmanager Service
-  ## Only used if service.type is 'LoadBalancer' and supported by cloud provider
-  ##
-  loadBalancerSourceRanges: []
-
-  ## Port to expose on each node
-  ## Only used if service.type is 'NodePort'
-  ##
-  # nodePort: 30903
-
-  ## Service type
-  ##
-  type: ClusterIP
 
 logLevel: "info"
 
@@ -183,3 +155,6 @@ persistence: {}
 sidecarsSpec: []
 # - name: sidecar
 #   image: registry/name:tag
+
+securityContext: {}
+
