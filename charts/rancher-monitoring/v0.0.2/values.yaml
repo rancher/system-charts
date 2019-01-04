@@ -11,15 +11,13 @@ apiGroup: "monitoring.coreos.com"
 ## Prometheus-operator image
 ##
 image:
-  # Reference to one or more secrets to be used when pulling images
-  pullSecrets: []
   repository: quay.io/coreos/prometheus-operator
-  tag: v0.23.2
+  tag: v0.26.0
   ## Prometheus-config-reloader image to use for config and rule reloading
   ##
   prometheusConfigReloader:
     repository: quay.io/coreos/prometheus-config-reloader
-    tag: v0.23.2
+    tag: v0.26.0
   ## Configmap-reload image to use for reloading configmaps
   ##
   configmapReload:
@@ -44,27 +42,191 @@ manageCRDs: false
 
 withValidation: true
 
-disableAutoUserGroup: false
-
-serviceMonitor:
-  ## Custom Labels to be added to ServiceMonitor
-  ##
-  labels: {}
+serviceMonitorLabels: {}
 
 ## Prometheus-operator resource limits & requests
 ## Ref: https://kubernetes.io/docs/user-guide/compute-resources/
 ##
-resources: {}
-  # limits:
-  #   cpu: 200m
-  #   memory: 100Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 50Mi
+resources:
+  limits:
+    cpu: 200m
+    memory: 100Mi
+  requests:
+    cpu: 100m
+    memory: 50Mi
 
 ## Already exist ServiceAccount
 ##
 serviceAccountName: ""
+
+exporter-coredns:
+  enabled: false
+  apiGroup: "monitoring.coreos.com"
+  endpoints: []
+  ports: 
+    metrics:
+      scheme: http
+      name: metrics
+      port: 9153
+      protocol: TCP
+  serviceSelectorLabels:
+    k8s-app: kube-dns
+  insecureSkipVerify: true
+  componentNamespace: ""
+
+exporter-kube-controller-manager:
+  enabled: false
+  apiGroup: "monitoring.coreos.com"
+  endpoints: []
+  ports: 
+    metrics:
+      scheme: http
+      name: metrics
+      port: 10252
+      protocol: TCP
+  serviceSelectorLabels:
+    k8s-app: kube-controller-manager
+  insecureSkipVerify: true
+  componentNamespace: ""
+
+exporter-kube-dns:
+  enabled: false
+  apiGroup: "monitoring.coreos.com"
+  endpoints: []
+  ports: 
+    metrics:
+      dnsmasq:
+        scheme: http
+        name: dnsmasq-metrics
+        port: 10054
+        protocol: TCP
+      skydns:
+        scheme: http
+        name: skydns-metrics
+        port: 10055
+        protocol: TCP
+  serviceSelectorLabels:
+    k8s-app: kube-dns
+  insecureSkipVerify: true
+  componentNamespace: ""
+
+exporter-kube-etcd:
+  enabled: false
+  apiGroup: "monitoring.coreos.com"
+  endpoints: []
+  ports: 
+    metrics:
+      scheme: https
+      name: metrics
+      port: 4001
+      protocol: TCP
+  serviceSelectorLabels:
+    k8s-app: etcd-server
+  insecureSkipVerify: true
+  caFile: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+  certFile: ""
+  keyFile: ""
+  componentNamespace: ""
+
+exporter-kube-scheduler:
+  enabled: false
+  apiGroup: "monitoring.coreos.com"
+  endpoints: []
+  ports: 
+    metrics:
+      scheme: http
+      name: http-metrics
+      port: 10251
+      protocol: TCP
+  serviceSelectorLabels:
+    component: kube-scheduler
+  insecureSkipVerify: true
+  componentNamespace: ""
+
+exporter-kubelets:
+  enabled: false
+  apiGroup: "monitoring.coreos.com"
+  serviceSelectorLabels:
+    k8s-app: kubelet
+  insecureSkipVerify: true
+  ## Set false when using GKE
+  ##
+  https: true
+
+exporter-kubernetes:
+  enabled: false
+  apiGroup: "monitoring.coreos.com"
+  ports: 
+    metrics:
+      scheme: https
+      name: https
+  serviceSelectorLabels:
+    component: apiserver
+    provider: kubernetes
+  insecureSkipVerify: true
+
+exporter-fluentd:
+  enabled: false
+  apiGroup: "monitoring.coreos.com"
+  ports: 
+    metrics:
+      scheme: http
+      name: metrics
+  serviceSelectorLabels:
+    k8s-app: fluentd
+  insecureSkipVerify: true
+
+metric-expression-project:
+  enabled: false
+
+metric-expression-cluster:
+  enabled: false
+
+exporter-node:
+  enabled: false
+  apiGroup: "monitoring.coreos.com"
+  image:
+    repository: prom/node-exporter
+    tag: v0.17.0
+  nodeSelector:
+    beta.kubernetes.io/os: linux
+  resources:
+    limits:
+      cpu: 200m
+      memory: 50Mi
+    requests:
+      cpu: 100m
+      memory: 30Mi
+  ports:
+    metrics:
+      port: 9100
+  collectors: {}
+  enabledHostNetwork: true
+  enabledHostPID: true
+  serviceAccountName: ""
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 65534
+
+exporter-kube-state:
+  enabled: false
+  apiGroup: "monitoring.coreos.com"
+  image:
+    repository: quay.io/coreos/kube-state-metrics
+    tag: v1.4.0
+  nodeSelector:
+    beta.kubernetes.io/os: linux
+  resources:
+    limits:
+      cpu: 100m
+      memory: 200Mi
+    requests:
+      cpu: 100m
+      memory: 130Mi
+  ## Already exist ServiceAccount
+  ##
+  serviceAccountName: ""
+  securityContext: {}
 
 alertmanager:
   enabled: false
@@ -72,8 +234,26 @@ alertmanager:
   image:
     repository: prom/alertmanager
     tag: v0.15.2
+    proxy:
+      repository: nginx
+      tag: 1.15.8-alpine
   nodeSelector:
     beta.kubernetes.io/os: linux
+  resources:
+    core:
+      limits:
+        memory: 500Mi
+        cpu: 1000m
+      requests:
+        memory: 100Mi
+        cpu: 100m
+    proxy:
+      limits:
+        memory: 100Mi
+        cpu: 100m
+      requests:
+        memory: 50Mi
+        cpu: 50m
   config:
     global:
       resolve_timeout: 5m
@@ -97,91 +277,10 @@ alertmanager:
   ## Already exist ServiceAccount
   ##
   serviceAccountName: ""
-
-exporter-coredns:
-  enabled: false
-  apiGroup: "monitoring.coreos.com"
-  endpoints: []
-  ports:
-    metrics:
-      port: 9153
-
-exporter-kube-controller-manager:
-  enabled: false
-  apiGroup: "monitoring.coreos.com"
-  endpoints: []
-  ports:
-    metrics:
-      port: 10252
-
-exporter-kube-dns:
-  enabled: false
-  apiGroup: "monitoring.coreos.com"
-  endpoints: []
-  ports:
-    metrics:
-      dnsmasq:
-        port: 10054
-      skydns:
-        port: 10055
-
-exporter-kube-etcd:
-  enabled: false
-  apiGroup: "monitoring.coreos.com"
-  endpoints: []
-  ports:
-    metrics:
-      scheme: "https"
-      port: 4001
-  caFile: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
-  certFile: ""
-  keyFile: ""
-
-exporter-kube-scheduler:
-  enabled: false
-  apiGroup: "monitoring.coreos.com"
-  endpoints: []
-  ports:
-    metrics:
-      port: 10251
-
-exporter-kube-state:
-  enabled: false
-  apiGroup: "monitoring.coreos.com"
-  ports:
-    metrics:
-      port: 8080
-  image:
-    repository: quay.io/coreos/kube-state-metrics
-    tag: v1.4.0
-  nodeSelector:
-    beta.kubernetes.io/os: linux
-  ## Already exist ServiceAccount
-  ##
-  serviceAccountName: ""
-
-exporter-kubelets:
-  enabled: false
-  apiGroup: "monitoring.coreos.com"
-
-exporter-kubernetes:
-  enabled: false
-  apiGroup: "monitoring.coreos.com"
-
-exporter-node:
-  enabled: false
-  apiGroup: "monitoring.coreos.com"
-  image:
-    repository: prom/node-exporter
-    tag: v0.16.0
-  nodeSelector:
-    beta.kubernetes.io/os: linux
-  ports:
-    metrics:
-      port: 9100
-  ## Already exist ServiceAccount
-  ##
-  serviceAccountName: ""
+  securityContext:
+    runAsUser: 1000
+    runAsNonRoot: true
+    fsGroup: 2000
 
 grafana:
   enabled: false
@@ -190,10 +289,12 @@ grafana:
   image:
     repository: grafana/grafana
     tag: 5.3.0
-    inits:
-      tools:
-        repository: rancher/prometheus-auth
-        tag: v0.1.0
+    tool:
+      repository: rancher/prometheus-auth
+      tag: v0.2.0
+    proxy:
+      repository: nginx
+      tag: 1.15.8-alpine
   nodeSelector:
     beta.kubernetes.io/os: linux
   resources:
@@ -218,20 +319,11 @@ grafana:
       requests:
         memory: 50Mi
         cpu: 50m
-    watcher:
-      limits:
-        memory: 50Mi
-        cpu: 50m
-      requests:
-        memory: 50Mi
-        cpu: 50m
   persistence:
     enabled: false
     storageClass: ""
     accessMode: "ReadWriteOnce"
     size: 50Gi
-  adminUser: "admin"
-  adminPassword: "admin"
   ## Already exist ServiceAccount
   ##
   serviceAccountName: ""
@@ -239,19 +331,64 @@ grafana:
 
 prometheus:
   enabled: false
+  level: cluster
+  auth:
+    args:
+    - --log.debug
+    - --proxy-url
+    - http://localhost:9090
+    - --listen-address
+    - $(POD_IP):9090
+    - --filter-reader-labels
+    - prometheus
+    - --filter-reader-labels
+    - prometheus_replica
+    env:
+    - name: POD_IP
+      valueFrom:
+        fieldRef:
+          fieldPath: status.podIP
   apiGroup: "monitoring.coreos.com"
   image:
-    ## Reference to one or more secrets to be used when pulling images
-    ##
-    pullSecrets: []
     repository: prom/prometheus
     tag: v2.5.0
-    inits:
-      tools:
-        repository: rancher/prometheus-auth
-        tag: v0.1.0
+    auth:
+      repository: rancher/prometheus-auth
+      tag: v0.2.0
+    proxy:
+      repository: nginx
+      tag: 1.15.8-alpine
   nodeSelector:
     beta.kubernetes.io/os: linux
+  resources:
+    inits:
+      limits:
+        memory: 50Mi
+        cpu: 50m
+      requests:
+        memory: 50Mi
+        cpu: 50m
+    core:
+      limits:
+        memory: 500Mi
+        cpu: 1000m
+      requests:
+        memory: 100Mi
+        cpu: 100m
+    proxy:
+      limits:
+        memory: 100Mi
+        cpu: 100m
+      requests:
+        memory: 50Mi
+        cpu: 50m
+    auth:
+      limits:
+        memory: 200Mi
+        cpu: 500m
+      requests:
+        memory: 100Mi
+        cpu: 100m
   persistence:
     enabled: false
     storageClass: ""
@@ -262,84 +399,15 @@ prometheus:
   ## Already exist ServiceAccount
   ##
   serviceAccountName: ""
-  sidecarsSpec:
-  - command:
-    - prometheus-auth
-    args:
-    - agent
-    - start
-    - --agent.proxy-url
-    - http://localhost:9090
-    - --listen.address
-    - $(POD_IP):9090
-    env:
-    - name: POD_IP
-      valueFrom:
-        fieldRef:
-          fieldPath: status.podIP
-    image: rancher/prometheus-auth:v0.1.0
-    livenessProbe:
-      failureThreshold: 6
-      httpGet:
-        path: /-/healthy
-        port: web
-        scheme: HTTP
-      periodSeconds: 5
-      successThreshold: 1
-      timeoutSeconds: 3
-    name: prometheus-agent
-    ports:
-    - containerPort: 9090
-      name: web
-      protocol: TCP
-    readinessProbe:
-      failureThreshold: 120
-      httpGet:
-        path: /-/ready
-        port: web
-        scheme: HTTP
-      periodSeconds: 5
-      successThreshold: 1
-      timeoutSeconds: 3
-  listenLocal: true
-  serviceMonitorsSelector:
-    matchExpressions:
-  additionalScrapeConfigsEnabled: true
-  additionalScrapeConfigs:
-  - job_name: 'ingress-nginx-endpoints'
-    kubernetes_sd_configs:
-    - role: pod
-      namespaces:
-        names:
-        - ingress-nginx
-        - kube-system
-    relabel_configs:
-    - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
-      action: keep
-      regex: true
-    - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scheme]
-      action: replace
-      target_label: __scheme__
-      regex: (https?)
-    - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_path]
-      action: replace
-      target_label: __metrics_path__
-      regex: (.+)
-    - source_labels: [__address__, __meta_kubernetes_pod_annotation_prometheus_io_port]
-      action: replace
-      target_label: __address__
-      regex: ([^:]+)(?::\d+)?;(\d+)
-      replacement: $1:$2
-    - source_labels: [__meta_kubernetes_service_name]
-      regex: prometheus-operated
-      action: drop
-
-metric-expression-project:
-  enabled: false
-
-metric-expression-cluster:
-  enabled: false
-
-exporter-fluentd:
-  enabled: false
-  apiGroup: "monitoring.coreos.com"
+  serviceAccountNameOverride: ""
+  ruleNamespaceSelector: {}
+  ruleSelector:
+    matchExpressions: []
+  serviceMonitorNamespaceSelector: {}
+  serviceMonitorSelector:
+    matchExpressions: []
+  addtionalBindingClusterRoles: []
+  securityContext:
+    runAsUser: 1000
+    runAsNonRoot: true
+    fsGroup: 2000

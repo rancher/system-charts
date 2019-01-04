@@ -24,9 +24,12 @@ spec:
         release: {{ .Release.Name }}
         component: nginx
     spec:
+      {{- if .Values.enabledRBAC }}
+      serviceAccountName: {{ default (include "app.fullname" .) .Values.serviceAccountName }}
+      {{- end }}
       containers:
-      - name: nginx
-        image: nginx:1.15.2
+      - name: alertmanager-proxy
+        image: {{ .Values.image.proxy.repository }}:{{ .Values.image.proxy.tag }}
         args:
         - nginx
         - -g
@@ -36,6 +39,10 @@ spec:
         volumeMounts:
         - mountPath: /nginx/
           name: alertmanager-nginx
+        {{- if and .Values.resources .Values.resources.proxy }}
+        resources:
+{{ toYaml .Values.resources.proxy | indent 10 }}
+        {{- end }}
         ports:
         - name: http
           containerPort: 80

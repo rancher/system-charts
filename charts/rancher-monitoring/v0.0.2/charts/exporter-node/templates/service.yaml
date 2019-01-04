@@ -7,9 +7,11 @@ metadata:
     chart: {{ template "app.version" . }}
     heritage: {{ .Release.Service }}
     release: {{ .Release.Name }}
-    monitoring.cattle.io: "true"
+    k8s-app: node
+    {{ .Values.apiGroup }}: "true"
 spec:
   type: ClusterIP
+  clusterIP: None
   selector:
     app: {{ template "app.name" . }}
     chart: {{ template "app.version" . }}

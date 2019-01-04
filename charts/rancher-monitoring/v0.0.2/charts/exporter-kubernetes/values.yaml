@@ -2,17 +2,17 @@
 ##
 apiGroup: "monitoring.coreos.com"
 
-## Skip verification until we have resolved why the certificate validation
-## for the kubelet on API server nodes fail.
-##
+ports: 
+  metrics:
+    scheme: https
+    name: https
+
+serviceSelectorLabels:
+  component: apiserver
+  provider: kubernetes
+
+serviceMonitorLabels: {}
+
+prometheusRuleLabels: {}
+
 insecureSkipVerify: true
-
-serviceMonitor:
-  ## Custom Labels to be added to ServiceMonitor
-  ##
-  labels: {}
-
-prometheusRule:
-  ## Custom Labels to be added to PrometheusRule
-  ##
-  labels: {}

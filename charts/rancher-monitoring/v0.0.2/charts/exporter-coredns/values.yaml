@@ -1,3 +1,8 @@
+## 
+## For now, HELM cannot support deploy commponents into multiple namespaces
+##
+componentNamespace: ""
+
 ## CRD apiGroup
 ##
 apiGroup: "monitoring.coreos.com"
@@ -8,9 +13,17 @@ endpoints: []
 
 ports: 
   metrics:
+    scheme: http
+    name: metrics
     port: 9153
+    protocol: TCP
 
-serviceMonitor:
-  ## Custom Labels to be added to ServiceMonitor
-  ##
-  labels: {}
+serviceSelectorLabels:
+  k8s-app: kube-dns
+
+serviceMonitorLabels: {}
+
+## Skip verification until we have resolved why the certificate validation
+## for the kubelet on API server nodes fail.
+##
+insecureSkipVerify: true

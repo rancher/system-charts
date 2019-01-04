@@ -24,30 +24,30 @@ spec:
       initContainers:
       - name: grafana-init-plugin-json-copy
         image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        {{- if and .Values.resources .Values.resources.inits }}
+        resources:
+{{ toYaml .Values.resources.inits | indent 10 }}
+        {{- end }}
         volumeMounts:
         - name: grafana-static-hooks
           mountPath: /run.sh
           subPath: copy-datasource-plugin-json.sh
         - name: grafana-static-contents
           mountPath: /host
+      - name: grafana-init-plugin-json-modify
+        image: {{ .Values.image.tool.repository }}:{{ .Values.image.tool.tag }}
+        command:
+        - /usr/bin/modify-datasource-plugin-json.sh
         {{- if and .Values.resources .Values.resources.inits }}
         resources:
 {{ toYaml .Values.resources.inits | indent 10 }}
         {{- end }}
-      - name: grafana-init-plugin-json-modify
-        image: {{ .Values.image.inits.tools.repository }}:{{ .Values.image.inits.tools.tag }}
-        command:
-        - /usr/bin/modify-datasource-plugin-json.sh
         volumeMounts:
         - name: grafana-static-hooks
           mountPath: /usr/bin/modify-datasource-plugin-json.sh
           subPath: modify-datasource-plugin-json.sh
         - name: grafana-static-contents
           mountPath: /host
-        {{- if and .Values.resources .Values.resources.inits }}
-        resources:
-{{ toYaml .Values.resources.inits | indent 10 }}
-        {{- end }}
       containers:
       - name: grafana
         image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
@@ -56,16 +56,6 @@ spec:
           value: "true"
         - name: GF_AUTH_ANONYMOUS_ENABLED
           value: "true"
-        - name: GF_SECURITY_ADMIN_USER
-          valueFrom:
-            secretKeyRef:
-              name: {{ template "app.fullname" . }}
-              key: user
-        - name: GF_SECURITY_ADMIN_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: {{ template "app.fullname" . }}
-              key: password
 {{- if .Values.extraVars }}
 {{ toYaml .Values.extraVars | indent 8 }}
 {{- end }}
@@ -75,10 +65,14 @@ spec:
         - name: grafana-static-contents
           mountPath: /usr/share/grafana/public/app/plugins/datasource/prometheus/plugin.json
           subPath: grafana/plugin.json
-      {{- if .Values.mountGrafanaConfig }}
-        - name: grafana-config
-          mountPath: /etc/grafana
-      {{- end }}
+        - name: grafana-dashboards
+          mountPath: /var/lib/grafana/rancher-dashboards
+        - name: grafana-provisionings
+          mountPath: /etc/grafana/provisioning/dashboards/all.yaml
+          subPath: dashboards.yaml
+        - name: grafana-provisionings
+          mountPath: /etc/grafana/provisioning/datasources/all.yaml
+          subPath: datasources.yaml
         ports:
         - name: web
           containerPort: 3000
@@ -95,38 +89,8 @@ spec:
         resources:
 {{ toYaml .Values.resources.core | indent 10 }}
         {{- end }}
-      - name: grafana-watcher
-        image: {{ .Values.grafanaWatcher.repository }}:{{ .Values.grafanaWatcher.tag }}
-        args:
-          - '--grafana-url=http://127.0.0.1:3000'
-          - '--watch-dir=/var/grafana-dashboards'
-          {{- range .Values.dashboardConfigmaps }}
-          - '--watch-dir=/var/additional-dashboards/{{ . }}'
-          {{- end }}
-        env:
-        - name: GRAFANA_USER
-          valueFrom:
-            secretKeyRef:
-              name: {{ template "app.fullname" . }}
-              key: user
-        - name: GRAFANA_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: {{ template "app.fullname" . }}
-              key: password
-        {{- if and .Values.resources .Values.resources.watcher }}
-        resources:
-{{ toYaml .Values.resources.watcher | indent 10 }}
-        {{- end }}
-        volumeMounts:
-          - name: grafana-dashboards
-            mountPath: /var/grafana-dashboards
-    {{- range .Values.dashboardConfigmaps }}
-          - name: {{ . }}
-            mountPath: /var/additional-dashboards/{{ . }}
-    {{- end }}
       - name: grafana-proxy
-        image: {{ .Values.grafanaProxy.repository }}:{{ .Values.grafanaProxy.tag }}
+        image: {{ .Values.image.proxy.repository }}:{{ .Values.image.proxy.tag }}
         args:
         - nginx
         - -g
@@ -149,7 +113,7 @@ spec:
     {{ toYaml .Values.nodeSelector | indent 4 }}
     {{- end }}
     {{- if .Values.enabledRBAC }}
-      serviceAccountName: {{ .Values.serviceAccountName }}
+      serviceAccountName: {{ default (include "app.fullname" .) .Values.serviceAccountName }}
     {{- end }}
     {{- if .Values.tolerations }}
       tolerations:
@@ -182,8 +146,6 @@ spec:
       - name: grafana-dashboards
         configMap:
           name: {{ template "app.dashboards.fullname" . }}
-      {{- range .Values.dashboardConfigmaps }}
-        - name: {{ . }}
-          configMap:
-            name: {{ . }}
-      {{- end }}
+      - name: grafana-provisionings
+        configMap:
+          name: {{ template "app.provisionings.fullname" . }}

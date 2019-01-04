@@ -31,25 +31,24 @@ spec:
             - --log-level={{ .Values.logLevel }}
             - --prometheus-config-reloader={{ .Values.image.prometheusConfigReloader.repository }}:{{ .Values.image.prometheusConfigReloader.tag }}
             - --config-reloader-image={{ .Values.image.configmapReload.repository }}:{{ .Values.image.configmapReload.tag }}
-            - --labels=monitoring.cattle.io=true
+            - --labels={{ .Values.apiGroup }}=true
             - --crd-apigroup={{ template "operator_api_group" . }}
             - --manage-crds={{ .Values.manageCRDs }}
             - --with-validation={{ .Values.withValidation }}
-            - --disable-auto-user-group={{ .Values.disableAutoUserGroup }}
           ports:
-            - containerPort: 8080
-              name: http
+          - containerPort: 8080
+            name: http
           resources:
 {{ toYaml .Values.resources | indent 12 }}
-    {{- if .Values.nodeSelector }}
+      {{- if .Values.nodeSelector }}
       nodeSelector:
 {{ toYaml .Values.nodeSelector | indent 8 }}
-    {{- end }}
-    {{- if .Values.enabledRBAC }}
-      serviceAccountName: {{ .Values.serviceAccountName }}
-    {{- end }}
-    {{- if .Values.tolerations }}
+      {{- end }}
+      {{- if .Values.enabledRBAC }}
+      serviceAccountName: {{ default (include "app.fullname" .) .Values.serviceAccountName }}
+      {{- end }}
+      {{- if .Values.tolerations }}
       tolerations:
 {{ toYaml .Values.tolerations | indent 8 }}
-    {{- end }}
+      {{- end }}
 {{- end }}

@@ -2,10 +2,17 @@
 ##
 apiGroup: "monitoring.coreos.com"
 
+ports: 
+  metrics:
+    scheme: http
+    name: metrics
+    
+serviceSelectorLabels:
+  k8s-app: fluentd
+
+serviceMonitorLabels: {}
+
 ## Skip verification until we have resolved why the certificate validation
 ## for the kubelet on API server nodes fail.
 ##
-serviceMonitor:
-  ## Custom Labels to be added to ServiceMonitor
-  ##
-  labels: {}
+insecureSkipVerify: true

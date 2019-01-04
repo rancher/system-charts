@@ -7,43 +7,96 @@ metadata:
     heritage: {{ .Release.Service }}
     release: {{ .Release.Name }}
     source: rancher-monitoring
-    {{- if .Values.serviceMonitor.labels }}
-{{ toYaml .Values.serviceMonitor.labels | indent 4 }}
+    {{- if .Values.serviceMonitorLabels }}
+{{ toYaml .Values.serviceMonitorLabels | indent 4 }}
     {{- end }}  
   name: {{ template "charts.exporter-kubelets.fullname" . }}
 spec:
-  jobLabel: kubelet
   selector:
     matchLabels:
-      k8s-app: kubelet
+{{ toYaml .Values.serviceSelectorLabels | indent 6 }}
   namespaceSelector:
-    any: true
     matchNames:
-      - "kube-system"
-      - {{ .Release.Namespace | quote }}
+    - {{ .Release.Namespace | quote }}
   endpoints:
+  {{- if .Values.https }}
   - port: https-metrics
     scheme: https
     interval: 15s
+    bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
     tlsConfig:
       caFile: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
       {{- if .Values.insecureSkipVerify }}
       insecureSkipVerify: true
       {{- end }}
-    bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+    relabelings:
+    - sourceLabels:
+      - __meta_kubernetes_pod_host_ip
+      targetLabel: host_ip
+      action: replace
+      regex: (.+)
+      replacement: $1
+    - sourceLabels:
+      - __meta_kubernetes_pod_node_name
+      targetLabel: node
+      action: replace
+      regex: (.+)
+      replacement: $1
   - port: https-metrics
     scheme: https
     path: /metrics/cadvisor
     interval: 30s
     honorLabels: true
+    bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
     tlsConfig:
       caFile: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
       {{- if .Values.insecureSkipVerify }}
       insecureSkipVerify: true
       {{- end }}
-    bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+    relabelings:
+    - sourceLabels:
+      - __meta_kubernetes_pod_host_ip
+      targetLabel: host_ip
+      action: replace
+      regex: (.+)
+      replacement: $1
+    - sourceLabels:
+      - __meta_kubernetes_pod_node_name
+      targetLabel: node
+      action: replace
+      regex: (.+)
+      replacement: $1
+  {{- else }}
   - port: http-metrics
     interval: 15s
-  - port: cadvisor
+    relabelings:
+    - sourceLabels:
+      - __meta_kubernetes_pod_host_ip
+      targetLabel: host_ip
+      action: replace
+      regex: (.+)
+      replacement: $1
+    - sourceLabels:
+      - __meta_kubernetes_pod_node_name
+      targetLabel: node
+      action: replace
+      regex: (.+)
+      replacement: $1
+  - port: http-metrics
+    path: /metrics/cadvisor
     interval: 30s
     honorLabels: true
+    relabelings:
+    - sourceLabels:
+      - __meta_kubernetes_pod_host_ip
+      targetLabel: host_ip
+      action: replace
+      regex: (.+)
+      replacement: $1
+    - sourceLabels:
+      - __meta_kubernetes_pod_node_name
+      targetLabel: node
+      action: replace
+      regex: (.+)
+      replacement: $1
+  {{- end }}

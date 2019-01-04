@@ -45,12 +45,6 @@
 {{- end -}}
 
 
-{{- define "app.dashboards.fullname" -}}
-{{- $name := include "app.name" . -}}
-{{- printf "%s-%s-dashboards" $name .Release.Name -}}
-{{- end -}}
-
-
 {{- define "app.hooks.fullname" -}}
 {{- $name := include "app.name" . -}}
 {{- printf "%s-%s-hooks" $name .Release.Name -}}
