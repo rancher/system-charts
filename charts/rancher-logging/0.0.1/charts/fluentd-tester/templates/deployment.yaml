@@ -37,7 +37,7 @@ spec:
       serviceAccountName: {{ template "fluentd-tester.fullname" . }}
       containers:
       - name: "dry-run"
-        image:  "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        image: {{ template "system_default_registry" . }}{{ .Values.image.repository }}:{{ .Values.image.tag }}
         imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
         {{- if .Values.command }}
         command: {{ .Values.command }}
