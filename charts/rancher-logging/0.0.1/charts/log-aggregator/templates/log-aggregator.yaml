@@ -30,7 +30,7 @@ spec:
       serviceAccountName: {{ template "log-aggregator.fullname" . }}
       containers:
       - name: log-aggregator
-        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        image: {{ template "system_default_registry" . }}{{ .Values.image.repository }}:{{ .Values.image.tag }}
         imagePullPolicy: "{{ .Values.image.pullPolicy }}"
         securityContext:
           privileged: true

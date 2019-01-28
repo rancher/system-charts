@@ -5,3 +5,5 @@ fluentd-tester:
 log-aggregator:
   enabled: false
   flexVolumeDir: /usr/libexec/kubernetes/kubelet-plugins/volume/exec
+global:
+  systemDefaultRegistry: ""
