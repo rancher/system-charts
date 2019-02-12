@@ -24,13 +24,13 @@ spec:
     spec:
       containers:
         - name: prometheus-operator
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          image: {{ template "system_default_registry" . }}{{ .Values.image.repository }}:{{ .Values.image.tag }}
           args:
             - --kubelet-service={{ .Release.Namespace }}/expose-kubelets-metrics
             - --log-format={{ .Values.logFormat }}
             - --log-level={{ .Values.logLevel }}
-            - --prometheus-config-reloader={{ .Values.image.prometheusConfigReloader.repository }}:{{ .Values.image.prometheusConfigReloader.tag }}
-            - --config-reloader-image={{ .Values.image.configmapReload.repository }}:{{ .Values.image.configmapReload.tag }}
+            - --prometheus-config-reloader={{ template "system_default_registry" . }}{{ .Values.image.prometheusConfigReloader.repository }}:{{ .Values.image.prometheusConfigReloader.tag }}
+            - --config-reloader-image={{ template "system_default_registry" . }}{{ .Values.image.configmapReload.repository }}:{{ .Values.image.configmapReload.tag }}
             - --labels={{ .Values.apiGroup }}=true
             - --crd-apigroup={{ template "operator_api_group" . }}
             - --manage-crds={{ .Values.manageCRDs }}

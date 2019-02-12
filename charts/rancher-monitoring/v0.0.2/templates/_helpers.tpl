@@ -117,3 +117,12 @@
 {{- "rbac.authorization.k8s.io/v1alpha1" -}}
 {{- end -}}
 {{- end -}}
+
+
+{{- define "system_default_registry" -}}
+{{- if .Values.global.systemDefaultRegistry -}}
+{{- printf "%s/" .Values.global.systemDefaultRegistry -}}
+{{- else -}}
+{{- "" -}}
+{{- end -}}
+{{- end -}}

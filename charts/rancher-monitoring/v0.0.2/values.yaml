@@ -411,3 +411,6 @@ prometheus:
     runAsUser: 1000
     runAsNonRoot: true
     fsGroup: 2000
+
+global:
+  systemDefaultRegistry: ""

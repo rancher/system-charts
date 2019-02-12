@@ -29,7 +29,7 @@ spec:
       {{- end }}
       containers:
       - name: alertmanager-proxy
-        image: {{ .Values.image.proxy.repository }}:{{ .Values.image.proxy.tag }}
+        image: {{ template "system_default_registry" . }}{{ .Values.image.proxy.repository }}:{{ .Values.image.proxy.tag }}
         args:
         - nginx
         - -g
