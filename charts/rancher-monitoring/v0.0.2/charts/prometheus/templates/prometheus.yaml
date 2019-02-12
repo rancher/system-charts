@@ -29,7 +29,7 @@ spec:
     env:
 {{ toYaml .Values.auth.env | indent 6 }}
     {{- end }}
-    image: {{ .Values.image.auth.repository }}:{{ .Values.image.auth.tag }}
+    image: {{ template "system_default_registry" . }}{{ .Values.image.auth.repository }}:{{ .Values.image.auth.tag }}
     ports:
     - containerPort: 9090
       name: web
@@ -88,7 +88,7 @@ spec:
         name: alertmanager-operated
         port: http
 {{- end }}
-  baseImage: "{{ .Values.image.repository }}"
+  baseImage: {{ template "system_default_registry" . }}{{ .Values.image.repository }}
 {{- if .Values.externalLabels }}
   externalLabels:
 {{ toYaml .Values.externalLabels | indent 4}}

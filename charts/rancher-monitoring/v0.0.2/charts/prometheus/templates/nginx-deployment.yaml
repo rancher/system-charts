@@ -26,7 +26,7 @@ spec:
     spec:
       initContainers:
       - name: nginx-init-auth-add
-        image: {{ .Values.image.proxy.repository }}:{{ .Values.image.proxy.tag }}
+        image: {{ template "system_default_registry" . }}{{ .Values.image.proxy.repository }}:{{ .Values.image.proxy.tag }}
         command:
         - /usr/bin/replace-config-by-auth.sh
         volumeMounts:
@@ -43,7 +43,7 @@ spec:
         {{- end }}
       containers:
       - name: prometheus-proxy
-        image: {{ .Values.image.proxy.repository }}:{{ .Values.image.proxy.tag }}
+        image: {{ template "system_default_registry" . }}{{ .Values.image.proxy.repository }}:{{ .Values.image.proxy.tag }}
         args:
         - nginx
         - -g

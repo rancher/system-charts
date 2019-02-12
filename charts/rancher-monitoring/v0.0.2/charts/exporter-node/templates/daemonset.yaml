@@ -22,7 +22,7 @@ spec:
     spec:
       containers:
       - name: exporter-node
-        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        image: {{ template "system_default_registry" . }}{{ .Values.image.repository }}:{{ .Values.image.tag }}
         args:
         - --web.listen-address=$(POD_IP):{{ .Values.ports.metrics.port }}
         - --path.procfs=/host/proc

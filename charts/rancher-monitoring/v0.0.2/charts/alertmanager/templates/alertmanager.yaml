@@ -24,7 +24,7 @@ spec:
       chart: {{ template "app.version" . }}
       release: {{ .Release.Name }}
 {{- end }}
-  baseImage: "{{ .Values.image.repository }}"
+  baseImage: {{ template "system_default_registry" . }}{{ .Values.image.repository }}
 {{- if .Values.externalUrl }}
   externalUrl: "{{ .Values.externalUrl }}"
 {{- end }}

@@ -23,7 +23,7 @@ spec:
     spec:
       initContainers:
       - name: grafana-init-plugin-json-copy
-        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        image: {{ template "system_default_registry" . }}{{ .Values.image.repository }}:{{ .Values.image.tag }}
         {{- if and .Values.resources .Values.resources.inits }}
         resources:
 {{ toYaml .Values.resources.inits | indent 10 }}
@@ -35,7 +35,7 @@ spec:
         - name: grafana-static-contents
           mountPath: /host
       - name: grafana-init-plugin-json-modify
-        image: {{ .Values.image.tool.repository }}:{{ .Values.image.tool.tag }}
+        image: {{ template "system_default_registry" . }}{{ .Values.image.tool.repository }}:{{ .Values.image.tool.tag }}
         command:
         - /usr/bin/modify-datasource-plugin-json.sh
         {{- if and .Values.resources .Values.resources.inits }}
@@ -50,7 +50,7 @@ spec:
           mountPath: /host
       containers:
       - name: grafana
-        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        image: {{ template "system_default_registry" . }}{{ .Values.image.repository }}:{{ .Values.image.tag }}
         env:
         - name: GF_AUTH_BASIC_ENABLED
           value: "true"
@@ -90,7 +90,7 @@ spec:
 {{ toYaml .Values.resources.core | indent 10 }}
         {{- end }}
       - name: grafana-proxy
-        image: {{ .Values.image.proxy.repository }}:{{ .Values.image.proxy.tag }}
+        image: {{ template "system_default_registry" . }}{{ .Values.image.proxy.repository }}:{{ .Values.image.proxy.tag }}
         args:
         - nginx
         - -g
