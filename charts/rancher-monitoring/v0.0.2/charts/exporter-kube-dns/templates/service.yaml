@@ -6,7 +6,14 @@ metadata:
     chart: {{ template "app.version" . }}
     heritage: {{ .Release.Service }}
     release: {{ .Release.Name }}
-{{ toYaml .Values.serviceSelectorLabels | indent 4 }}
+    {{- range .Values.serviceSelectorLabels }}
+    {{- $pair := regexSplit "=" . 2 }}
+    {{- if eq 2 (len $pair) }}
+    {{ (index $pair 0) }}: {{ (index $pair 1) }}
+    {{- else }}
+    {{ (index $pair 0) }}: ""
+    {{- end }}
+    {{- end }}
   name: expose-kube-dns-metrics
   namespace: {{ .Release.Namespace }}
 spec:
@@ -23,5 +30,12 @@ spec:
     targetPort: {{ .Values.ports.metrics.skydns.port }}
 {{- if not .Values.endpoints }}
   selector:
-{{ toYaml .Values.serviceSelectorLabels | indent 4 }}
+    {{- range .Values.serviceSelectorLabels }}
+    {{- $pair := regexSplit "=" . 2 }}
+    {{- if eq 2 (len $pair) }}
+    {{ (index $pair 0) }}: {{ (index $pair 1) }}
+    {{- else }}
+    {{ (index $pair 0) }}: ""
+    {{- end }}
+    {{- end }}
 {{- end }}

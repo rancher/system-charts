@@ -39,7 +39,7 @@ exporter-coredns:
       port: 9153
       protocol: TCP
   serviceSelectorLabels:
-    k8s-app: kube-dns
+    - "k8s-app=kube-dns"
   insecureSkipVerify: true
 
 exporter-kube-controller-manager:
@@ -53,7 +53,7 @@ exporter-kube-controller-manager:
       port: 10252
       protocol: TCP
   serviceSelectorLabels:
-    k8s-app: kube-controller-manager
+  - "k8s-app=kube-controller-manager"
   insecureSkipVerify: true
 
 exporter-kube-dns:
@@ -73,7 +73,7 @@ exporter-kube-dns:
         port: 10055
         protocol: TCP
   serviceSelectorLabels:
-    k8s-app: kube-dns
+  - "k8s-app=kube-dns"
   insecureSkipVerify: true
 
 exporter-kube-etcd:
@@ -87,7 +87,7 @@ exporter-kube-etcd:
       port: 4001
       protocol: TCP
   serviceSelectorLabels:
-    k8s-app: etcd-server
+  - "k8s-app=etcd-server"
   insecureSkipVerify: true
   caFile: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
   certFile: ""
@@ -104,14 +104,14 @@ exporter-kube-scheduler:
       port: 10251
       protocol: TCP
   serviceSelectorLabels:
-    component: kube-scheduler
+  - "component=kube-scheduler"
   insecureSkipVerify: true
 
 exporter-kubelets:
   enabled: false
   apiGroup: "monitoring.coreos.com"
   serviceSelectorLabels:
-    k8s-app: kubelet
+  - "k8s-app=kubelet"
   insecureSkipVerify: true
   ## Set false when using GKE
   ##
@@ -125,8 +125,8 @@ exporter-kubernetes:
       scheme: https
       name: https
   serviceSelectorLabels:
-    component: apiserver
-    provider: kubernetes
+  - "component=apiserver"
+  - "provider=kubernetes"
   insecureSkipVerify: true
 
 exporter-fluentd:
@@ -137,7 +137,7 @@ exporter-fluentd:
       scheme: http
       name: metrics
   serviceSelectorLabels:
-    k8s-app: fluentd
+  - "k8s-app=fluentd"
   insecureSkipVerify: true
 
 metric-expression-project:
