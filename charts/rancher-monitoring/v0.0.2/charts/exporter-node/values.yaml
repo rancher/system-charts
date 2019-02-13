@@ -1,42 +1,5 @@
 enabledRBAC: true
 
-## Already exist ServiceAccount
-##
-serviceAccountName: ""
-
-## CRD apiGroup
-##
-apiGroup: "monitoring.coreos.com"
-
-## Expertor listens on where and exports on host
-##
-ports: 
-  metrics:
-    port: 9100
-
-enabledHostNetwork: true
-
-enabledHostPID: true
-
-image:
-  repository: quay.io/prometheus/node-exporter
-  tag: v0.17.0
-
-resources:
-  limits:
-    cpu: 200m
-    memory: 50Mi
-  requests:
-    cpu: 100m
-    memory: 30Mi
-
-## Node Selector to constrain pods to run on particular nodes
-## Ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
-##
-nodeSelectors: []
-
-collectors: {}
-
 ##
 # Default collector settings
 ##

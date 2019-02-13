@@ -1,40 +1,11 @@
 enabledRBAC: true
 
-## Already exist ServiceAccount
-##
-serviceAccountName: ""
-
-## CRD apiGroup
-##
-apiGroup: "monitoring.coreos.com"
-
 ## The name of a secret in the same kubernetes namespace which contains the Alertmanager config
 ## If defined this will be used instead of the `config` block values.
 ## The name of the secret must be alertmanager-{{ .Release.Name }} and its data must contain, at least, a key called `alertmanager.yaml`
 ## that contains the configuration as value.
 ##
 configFromSecret: ""
-
-## Alertmanager configuration directives
-## Ref: https://prometheus.io/docs/alerting/configuration/
-##
-config: {}
-#
-# An example config:
-#   global:
-#     resolve_timeout: 5m
-#   route:
-#     group_by: ['job']
-#     group_wait: 30s
-#     group_interval: 5m
-#     repeat_interval: 12h
-#     receiver: 'null'
-#     routes:
-#     - match:
-#         alertname: DeadMansSwitch
-#       receiver: 'null'
-#   receivers:
-#   - name: 'null'
 
 ## Alertmanager template files to include
 #
@@ -56,20 +27,6 @@ templates: {}
 #           {{ range .Labels.SortedPairs }} • *{{ .Name }}:* `{{ .Value }}`
 #           {{ end }}
 
-## Alertmanager container image
-##
-image:
-  repository: quay.io/prometheus/alertmanager
-  tag: v0.15.2
-  proxy:
-    repository: nginx
-    tag: 1.15.8-alpine
-
-## Node labels for Alertmanager pod assignment
-## Ref: https://kubernetes.io/docs/user-guide/node-selection/
-##
-nodeSelectors: []
-
 ## Tolerations for use with node taints
 ## Ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
 ##
@@ -86,25 +43,6 @@ paused: false
 ## Number of Alertmanager replicas desired
 ##
 replicaCount: 1
-
-## Resource limits & requests
-## Ref: https://kubernetes.io/docs/user-guide/compute-resources/
-##
-resources:
-  core:
-    limits:
-      memory: 500Mi
-      cpu: 1000m
-    requests:
-      memory: 100Mi
-      cpu: 100m
-  proxy:
-    limits:
-      memory: 100Mi
-      cpu: 100m
-    requests:
-      memory: 50Mi
-      cpu: 50m
 
 ## How long to retain metrics
 ##
@@ -129,17 +67,6 @@ storageSpec: {}
 #       storage: 50Gi
 #  selector: {}
 
-## Easy way to create persistent data
-##
-persistence: {}
-#  enabled: true
-#  storageClass: gluster
-#  accessMode: "ReadWriteOnce"
-#  size: 50Gi
-
 sidecarsSpec: []
 # - name: sidecar
 #   image: registry/name:tag
-
-securityContext: {}
-

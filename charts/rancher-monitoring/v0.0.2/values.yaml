@@ -1,49 +1,16 @@
 enabled: false
-
 nameOverride: "prometheus-operator"
-
 enabledRBAC: true
-
-## CRD apiGroup
-##
 apiGroup: "monitoring.coreos.com"
-
-## Prometheus-operator image
-##
 image:
   repository: quay.io/coreos/prometheus-operator
   tag: v0.26.0
-  ## Prometheus-config-reloader image to use for config and rule reloading
-  ##
   prometheusConfigReloader:
     repository: quay.io/coreos/prometheus-config-reloader
     tag: v0.26.0
-  ## Configmap-reload image to use for reloading configmaps
-  ##
   configmapReload:
     repository: quay.io/coreos/configmap-reload
     tag: v0.0.1
-
-## Node labels for prometheus-operator pod assignment
-##
-nodeSelectors: []
-
-## Tolerations for use with node taints
-## Ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
-##
-tolerations: []
-
-logFormat: "logfmt"
-
-logLevel: "info"
-
-manageCRDs: false
-
-withValidation: true
-
-## Prometheus-operator resource limits & requests
-## Ref: https://kubernetes.io/docs/user-guide/compute-resources/
-##
 resources:
   limits:
     cpu: 200m
@@ -51,7 +18,12 @@ resources:
   requests:
     cpu: 100m
     memory: 50Mi
-
+nodeSelectors: []
+tolerations: []
+logFormat: "logfmt"
+logLevel: "info"
+manageCRDs: false
+withValidation: true
 ## Already exist ServiceAccount
 ##
 serviceAccountName: ""
@@ -194,6 +166,8 @@ exporter-node:
   collectors: {}
   enabledHostNetwork: true
   enabledHostPID: true
+  ## Already exist ServiceAccount
+  ##
   serviceAccountName: ""
 
 exporter-kube-state:
