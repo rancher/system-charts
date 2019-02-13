@@ -17,7 +17,6 @@ data:
     if [[ -f $srcpath ]] && [[ -d /host ]]; then
       mkdir -p /host/grafana
       cp -f $srcpath $dstpath
-      cat $srcpath
 
       exit 0
     fi
@@ -36,7 +35,6 @@ data:
       token=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)
 
       cat $srcpath | K8S_BEARERTOKEN="Bearer $token" jq 'to_entries | . + [{"key":"routes","value":[{"path":"api/v1","url":"{{ .Values.prometheusDatasourceURL }}/api/v1","headers":[{"name":"Authorization","content":env.K8S_BEARERTOKEN}]}]}] | from_entries' > $dstpath
-      cat $dstpath
 
       exit 0
     fi

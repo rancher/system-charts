@@ -18,7 +18,6 @@ data:
       token=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)
 
       sed "s/REPLACE_PARAM_AUTHORIZATION/Bearer ${token}/g" $srcpath > $dstpath
-      cat $dstpath
 
       exit 0
     fi
