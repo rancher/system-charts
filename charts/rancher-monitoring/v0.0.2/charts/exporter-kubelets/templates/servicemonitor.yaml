@@ -7,9 +7,6 @@ metadata:
     heritage: {{ .Release.Service }}
     release: {{ .Release.Name }}
     source: rancher-monitoring
-    {{- if .Values.serviceMonitorLabels }}
-{{ toYaml .Values.serviceMonitorLabels | indent 4 }}
-    {{- end }}  
   name: {{ template "charts.exporter-kubelets.fullname" . }}
 spec:
   selector:

@@ -56,12 +56,6 @@ templates: {}
 #           {{ range .Labels.SortedPairs }} • *{{ .Name }}:* `{{ .Value }}`
 #           {{ end }}
 
-## External URL at which Alertmanager will be reachable
-##
-externalUrl: ""
-
-serviceMonitorLabels: {}
-
 ## Alertmanager container image
 ##
 image:
@@ -70,10 +64,6 @@ image:
   proxy:
     repository: nginx
     tag: 1.15.8-alpine
-
-## Labels to be added to the Alertmanager
-##
-# labels: {}
 
 ## Node labels for Alertmanager pod assignment
 ## Ref: https://kubernetes.io/docs/user-guide/node-selection/
@@ -119,11 +109,6 @@ resources:
 ## How long to retain metrics
 ##
 retention: 24h
-
-## Prefix used to register routes, overriding externalUrl route.
-## Useful for proxies that rewrite URLs.
-##
-routePrefix: ""
 
 ## List of Secrets in the same namespace as the Alertmanager
 ## object, which shall be mounted into the Alertmanager Pods.

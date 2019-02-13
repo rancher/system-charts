@@ -11,8 +11,4 @@ serviceSelectorLabels:
   component: apiserver
   provider: kubernetes
 
-serviceMonitorLabels: {}
-
-prometheusRuleLabels: {}
-
 insecureSkipVerify: true

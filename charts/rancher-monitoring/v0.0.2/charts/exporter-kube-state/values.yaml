@@ -39,6 +39,4 @@ tolerations: []
   #    value: "value"
   #    effect: "NoSchedule"
 
-serviceMonitorLabels: {}
-
 securityContext: {}

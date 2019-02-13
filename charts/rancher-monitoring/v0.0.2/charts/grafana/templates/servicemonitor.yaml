@@ -6,10 +6,7 @@ metadata:
     chart: {{ template "app.version" . }}
     heritage: {{ .Release.Service }}
     release: {{ .Release.Name }}
-    source: rancher-monitoring
-    {{- if .Values.serviceMonitorLabels }}
-{{ toYaml .Values.serviceMonitorLabels | indent 4 }}
-    {{- end }}    
+    source: rancher-monitoring  
   name: {{ template "app.fullname" . }}
 spec:
   selector:

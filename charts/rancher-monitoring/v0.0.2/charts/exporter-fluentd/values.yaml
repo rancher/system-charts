@@ -10,8 +10,6 @@ ports:
 serviceSelectorLabels:
   k8s-app: fluentd
 
-serviceMonitorLabels: {}
-
 ## Skip verification until we have resolved why the certificate validation
 ## for the kubelet on API server nodes fail.
 ##

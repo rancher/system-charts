@@ -7,9 +7,6 @@ metadata:
     heritage: {{ .Release.Service }}
     release: {{ .Release.Name }}
     source: rancher-monitoring
-    {{- if .Values.prometheusRuleLabels }}
-{{ toYaml .Values.prometheusRuleLabels | indent 4 }}
-    {{- end }}
   name: {{ template "app.fullname" . }}
 spec:
   groups:

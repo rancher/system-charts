@@ -25,12 +25,6 @@ alertingEndpoints: []
 ##
 externalLabels: {}
 
-## External URL at which Prometheus will be reachable
-##
-externalUrl: ""
-
-serviceMonitorLabels: {}
-
 ##Custom Labels to be added to Prometheus Rules CRDs
 ##
 additionalRulesLabels: {}
@@ -42,29 +36,26 @@ image:
   tag: v2.4.3
   auth:
     repository: rancher/prometheus-auth
-    tag: v0.1.0
+    tag: v0.2.0
   proxy:
     repository: nginx
     tag: 1.15.8-alpine
 
 auth:
   args:
-  - --log.debug
-  - agent
-  - start
-  - --agent.proxy-url
+  - --proxy-url
   - http://localhost:9090
-  - --listen.address
+  - --listen-address
   - $(POD_IP):9090
+  - --filter-reader-labels
+  - prometheus
+  - --filter-reader-labels
+  - prometheus_replica
   env:
   - name: POD_IP
     valueFrom:
       fieldRef:
         fieldPath: status.podIP
-
-## Labels to be added to the Prometheus
-##
-# labels: {}
 
 ## Node labels for Prometheus pod assignment
 ## Ref: https://kubernetes.io/docs/user-guide/node-selection/
@@ -135,11 +126,6 @@ resources:
 ## How long to retain metrics
 ##
 retention: 24h
-
-## Prefix used to register routes, overriding externalUrl route.
-## Useful for proxies that rewrite URLs.
-##
-routePrefix: ""
 
 ## Namespaces to be selected for PrometheusRules discovery.
 ## If unspecified, only the same namespace as the Prometheus object is in is used.

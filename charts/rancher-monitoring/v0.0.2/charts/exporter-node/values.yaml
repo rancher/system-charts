@@ -4,8 +4,6 @@ enabledRBAC: true
 ##
 serviceAccountName: ""
 
-serviceAccountNameOverride: ""
-
 ## CRD apiGroup
 ##
 apiGroup: "monitoring.coreos.com"
@@ -32,26 +30,12 @@ resources:
     cpu: 100m
     memory: 30Mi
 
-## Tolerations for use with node taints
-## Ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
-##
-tolerations:
-- operator: Exists
-
 ## Node Selector to constrain pods to run on particular nodes
 ## Ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
 ##
 nodeSelectors: []
 
-serviceMonitorLabels: {}
-
-prometheusRuleLabels: {}
-
 collectors: {}
-
-securityContext:
-  runAsNonRoot: true
-  runAsUser: 65534
 
 ##
 # Default collector settings
