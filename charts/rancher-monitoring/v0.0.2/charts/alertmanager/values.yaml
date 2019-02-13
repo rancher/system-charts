@@ -78,12 +78,12 @@ image:
 ## Node labels for Alertmanager pod assignment
 ## Ref: https://kubernetes.io/docs/user-guide/node-selection/
 ##
-nodeSelector: {}
+nodeSelectors: []
 
 ## Tolerations for use with node taints
 ## Ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
 ##
-tolerations: {}
+tolerations: []
   #  - key: "key"
   #    operator: "Equal"
   #    value: "value"

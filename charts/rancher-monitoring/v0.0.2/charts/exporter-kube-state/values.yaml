@@ -28,12 +28,12 @@ resources:
 ## Node Selector to constrain pods to run on particular nodes
 ## Ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/
 ##
-nodeSelector: {}
+nodeSelectors: []
 
 ## Tolerations for use with node taints
 ## Ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
 ##
-tolerations: {}
+tolerations: []
   #  - key: "key"
   #    operator: "Equal"
   #    value: "value"
