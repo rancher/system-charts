@@ -1,25 +1,4 @@
-level: cluster
-
 enabledRBAC: true
-
-## Already exist ServiceAccount
-##
-serviceAccountName: ""
-
-serviceAccountNameOverride: ""
-
-## CRD apiGroup
-##
-apiGroup: "monitoring.coreos.com"
-
-## Alertmanagers to which alerts will be sent
-## Ref: https://github.com/coreos/prometheus-operator/blob/master/Documentation/api.md#alertmanagerendpoints
-##
-alertingEndpoints: []
-#   - name: ""
-#     namespace: ""
-#     port: http
-#     scheme: http
 
 ## External labels to add to any time series or alerts when communicating with external systems
 ##
@@ -28,39 +7,6 @@ externalLabels: {}
 ##Custom Labels to be added to Prometheus Rules CRDs
 ##
 additionalRulesLabels: {}
-
-## Prometheus container image
-##
-image:
-  repository: quay.io/prometheus/prometheus
-  tag: v2.4.3
-  auth:
-    repository: rancher/prometheus-auth
-    tag: v0.2.0
-  proxy:
-    repository: nginx
-    tag: 1.15.8-alpine
-
-auth:
-  args:
-  - --proxy-url
-  - http://localhost:9090
-  - --listen-address
-  - $(POD_IP):9090
-  - --filter-reader-labels
-  - prometheus
-  - --filter-reader-labels
-  - prometheus_replica
-  env:
-  - name: POD_IP
-    valueFrom:
-      fieldRef:
-        fieldPath: status.podIP
-
-## Node labels for Prometheus pod assignment
-## Ref: https://kubernetes.io/docs/user-guide/node-selection/
-##
-nodeSelectors: []
 
 ## Tolerations for use with node taints
 ## Ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
@@ -71,11 +17,9 @@ tolerations: []
   #    value: "value"
   #    effect: "NoSchedule"
 
-
 ## If true, the Operator won't process any Prometheus configuration changes
 ##
 paused: false
-
 
 ## Number of Prometheus replicas desired
 ##
@@ -91,82 +35,9 @@ remoteRead: []
 remoteWrite: []
 # - url: http://remote1/push
 
-## Resource limits & requests
-## Ref: https://kubernetes.io/docs/user-guide/compute-resources/
-resources:
-  inits:
-    limits:
-      memory: 50Mi
-      cpu: 50m
-    requests:
-      memory: 50Mi
-      cpu: 50m
-  core:
-    limits:
-      memory: 500Mi
-      cpu: 1000m
-    requests:
-      memory: 100Mi
-      cpu: 100m
-  proxy:
-    limits:
-      memory: 100Mi
-      cpu: 100m
-    requests:
-      memory: 50Mi
-      cpu: 50m
-  auth:
-    limits:
-      memory: 200Mi
-      cpu: 500m
-    requests:
-      memory: 100Mi
-      cpu: 100m
-
 ## How long to retain metrics
 ##
 retention: 24h
-
-## Namespaces to be selected for PrometheusRules discovery.
-## If unspecified, only the same namespace as the Prometheus object is in is used.
-ruleNamespaceSelector: {}
-
-## Rules CRD selector
-## Ref: https://github.com/coreos/prometheus-operator/blob/master/Documentation/design.md
-##
-## 1. If `matchLabels` is used, `PrometheusRules` must contain all the labels from
-##    `matchLabels` in order to be be matched by Prometheus
-## 2. If `matchExpressions` is used `PrometheusRules` must contain at least one label
-##    from `matchExpressions` in order to be matched by Prometheus
-## Ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels
-ruleSelector: {}
- # ruleSelector: {
- #   matchExpressions: [{key: prometheus, operator: In, values: [example-rules, example-rules-2]}]
- # }
- ### OR
- # ruleSelector: {
- #   matchLabels: {role: example-rules}
- # }
-
-## List of Secrets in the same namespace as the Prometheus
-## object, which shall be mounted into the Prometheus Pods.
-## Ref: https://github.com/coreos/prometheus-operator/blob/master/Documentation/api.md#prometheusspec
-##
-secrets: []
-
-## Namespaces to be selected for ServiceMonitors discovery.
-## If unspecified, only the same namespace as the Prometheus object is in is used.
-serviceMonitorNamespaceSelector: {}
-
-## ServiceMonitor CRD selector
-## Ref: https://github.com/coreos/prometheus-operator/blob/master/Documentation/design.md
-##
-## 1. If `matchLabels` is used, `ServiceMonitors` must contain all the labels from
-##    `matchLabels` in order to be be matched by Prometheus
-## 2. If `matchExpressions` is used `ServiceMonitors` must contain at least one label
-##    from `matchExpressions` in order to be matched by Prometheus
-## Ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels
-serviceMonitorSelector: {}
 
 logLevel: "info"
 
@@ -180,14 +51,6 @@ storageSpec: {}
 #    requests:
 #      storage: 50Gi
 #  selector: {}
-
-## Easy way to create persistent data
-##
-persistence: {}
-#  enabled: true
-#  storageClass: gluster
-#  accessMode: "ReadWriteOnce"
-#  size: 50Gi
 
 ## Prometheus AdditionalScrapeConfigs
 ## Ref: https://github.com/coreos/prometheus-operator/blob/master/Documentation/api.md#prometheusspec
@@ -209,7 +72,3 @@ additionalAlertManagerConfigs: []
 sidecarsSpec: []
 # - name: sidecar
 #   image: registry/name:tag
-
-additionalBindingClusterRoles: []
-
-securityContext: {}
