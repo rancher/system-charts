@@ -26,13 +26,12 @@ image:
 
 ## Node labels for prometheus-operator pod assignment
 ##
-nodeSelector:
-  beta.kubernetes.io/os: linux
+nodeSelectors: []
 
 ## Tolerations for use with node taints
 ## Ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
 ##
-tolerations: {}
+tolerations: []
 
 logFormat: "logfmt"
 
@@ -188,8 +187,7 @@ exporter-node:
   image:
     repository: prom/node-exporter
     tag: v0.17.0
-  nodeSelector:
-    beta.kubernetes.io/os: linux
+  nodeSelectors: []
   resources:
     limits:
       cpu: 200m
@@ -214,8 +212,7 @@ exporter-kube-state:
   image:
     repository: quay.io/coreos/kube-state-metrics
     tag: v1.4.0
-  nodeSelector:
-    beta.kubernetes.io/os: linux
+  nodeSelectors: []
   resources:
     limits:
       cpu: 100m
@@ -237,8 +234,7 @@ alertmanager:
     proxy:
       repository: nginx
       tag: 1.15.8-alpine
-  nodeSelector:
-    beta.kubernetes.io/os: linux
+  nodeSelectors: []
   resources:
     core:
       limits:
@@ -295,8 +291,7 @@ grafana:
     proxy:
       repository: nginx
       tag: 1.15.8-alpine
-  nodeSelector:
-    beta.kubernetes.io/os: linux
+  nodeSelectors: []
   resources:
     inits:
       limits:
@@ -358,8 +353,7 @@ prometheus:
     proxy:
       repository: nginx
       tag: 1.15.8-alpine
-  nodeSelector:
-    beta.kubernetes.io/os: linux
+  nodeSelectors: []
   resources:
     inits:
       limits:
