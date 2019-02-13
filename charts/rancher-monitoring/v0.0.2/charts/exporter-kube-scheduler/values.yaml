@@ -1,8 +1,3 @@
-## 
-## For now, HELM cannot support deploy commponents into multiple namespaces
-##
-componentNamespace: ""
-
 ## CRD apiGroup
 ##
 apiGroup: "monitoring.coreos.com"
@@ -20,10 +15,6 @@ ports:
 
 serviceSelectorLabels:
   component: kube-scheduler
-
-serviceMonitorLabels: {}
-
-prometheusRuleLabels: {}
 
 ## Skip verification until we have resolved why the certificate validation
 ## for the kubelet on API server nodes fail.

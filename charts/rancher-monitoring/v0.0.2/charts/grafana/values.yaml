@@ -24,11 +24,6 @@ tolerations: []
   #    value: "value"
   #    effect: "NoSchedule"
 
-serviceMonitor:
-  ## Custom Labels to be added to ServiceMonitor
-  ##
-  labels: {}
-
 ## Pass extra environment variables to the Grafana container.
 ##
 # extraVars:

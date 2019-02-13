@@ -5,8 +5,6 @@ apiGroup: "monitoring.coreos.com"
 serviceSelectorLabels:
   k8s-app: kubelet
 
-serviceMonitorLabels: {}
-
 ## Skip verification until we have resolved why the certificate validation
 ## for the kubelet on API server nodes fail.
 ##

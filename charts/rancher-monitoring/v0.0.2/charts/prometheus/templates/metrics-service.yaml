@@ -12,13 +12,9 @@ spec:
   type: ClusterIP
   clusterIP: None
   selector:
-{{- if .Values.labels }}
-{{ toYaml .Values.labels | indent 4 }}
-{{- else }}
     app: {{ template "app.name" . }}
     chart: {{ template "app.version" . }}
     release: {{ .Release.Name }}
-{{- end }}
   ports:
   - name: metrics
     port: 9090

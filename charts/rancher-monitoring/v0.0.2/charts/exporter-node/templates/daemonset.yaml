@@ -72,14 +72,11 @@ spec:
       {{- if .Values.enabledRBAC }}
       serviceAccountName: {{ default (include "app.fullname" .) .Values.serviceAccountName }}
       {{- end }}
-      {{- if .Values.securityContext }}
       securityContext:
-{{ toYaml .Values.securityContext | indent 8 }}
-      {{- end }}
-      {{- if .Values.tolerations }}
+        runAsNonRoot: true
+        runAsUser: 65534
       tolerations:
-{{ toYaml .Values.tolerations | indent 8 }}
-      {{- end }}
+      - operator: Exists
       nodeSelector:
         beta.kubernetes.io/os: linux
         {{- range .Values.nodeSelectors }}

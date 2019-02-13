@@ -6,9 +6,6 @@ metadata:
     chart: {{ template "app.version" . }}
     heritage: {{ .Release.Service }}
     release: {{ .Release.Name }}
-{{- if .Values.labels }}
-{{ toYaml .Values.labels | indent 4 }}
-{{- end }}
   name: {{ .Release.Name }}
 spec:
 {{- if .Values.securityContext }}
@@ -59,9 +56,9 @@ spec:
     resources:
 {{ toYaml .Values.resources.auth | indent 6 }}
     {{- end }}
-{{- if .Values.sidecarsSpec }}
+  {{- if .Values.sidecarsSpec }}
 {{ toYaml .Values.sidecarsSpec | indent 2 }}
-{{- end }}
+  {{- end }}
 {{- else }} 
   {{- if .Values.sidecarsSpec }}
   containers:
@@ -70,13 +67,9 @@ spec:
 {{- end }}
   podMetadata:
     labels:
-{{- if .Values.labels }}
-{{ toYaml .Values.labels | indent 6 }}
-{{- else }}
       app: {{ template "app.name" . }}
       chart: {{ template "app.version" . }}
       release: {{ .Release.Name }}
-{{- end }}
 {{- if .Values.alertingEndpoints }}
   alerting:
     alertmanagers:
@@ -92,9 +85,6 @@ spec:
 {{- if .Values.externalLabels }}
   externalLabels:
 {{ toYaml .Values.externalLabels | indent 4}}
-{{- end }}
-{{- if .Values.externalUrl }}
-  externalUrl: "{{ .Values.externalUrl }}"
 {{- end }}
   nodeSelector:
     beta.kubernetes.io/os: linux
@@ -114,9 +104,6 @@ spec:
 {{ toYaml .Values.resources.core | indent 4 }}
 {{- end }}
   retention: "{{ .Values.retention }}"
-{{- if .Values.routePrefix }}
-  routePrefix: "{{ .Values.routePrefix }}"
-{{- end }}
 {{- if .Values.secrets }}
   secrets:
 {{ toYaml .Values.secrets | indent 4 }}

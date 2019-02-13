@@ -6,9 +6,6 @@ metadata:
     chart: {{ template "app.version" . }}
     heritage: {{ .Release.Service }}
     release: {{ .Release.Name }}
-{{- if .Values.labels }}
-{{ toYaml .Values.labels | indent 4 }}
-{{- end }}
   name: {{ .Release.Name }}
 spec:
 {{- if .Values.securityContext }}
@@ -17,17 +14,10 @@ spec:
 {{- end }}
   podMetadata:
     labels:
-{{- if .Values.labels }}
-{{ toYaml .Values.labels | indent 6 }}
-{{- else }}
       app: {{ template "app.name" . }}
       chart: {{ template "app.version" . }}
       release: {{ .Release.Name }}
-{{- end }}
   baseImage: {{ template "system_default_registry" . }}{{ .Values.image.repository }}
-{{- if .Values.externalUrl }}
-  externalUrl: "{{ .Values.externalUrl }}"
-{{- end }}
   nodeSelector:
     beta.kubernetes.io/os: linux
     {{- range .Values.nodeSelectors }}
@@ -46,9 +36,6 @@ spec:
 {{ toYaml .Values.resources.core | indent 4 }}
 {{- end }}
   retention: "{{ .Values.retention }}"
-{{- if .Values.routePrefix }}
-  routePrefix: "{{ .Values.routePrefix }}"
-{{- end }}
 {{- if .Values.secrets }}
   secrets:
 {{ toYaml .Values.secrets | indent 4 }}
