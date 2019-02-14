@@ -368,6 +368,10 @@ prometheus:
     runAsUser: 1000
     runAsNonRoot: true
     fsGroup: 2000
+  sync:
+    mode: "remote"
+    path: "/api/v1/read"
+    target: ""
 
 global:
   systemDefaultRegistry: ""

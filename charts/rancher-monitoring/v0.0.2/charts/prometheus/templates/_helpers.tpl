@@ -5,17 +5,23 @@
 {{- $yamls := dict -}}
 {{- if eq .Values.level "cluster" -}}
   {{- range $path, $bytes := .Files.Glob "additionals/c-scrape_*.yaml" -}}
-    {{- $_ := set $yamls (tpl ($bytes | toString) $root) "" -}}
+    {{- $tpl := tpl ($bytes | toString) $root }}
+    {{- if $tpl }}
+    {{- $_ := set $yamls $tpl "" -}}
+    {{- end }}
   {{- end -}}
 {{- end -}}
 {{- range $path, $bytes := .Files.Glob "additionals/w-scrape_*.yaml" -}}
-  {{- $_ := set $yamls (tpl ($bytes | toString) $root) "" -}}
+  {{- $tpl := tpl ($bytes | toString) $root }}
+  {{- if $tpl }}
+  {{- $_ := set $yamls $tpl "" -}}
+  {{- end }}
 {{- end -}}
 {{- if .Values.additionalScrapeConfigs -}}
   {{- $_ := set $yamls (.Values.additionalScrapeConfigs | toYaml) "" -}}
 {{- end -}}
 {{- if $yamls -}}
-  {{- keys $yamls | join "\\n" | b64enc | quote -}}
+  {{- keys $yamls | join "\n" | b64enc | quote -}}
 {{- end -}}
 {{- end -}}
 
@@ -25,17 +31,23 @@
 {{- $yamls := dict -}}
 {{- if eq .Values.level "cluster" -}}
   {{- range $path, $bytes := .Files.Glob "additionals/c-altermanager_*.yaml" -}}
-    {{- $_ := set $yamls (tpl ($bytes | toString) $root) "" -}}
+    {{- $tpl := tpl ($bytes | toString) $root }}
+    {{- if $tpl }}
+    {{- $_ := set $yamls $tpl "" -}}
+    {{- end }}
   {{- end -}}
 {{- end -}}
 {{- range $path, $bytes := .Files.Glob "additionals/w-altermanager_*.yaml" -}}
-  {{- $_ := set $yamls (tpl ($bytes | toString) $root) "" -}}
+  {{- $tpl := tpl ($bytes | toString) $root }}
+  {{- if $tpl }}
+  {{- $_ := set $yamls $tpl "" -}}
+  {{- end }}
 {{- end -}}
 {{- if .Values.additionalAlertManagerConfigs -}}
   {{- $_ := set $yamls (.Values.additionalAlertManagerConfigs | toYaml) "" -}}
 {{- end -}}
 {{- if $yamls -}}
-  {{- keys $yamls | join "\\n" | b64enc | quote -}}
+  {{- keys $yamls | join "\n" | b64enc | quote -}}
 {{- end -}}
 {{- end -}}
 

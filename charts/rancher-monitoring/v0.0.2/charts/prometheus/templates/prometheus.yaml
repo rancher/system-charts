@@ -119,13 +119,10 @@ spec:
   serviceMonitorSelector:
 {{ toYaml .Values.serviceMonitorSelector | indent 4 }}
 {{- end }}
-{{- if .Values.remoteRead }}
+{{- if and (eq .Values.level "project") (eq .Values.sync.mode "remote") }}
   remoteRead:
-{{ toYaml .Values.remoteRead | indent 4 }}
-{{- end }}
-{{- if .Values.remoteWrite }}
-  remoteWrite:
-{{ toYaml .Values.remoteWrite | indent 4 }}
+  - bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+    url: {{ printf "%s%s" .Values.sync.target .Values.sync.path }}
 {{- end }}
 {{- if .Values.ruleNamespaceSelector }}
   ruleNamespaceSelector:

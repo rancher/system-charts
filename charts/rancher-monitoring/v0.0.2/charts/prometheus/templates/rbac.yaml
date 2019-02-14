@@ -86,7 +86,7 @@ subjects:
     name: {{ default (include "app.fullname" .) .Values.serviceAccountNameOverride }}
     namespace: {{ .Release.Namespace }}
 
-{{- if ne .Values.level "cluster" }}
+{{- if eq .Values.level "project" }}
 ---
 apiVersion: {{ template "rbac_api_version" . }}
 kind: Role
