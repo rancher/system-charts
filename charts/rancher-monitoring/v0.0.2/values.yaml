@@ -3,13 +3,13 @@ nameOverride: "prometheus-operator"
 enabledRBAC: true
 apiGroup: "monitoring.coreos.com"
 image:
-  repository: quay.io/coreos/prometheus-operator
+  repository: rancher/coreos-prometheus-operator
   tag: v0.26.0
   prometheusConfigReloader:
-    repository: quay.io/coreos/prometheus-config-reloader
+    repository: rancher/coreos-prometheus-config-reloader
     tag: v0.26.0
   configmapReload:
-    repository: quay.io/coreos/configmap-reload
+    repository: rancher/coreos-configmap-reload
     tag: v0.0.1
 resources:
   limits:
@@ -150,7 +150,7 @@ exporter-node:
   enabled: false
   apiGroup: "monitoring.coreos.com"
   image:
-    repository: prom/node-exporter
+    repository: rancher/node-exporter
     tag: v0.17.0
   nodeSelectors: []
   resources:
@@ -174,7 +174,7 @@ exporter-kube-state:
   enabled: false
   apiGroup: "monitoring.coreos.com"
   image:
-    repository: quay.io/coreos/kube-state-metrics
+    repository: rancher/coreos-kube-state-metrics
     tag: v1.4.0
   nodeSelectors: []
   resources:
@@ -193,10 +193,10 @@ alertmanager:
   enabled: false
   apiGroup: "monitoring.coreos.com"
   image:
-    repository: prom/alertmanager
+    repository: rancher/prom-alertmanager
     tag: v0.15.2
     proxy:
-      repository: nginx
+      repository: rancher/nginx
       tag: 1.15.8-alpine
   nodeSelectors: []
   resources:
@@ -247,13 +247,13 @@ grafana:
   level: cluster
   apiGroup: "monitoring.coreos.com"
   image:
-    repository: grafana/grafana
+    repository: rancher/grafana
     tag: 5.3.0
     tool:
       repository: rancher/prometheus-auth
       tag: v0.2.0
     proxy:
-      repository: nginx
+      repository: rancher/nginx
       tag: 1.15.8-alpine
   nodeSelectors: []
   resources:
@@ -308,13 +308,13 @@ prometheus:
           fieldPath: status.podIP
   apiGroup: "monitoring.coreos.com"
   image:
-    repository: prom/prometheus
+    repository: rancher/prometheus
     tag: v2.5.0
     auth:
       repository: rancher/prometheus-auth
       tag: v0.2.0
     proxy:
-      repository: nginx
+      repository: rancher/nginx
       tag: 1.15.8-alpine
   nodeSelectors: []
   resources:
