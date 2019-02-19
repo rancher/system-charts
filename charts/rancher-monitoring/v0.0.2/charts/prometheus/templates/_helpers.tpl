@@ -21,7 +21,7 @@
   {{- $_ := set $yamls (.Values.additionalScrapeConfigs | toYaml) "" -}}
 {{- end -}}
 {{- if $yamls -}}
-  {{- keys $yamls | join "\n" | b64enc | quote -}}
+  {{- keys $yamls | join "\n" | quote -}}
 {{- end -}}
 {{- end -}}
 
@@ -47,7 +47,7 @@
   {{- $_ := set $yamls (.Values.additionalAlertManagerConfigs | toYaml) "" -}}
 {{- end -}}
 {{- if $yamls -}}
-  {{- keys $yamls | join "\n" | b64enc | quote -}}
+  {{- keys $yamls | join "\n" | quote -}}
 {{- end -}}
 {{- end -}}
 

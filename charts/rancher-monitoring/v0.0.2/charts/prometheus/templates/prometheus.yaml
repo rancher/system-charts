@@ -12,9 +12,33 @@ spec:
   securityContext:
 {{ toYaml .Values.securityContext | indent 4 }}
 {{- end }}
-{{- if eq .Values.level "cluster" }}
-  listenLocal: true
   containers:
+  - name: prometheus-proxy
+    command:
+    - /bin/sh
+    - -c 
+    - cp /nginx/run-sh.tmpl /var/run/nginx-start.sh; chmod +x /var/run/nginx-start.sh; /var/run/nginx-start.sh
+    env:
+    - name: POD_IP
+      valueFrom:
+        fieldRef:
+          fieldPath: status.podIP
+    image: {{ template "system_default_registry" . }}{{ .Values.image.proxy.repository }}:{{ .Values.image.proxy.tag }}
+    ports:
+    - containerPort: 80
+      name: http
+      protocol: TCP
+    {{- if and .Values.resources .Values.resources.proxy }}
+    resources:
+{{ toYaml .Values.resources.proxy | indent 6 }}
+    {{- end }}
+    securityContext:
+      runAsNonRoot: false
+      runAsUser: 0
+    volumeMounts:
+    - mountPath: /nginx
+      name: configmap-{{ template "app.nginx.fullname" . }}
+{{- if eq .Values.level "cluster" }}
   - name: prometheus-agent
     command:
     - prometheus-auth
@@ -30,9 +54,6 @@ spec:
     ports:
     - containerPort: 9090
       name: web
-      protocol: TCP
-    - containerPort: 9190
-      name: profile
       protocol: TCP
     livenessProbe:
       failureThreshold: 6
@@ -56,14 +77,7 @@ spec:
     resources:
 {{ toYaml .Values.resources.auth | indent 6 }}
     {{- end }}
-  {{- if .Values.sidecarsSpec }}
-{{ toYaml .Values.sidecarsSpec | indent 2 }}
-  {{- end }}
-{{- else }} 
-  {{- if .Values.sidecarsSpec }}
-  containers:
-{{ toYaml .Values.sidecarsSpec | indent 2 }}
-  {{- end }}
+  listenLocal: true
 {{- end }}
   podMetadata:
     labels:
@@ -104,9 +118,11 @@ spec:
 {{ toYaml .Values.resources.core | indent 4 }}
 {{- end }}
   retention: "{{ .Values.retention }}"
+  configMaps:
+  - {{ template "app.nginx.fullname" . }}
 {{- if .Values.secrets }}
   secrets:
-{{ toYaml .Values.secrets | indent 4 }}
+{{ toYaml .Values.secrets | indent 2 }}
 {{- end }}
 {{- if .Values.enabledRBAC }}
   serviceAccountName: {{ default (default (include "app.fullname" .) .Values.serviceAccountName) .Values.serviceAccountNameOverride }}

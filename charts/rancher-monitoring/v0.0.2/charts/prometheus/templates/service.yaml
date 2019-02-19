@@ -10,11 +10,11 @@ metadata:
     kubernetes.io/cluster-service: "true"
 spec:
   type: ClusterIP
+  sessionAffinity: ClientIP
   selector:
     app: {{ template "app.name" . }}
     chart: {{ template "app.version" . }}
     release: {{ .Release.Name }}
-    component: nginx
   ports:
     - name: http
       port: 80

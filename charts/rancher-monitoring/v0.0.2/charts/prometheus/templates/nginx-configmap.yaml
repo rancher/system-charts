@@ -7,12 +7,27 @@ metadata:
     chart: {{ template "app.version" . }}
     heritage: {{ .Release.Service }}
     release: {{ .Release.Name }}
-    component: nginx
 data:
-  nginx.conf: |-
+  run-sh.tmpl: |-
+    #!/bin/sh
+    set -e
+
+    srcpath="/nginx/nginx-conf.tmpl"
+    dstpath="/var/run/nginx.conf"
+
+    if ![ -f $srcpath ]; then
+      exit 1
+    fi
+
+    token=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)
+    sed "s/REPLACE_PARAM_AUTHORIZATION/Bearer ${token}/g" $srcpath | sed "s/REPLACE_PARAM_IP/${POD_IP}/g" > $dstpath
+    
+    nginx -g "daemon off;" -c /var/run/nginx.conf
+
+  nginx-conf.tmpl: |-
     user                  nginx;
     worker_processes      auto;
-    error_log             /dev/null warn;
+    error_log             /dev/stdout warn;
     pid                   /var/run/nginx.pid;
 
     events {
@@ -57,7 +72,7 @@ data:
           add_header          X-Proxy-Cache $upstream_cache_status;
           add_header          Cache-Control "public";
 
-          proxy_pass          http://prometheus-operated:9090/;
+          proxy_pass          http://REPLACE_PARAM_IP:9090/;
 
           sub_filter_types    text/html;
           sub_filter_once     off;

@@ -68,7 +68,3 @@ additionalAlertManagerConfigs: []
 # - static_configs:
 #   - targets:
 #     - "localhost:9093"
-
-sidecarsSpec: []
-# - name: sidecar
-#   image: registry/name:tag

@@ -283,14 +283,10 @@ prometheus:
   level: cluster
   auth:
     args:
-    - --proxy-url
-    - http://localhost:9090
-    - --listen-address
-    - $(POD_IP):9090
-    - --filter-reader-labels
-    - prometheus
-    - --filter-reader-labels
-    - prometheus_replica
+    - --proxy-url=http://localhost:9090
+    - --listen-address=$(POD_IP):9090
+    - --filter-reader-labels=prometheus
+    - --filter-reader-labels=prometheus_replica
     env:
     - name: POD_IP
       valueFrom:
@@ -308,13 +304,6 @@ prometheus:
       tag: 1.15.8-alpine
   nodeSelectors: []
   resources:
-    inits:
-      limits:
-        memory: 50Mi
-        cpu: 50m
-      requests:
-        memory: 50Mi
-        cpu: 50m
     core:
       limits:
         memory: 500Mi
