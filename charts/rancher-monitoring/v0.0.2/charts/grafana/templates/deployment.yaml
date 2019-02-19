@@ -29,7 +29,7 @@ spec:
 {{ toYaml .Values.resources.inits | indent 10 }}
         {{- end }}
         volumeMounts:
-        - name: grafana-static-hooks
+        - name: grafana-nginx
           mountPath: /run.sh
           subPath: copy-datasource-plugin-json.sh
         - name: grafana-static-contents
@@ -37,14 +37,14 @@ spec:
       - name: grafana-init-plugin-json-modify
         image: {{ template "system_default_registry" . }}{{ .Values.image.tool.repository }}:{{ .Values.image.tool.tag }}
         command:
-        - /usr/bin/modify-datasource-plugin-json.sh
+        - /run.sh
         {{- if and .Values.resources .Values.resources.inits }}
         resources:
 {{ toYaml .Values.resources.inits | indent 10 }}
         {{- end }}
         volumeMounts:
-        - name: grafana-static-hooks
-          mountPath: /usr/bin/modify-datasource-plugin-json.sh
+        - name: grafana-nginx
+          mountPath: /run.sh
           subPath: modify-datasource-plugin-json.sh
         - name: grafana-static-contents
           mountPath: /host
@@ -128,10 +128,6 @@ spec:
       securityContext:
         fsGroup: 472
       volumes:
-      - name: grafana-static-hooks
-        configMap:
-          name: {{ template "app.hooks.fullname" . }}
-          defaultMode: 0777
       - name: grafana-static-contents
         emptyDir: {}
       - name: grafana-storage
@@ -143,12 +139,17 @@ spec:
         {{- end }}
       - name: grafana-nginx
         configMap:
-          defaultMode: 438
+          name: {{ template "app.nginx.fullname" . }}
           items:
           - key: nginx.conf
             mode: 438
             path: nginx.conf
-          name: {{ template "app.nginx.fullname" . }}
+          - key: copy-datasource-plugin-json.sh
+            mode: 0777
+            path: copy-datasource-plugin-json.sh
+          - key: modify-datasource-plugin-json.sh
+            mode: 0777
+            path: modify-datasource-plugin-json.sh
       - name: grafana-dashboards
         configMap:
           name: {{ template "app.dashboards.fullname" . }}
