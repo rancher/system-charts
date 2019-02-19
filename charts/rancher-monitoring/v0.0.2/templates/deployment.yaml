@@ -1,4 +1,21 @@
 {{- if .Values.enabled }}
+{{- $kubeletSvcName := "expose-kubelets-metrics" -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $kubeletSvcName }}
+  labels:
+    k8s-app: kubelet
+    {{ .Values.apiGroup }}: "true"
+spec:
+  type: ClusterIP
+  clusterIP: None
+  ports:
+  - name: https-metrics
+    port: 10250
+    targetPort: 10250
+
+---
 apiVersion: {{ template "deployment_api_version" . }}
 kind: Deployment
 metadata:
@@ -26,7 +43,7 @@ spec:
         - name: prometheus-operator
           image: {{ template "system_default_registry" . }}{{ .Values.image.repository }}:{{ .Values.image.tag }}
           args:
-            - --kubelet-service={{ .Release.Namespace }}/expose-kubelets-metrics
+            - --kubelet-service={{ .Release.Namespace }}/{{ $kubeletSvcName }}
             - --log-format={{ .Values.logFormat }}
             - --log-level={{ .Values.logLevel }}
             - --prometheus-config-reloader={{ template "system_default_registry" . }}{{ .Values.image.prometheusConfigReloader.repository }}:{{ .Values.image.prometheusConfigReloader.tag }}
