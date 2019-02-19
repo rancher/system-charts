@@ -14,8 +14,7 @@ spec:
     app: {{ template "app.name" . }}
     chart: {{ template "app.version" . }}
     release: {{ .Release.Name }}
-    component: nginx
   ports:
     - name: http
       port: 80
-      targetPort: http
+      targetPort: web

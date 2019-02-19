@@ -195,9 +195,6 @@ alertmanager:
   image:
     repository: rancher/prom-alertmanager
     tag: v0.15.2
-    proxy:
-      repository: rancher/nginx
-      tag: 1.15.8-alpine
   nodeSelectors: []
   resources:
     core:
@@ -207,13 +204,6 @@ alertmanager:
       requests:
         memory: 100Mi
         cpu: 100m
-    proxy:
-      limits:
-        memory: 100Mi
-        cpu: 100m
-      requests:
-        memory: 50Mi
-        cpu: 50m
   config:
     global:
       resolve_timeout: 5m

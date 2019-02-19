@@ -75,7 +75,3 @@ spec:
   tolerations:
 {{ toYaml .Values.tolerations | indent 4 }}
 {{- end }}
-{{- if .Values.sidecarsSpec }}
-  containers:
-{{ toYaml .Values.sidecarsSpec | indent 4 }}
-{{- end }}
