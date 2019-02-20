@@ -9,10 +9,43 @@ metadata:
     release: {{ .Release.Name }}
     component: nginx
 data:
+  copy-datasource-plugin-json.sh: |-
+    #!/bin/bash
+
+    srcpath="/usr/share/grafana/public/app/plugins/datasource/prometheus/plugin.json"
+    dstpath="/host/grafana/raw-plugin.json"
+
+    if [[ -f $srcpath ]] && [[ -d /host ]]; then
+      mkdir -p /host/grafana
+      cp -f $srcpath $dstpath
+
+      exit 0
+    fi
+
+    exit 1
+
+  modify-datasource-plugin-json.sh: |-
+    #!/bin/sh
+
+    srcpath="/host/grafana/raw-plugin.json"
+    dstpath="/host/grafana/plugin.json"
+
+    if [ -f $srcpath ] && [ -d /host ]; then
+      mkdir -p /host/grafana
+
+      token=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)
+
+      cat $srcpath | K8S_BEARERTOKEN="Bearer $token" jq 'to_entries | . + [{"key":"routes","value":[{"path":"api/v1","url":"{{ .Values.prometheusDatasourceURL }}/api/v1","headers":[{"name":"Authorization","content":env.K8S_BEARERTOKEN}]}]}] | from_entries' > $dstpath
+
+      exit 0
+    fi
+
+    exit 1
+  
   nginx.conf: |-
     user                  nginx;
     worker_processes      auto;
-    error_log             /dev/null warn;
+    error_log             /dev/stdout warn;
     pid                   /var/run/nginx.pid;
 
     events {
