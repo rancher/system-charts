@@ -9,25 +9,15 @@ dependencies:
     condition: exporter-coredns.enabled
     repository: "file://./charts/exporter-coredns/"
 
-  - name: exporter-kube-controller-manager
-    version: 0.0.1
-    condition: exporter-kube-controller-manager.enabled
-    repository: "file://./charts/exporter-kube-controller-manager/"
-
   - name: exporter-kube-dns
     version: 0.0.1
     condition: exporter-kube-dns.enabled
     repository: "file://./charts/exporter-kube-dns/"
 
-  - name: exporter-kube-etcd
+  - name: exporter-rke
     version: 0.0.1
-    condition: exporter-kube-etcd.enabled
-    repository: "file://./charts/exporter-kube-etcd/"
-
-  - name: exporter-kube-scheduler
-    version: 0.0.1
-    condition: exporter-kube-scheduler.enabled
-    repository: "file://./charts/exporter-kube-scheduler/"
+    condition: exporter-rke.enabled
+    repository: "file://./charts/exporter-rke/"
 
   - name: exporter-kube-state
     version: 0.0.1

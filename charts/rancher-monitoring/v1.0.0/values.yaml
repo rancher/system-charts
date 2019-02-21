@@ -42,20 +42,6 @@ exporter-coredns:
     - "k8s-app=kube-dns"
   insecureSkipVerify: true
 
-exporter-kube-controller-manager:
-  enabled: false
-  apiGroup: "monitoring.coreos.com"
-  endpoints: []
-  ports: 
-    metrics:
-      scheme: http
-      name: metrics
-      port: 10252
-      protocol: TCP
-  serviceSelectorLabels:
-  - "k8s-app=kube-controller-manager"
-  insecureSkipVerify: true
-
 exporter-kube-dns:
   enabled: false
   apiGroup: "monitoring.coreos.com"
@@ -74,37 +60,6 @@ exporter-kube-dns:
         protocol: TCP
   serviceSelectorLabels:
   - "k8s-app=kube-dns"
-  insecureSkipVerify: true
-
-exporter-kube-etcd:
-  enabled: false
-  apiGroup: "monitoring.coreos.com"
-  endpoints: []
-  ports: 
-    metrics:
-      scheme: https
-      name: metrics
-      port: 4001
-      protocol: TCP
-  serviceSelectorLabels:
-  - "k8s-app=etcd-server"
-  insecureSkipVerify: true
-  caFile: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
-  certFile: ""
-  keyFile: ""
-
-exporter-kube-scheduler:
-  enabled: false
-  apiGroup: "monitoring.coreos.com"
-  endpoints: []
-  ports: 
-    metrics:
-      scheme: http
-      name: http-metrics
-      port: 10251
-      protocol: TCP
-  serviceSelectorLabels:
-  - "component=kube-scheduler"
   insecureSkipVerify: true
 
 exporter-kubelets:
@@ -182,6 +137,33 @@ exporter-kube-state:
   ##
   serviceAccountName: ""
   securityContext: {}
+
+exporter-rke:
+  enabled: false
+  apiGroup: "monitoring.coreos.com"
+  image:
+    repository: maiwj/exporter-gateway
+    tag: v0.0.1
+  resources:
+    limits:
+      cpu: 200m
+      memory: 200Mi
+    requests:
+      cpu: 100m
+      memory: 100Mi
+  secrets: []
+  serviceAccountName: ""
+  pushgatewayURL: "http://access-pushgateway:9091/metrics"
+  kubeScheduler:
+    port: 10251
+  kubeControllerManager:
+    port: 10252
+  etcd:
+    port: 4001
+    tlsConfig:
+      certFile: ""
+      keyFile: ""
+      insecureSkipVerify: true
 
 alertmanager:
   enabled: false

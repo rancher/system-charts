@@ -1,0 +1,149 @@
+apiVersion: {{ template "daemonset_api_version" . }}
+kind: DaemonSet
+metadata:
+  labels:
+    app: {{ template "app.controlplane.name" . }}
+    chart: {{ template "app.version" . }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+  name: {{ template "app.controlplane.fullname" . }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ template "app.controlplane.name" . }}
+      chart: {{ template "app.version" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "app.controlplane.name" . }}
+        chart: {{ template "app.version" . }}
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+      - name: exporter-gateway
+        image: {{ template "system_default_registry" . }}{{ .Values.image.repository }}:{{ .Values.image.tag }}
+        args:
+        - --interval=30s
+        - --from=expose-kube-scheduler-metrics.url=http://127.0.0.1:{{ .Values.kubeScheduler.port }}/metrics
+        - --from=expose-kube-controller-manager-metrics.url=http://127.0.0.1:{{ .Values.kubeControllerManager.port }}/metrics
+        - --to=psgw.url={{ .Values.pushgatewayURL }}
+        - --to.group=instance=$(POD_IP)
+        - --to.group=node=$(NODE_NAME)
+        - --to.group=host_ip=$(HOST_IP)
+        env:
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: HOST_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+        resources:
+{{ toYaml .Values.resources | indent 10 }}
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534
+      tolerations:
+      - operator: Exists
+      nodeSelector:
+        beta.kubernetes.io/os: linux
+        node-role.kubernetes.io/controlplane: "true"
+      dnsPolicy: ClusterFirstWithHostNet
+      hostNetwork: true
+      {{- if .Values.enabledRBAC }}
+      serviceAccountName: {{ default (include "app.fullname" .) .Values.serviceAccountName }}
+      {{- end }}
+
+---
+apiVersion: {{ template "daemonset_api_version" . }}
+kind: DaemonSet
+metadata:
+  labels:
+    app: {{ template "app.etcd.name" . }}
+    chart: {{ template "app.version" . }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+  name: {{ template "app.etcd.fullname" . }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ template "app.etcd.name" . }}
+      chart: {{ template "app.version" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "app.etcd.name" . }}
+        chart: {{ template "app.version" . }}
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+      - name: exporter-gateway
+        image: {{ template "system_default_registry" . }}{{ .Values.image.repository }}:{{ .Values.image.tag }}
+        args:
+        - --interval=30s
+        - --from=expose-etcd-metrics.url=https://127.0.0.1:{{ .Values.etcd.port }}/metrics
+        - --from=expose-etcd-metrics.tlsConfig.caFile=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+        {{- if .Values.etcd.tlsConfig.certFile }}
+        - --from=expose-etcd-metrics.tlsConfig.certFile={{ .Values.etcd.tlsConfig.certFile }}
+        {{- end }}
+        {{- if .Values.etcd.tlsConfig.keyFile }}
+        - --from=expose-etcd-metrics.tlsConfig.keyFile={{ .Values.etcd.tlsConfig.keyFile }}
+        {{- end }}
+        {{- if .Values.etcd.tlsConfig.insecureSkipVerify }}
+        - --from=expose-etcd-metrics.tlsConfig.insecureSkipVerify={{ .Values.etcd.tlsConfig.insecureSkipVerify }}
+        {{- end }}
+        - --to=psgw.url={{ .Values.pushgatewayURL }}
+        - --to.group=instance=$(POD_IP)
+        - --to.group=node=$(NODE_NAME)
+        - --to.group=host_ip=$(HOST_IP)
+        env:
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: HOST_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+        resources:
+{{ toYaml .Values.resources | indent 10 }}
+        {{- if .Values.secrets }}
+        volumeMounts:
+        {{- range .Values.secrets }}
+        - name: secret-{{ . }}
+          mountPath: /etc/exporter-rke/secrets/{{ . }}
+          readOnly:  true
+        {{- end }}
+        {{- end }}
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534
+      tolerations:
+      - operator: Exists
+      nodeSelector:
+        beta.kubernetes.io/os: linux
+        node-role.kubernetes.io/etcd: "true"
+      dnsPolicy: ClusterFirstWithHostNet
+      hostNetwork: true
+      {{- if .Values.enabledRBAC }}
+      serviceAccountName: {{ default (include "app.fullname" .) .Values.serviceAccountName }}
+      {{- end }}
+      {{- if .Values.secrets }}
+      volumes:
+      {{- range .Values.secrets }}
+      - name: secret-{{ . }}
+        secret:
+          secretName: {{ . }}
+      {{- end }}
+      {{- end }}

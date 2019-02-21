@@ -1,0 +1,8 @@
+apiVersion: v1
+description: Creates Exporter gateway instance for Kubernetes which maintaining by Rancher 2.
+engine: gotpl
+maintainers:
+- name: thxCode
+  email: frank@rancher.com
+name: exporter-rke
+version: 0.0.1
