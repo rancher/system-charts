@@ -1,0 +1,39 @@
+{{- if .Values.enabled }}
+apiVersion: {{ template "operator_api_version" . }}
+kind: ServiceMonitor
+metadata:
+  labels:
+    app: {{ template "app.name" . }}
+    chart: {{ template "app.version" . }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+    source: rancher-monitoring
+  name: {{ template "app.fullname" . }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ template "app.name" . }}
+      chart: {{ template "app.version" . }}
+      release: {{ .Release.Name }}
+      {{ .Values.apiGroup }}: "true"
+  namespaceSelector:
+    matchNames:
+    - {{ .Release.Namespace | quote }}
+  endpoints:
+  - port: metrics
+    interval: 30s
+    honorLabels: true
+    relabelings:
+    - sourceLabels:
+      - __meta_kubernetes_pod_host_ip
+      action: replace
+      targetLabel: host_ip
+      regex: (.+)
+      replacement: $1
+    - sourceLabels:
+      - __meta_kubernetes_pod_node_name
+      action: replace
+      targetLabel: node
+      regex: (.+)
+      replacement: $1
+{{- end }}
