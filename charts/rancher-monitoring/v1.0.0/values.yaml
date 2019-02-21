@@ -101,23 +101,32 @@ exporter-node:
   image:
     repository: rancher/prom-node-exporter
     tag: v0.17.0
-  nodeSelectors: []
+    gateway:
+      repository: maiwj/exporter-gateway
+      tag: v0.0.1
   resources:
-    limits:
-      cpu: 200m
-      memory: 50Mi
-    requests:
-      cpu: 100m
-      memory: 30Mi
+    core:
+      limits:
+        cpu: 200m
+        memory: 50Mi
+      requests:
+        cpu: 100m
+        memory: 30Mi
+    gateway:
+      limits:
+        cpu: 200m
+        memory: 50Mi
+      requests:
+        cpu: 100m
+        memory: 30Mi
   ports:
     metrics:
       port: 9100
   collectors: {}
-  enabledHostNetwork: true
-  enabledHostPID: true
   ## Already exist ServiceAccount
   ##
   serviceAccountName: ""
+  pushgatewayURL: "http://access-pushgateway:9091/metrics"
 
 exporter-kube-state:
   enabled: false
