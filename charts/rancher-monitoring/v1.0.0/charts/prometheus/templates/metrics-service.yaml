@@ -19,3 +19,26 @@ spec:
   - name: metrics
     port: 9090
     targetPort: web
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: expose-pushgateway-metrics
+  labels:
+    app: {{ template "app.pushgateway.name" . }}
+    chart: {{ template "app.version" . }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+    {{ .Values.apiGroup }}: "true"
+spec:
+  type: ClusterIP
+  clusterIP: None
+  selector:
+    app: {{ template "app.pushgateway.name" . }}
+    chart: {{ template "app.version" . }}
+    release: {{ .Release.Name }}
+  ports:
+  - name: metrics
+    port: 9091
+    targetPort: metrics

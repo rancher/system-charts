@@ -296,6 +296,9 @@ prometheus:
     proxy:
       repository: rancher/nginx
       tag: 1.15.8-alpine
+    push:
+      repository: prom/pushgateway
+      tag: v0.7.0
   nodeSelectors: []
   resources:
     core:
@@ -319,6 +322,13 @@ prometheus:
       requests:
         memory: 100Mi
         cpu: 100m
+    push:
+      limits:
+        cpu: 200m
+        memory: 50Mi
+      requests:
+        cpu: 100m
+        memory: 30Mi
   persistence:
     enabled: false
     storageClass: ""

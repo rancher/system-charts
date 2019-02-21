@@ -52,7 +52,13 @@
 {{- end -}}
 
 
-{{- define "app.auth.fullname" -}}
+{{- define "app.pushgateway.name" -}}
 {{- $name := include "app.name" . -}}
-{{- printf "%s-auth-%s" $name .Release.Name -}}
+{{- printf "%s-pushgateway" $name -}}
+{{- end -}}
+
+
+{{- define "app.pushgateway.fullname" -}}
+{{- $name := include "app.pushgateway.name" . -}}
+{{- printf "%s-%s" $name .Release.Name -}}
 {{- end -}}
