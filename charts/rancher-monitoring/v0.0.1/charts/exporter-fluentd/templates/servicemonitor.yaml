@@ -15,11 +15,11 @@ spec:
   jobLabel: fluentd
   selector:
     matchLabels:
-      k8s-app: fluentd
+      app: fluentd
   namespaceSelector:
     matchNames:
       - cattle-logging
   endpoints:
-  - port: metrics
+  - port: metric
     interval: 15s
     honorLabels: true
