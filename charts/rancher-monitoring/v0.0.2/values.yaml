@@ -135,9 +135,9 @@ exporter-fluentd:
   ports: 
     metrics:
       scheme: http
-      name: metrics
+      name: metric
   serviceSelectorLabels:
-  - "k8s-app=fluentd"
+  - "app=fluentd"
   insecureSkipVerify: true
 
 metric-expression-project:
