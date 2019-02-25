@@ -1,7 +1,7 @@
 ## Details about the image to be pulled.
 image:
-  name: registry.opensource.zalan.do/teapot/external-dns
-  tag: v0.5.9
+  name: rancher/kubernetes-external-dns
+  tag: v0.5.10
   pullSecrets: []
   pullPolicy: IfNotPresent
 
@@ -124,12 +124,13 @@ extraArgs: {}
 extraEnv: []
 
 ## CPU and Memory limit and request for external-dns
-resources: {}
-#  limits:
-#    memory: 50Mi
-#  requests:
-#    memory: 50Mi
-#    cpu: 10m
+resources:
+  limits:
+    memory: 100Mi
+    cpu: 200m
+  requests:
+    memory: 50Mi
+    cpu: 100m
 
 rbac:
   ## If true, create & use RBAC resources
@@ -164,3 +165,6 @@ service:
   type: ClusterIP
 
 priorityClassName: ""
+
+global:
+  systemDefaultRegistry: ""
