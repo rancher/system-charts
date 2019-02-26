@@ -14,8 +14,15 @@ sources:
 # Allow external-dns to publish DNS records for ClusterIP services (optional)
 publishInternalServices: false
 
-## The DNS provider where the DNS records will be created (options: aws, google, inmemory, azure )
+## The DNS provider where the DNS records will be created (options: aws, google, inmemory, azure, alibabacloud )
 provider: aws
+
+# Configurations for Alibabacloud provider
+alibabacloud:
+  accessKey: ""
+  secretKey: ""
+  # Filter for zones of this type (optional, options: public, private or no value for both)
+  zoneType: ""
 
 # AWS Access keys to inject as environment variables
 aws:
