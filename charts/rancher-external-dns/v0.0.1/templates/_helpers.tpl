@@ -45,6 +45,10 @@ region = {{ .Values.aws.region }}
 source_profile = default
 {{ end }}
 
+{{- define "external-dns.alibabacloud-config" }}
+accessKeyId: {{ .Values.alibabacloud.accessKey }}
+accessKeySecret: {{ .Values.alibabacloud.secretKey }}
+{{ end }}
 
 {{- define "system_default_registry" -}}
 {{- if .Values.global.systemDefaultRegistry -}}

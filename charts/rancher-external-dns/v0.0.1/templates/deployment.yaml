@@ -94,6 +94,12 @@ spec:
             - --infoblox-ssl-verify
             {{- end }}
           {{- end }}
+          {{- if eq .Values.provider "alibabacloud" }}
+            - --alibaba-cloud-config-file=/etc/kubernetes/config.yaml
+          {{- end }}
+          {{- if .Values.alibabacloud.zoneType }}
+            - --alibaba-cloud-zone-type={{ .Values.alibabacloud.zoneType }}
+          {{- end }}
           volumeMounts:
           {{- if or .Values.google.serviceAccountSecret .Values.google.serviceAccountKey }}
           - name: google-service-account
@@ -116,6 +122,14 @@ spec:
           {{- if and (eq .Values.provider "designate") .Values.designate.customCA.enabled }}
           - name: designate-custom-ca
             mountPath: {{ .Values.designate.customCA.directory }}
+            readOnly: true
+          {{- end }}
+          {{- if eq .Values.provider "alibabacloud" }}
+          - name: alibaba-cloud-config-file
+            mountPath: /etc/kubernetes/
+            readOnly: true
+          - mountPath: /usr/share/zoneinfo
+            name: zoneinfo
             readOnly: true
           {{- end }}
           env:
@@ -221,6 +235,14 @@ spec:
           items:
           - key: {{ .Values.designate.customCA.filename }}
             path: {{ .Values.designate.customCA.filename }}
+      {{- end }}
+      {{- if eq .Values.provider "alibabacloud" }}
+      - name: alibaba-cloud-config-file
+        secret:
+          secretName: {{ template "external-dns.fullname" . }}
+      - name: zoneinfo
+        hostPath:
+          path: /usr/share/zoneinfo
       {{- end }}
       nodeSelector:
         beta.kubernetes.io/os: linux
