@@ -1,6 +1,6 @@
 ## Details about the image to be pulled.
 image:
-  name: rancher/kubernetes-external-dns
+  repository: rancher/kubernetes-external-dns
   tag: v0.5.11
   pullSecrets: []
   pullPolicy: IfNotPresent
