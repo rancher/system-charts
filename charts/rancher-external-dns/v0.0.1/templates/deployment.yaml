@@ -25,7 +25,7 @@ spec:
       {{- end }}
       containers:
         - name: {{ template "external-dns.name" . }}
-          image: {{ template "system_default_registry" . }}{{ .Values.image.name}}:{{ .Values.image.tag }}
+          image: {{ template "system_default_registry" . }}{{ .Values.image.repository}}:{{ .Values.image.tag }}
           imagePullPolicy: "{{ .Values.image.pullPolicy }}"
           args:
           {{- if .Values.logLevel }}
