@@ -15,14 +15,14 @@ data:
     srcpath="/nginx/nginx-conf.tmpl"
     dstpath="/var/run/nginx.conf"
 
-    if ![ -f $srcpath ]; then
+    if ! [ -f $srcpath ]; then
       exit 1
     fi
 
     token=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)
     sed "s/REPLACE_PARAM_AUTHORIZATION/Bearer ${token}/g" $srcpath | sed "s/REPLACE_PARAM_IP/${POD_IP}/g" > $dstpath
     
-    nginx -g "daemon off;" -c /var/run/nginx.conf
+    exec nginx -g "daemon off;" -c /var/run/nginx.conf
 
   nginx-conf.tmpl: |-
     user                  nginx;
