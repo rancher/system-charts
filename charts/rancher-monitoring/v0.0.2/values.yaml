@@ -140,12 +140,6 @@ exporter-fluentd:
   - "app=fluentd"
   insecureSkipVerify: true
 
-metric-expression-project:
-  enabled: false
-
-metric-expression-cluster:
-  enabled: false
-
 exporter-node:
   enabled: false
   apiGroup: "monitoring.coreos.com"
