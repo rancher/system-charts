@@ -63,3 +63,8 @@ dependencies:
     version: 0.0.1
     condition: exporter-fluentd.enabled
     repository: "file://./charts/exporter-fluentd/"
+
+  - name: operator
+    version: 0.0.1
+    condition: operator.enabled
+    repository: "file://./charts/operator/"
