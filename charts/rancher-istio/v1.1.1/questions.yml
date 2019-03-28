@@ -1,0 +1,242 @@
+categories:
+- Microservice 
+- Service mesh 
+namespace: istio-system
+questions:
+- variable: defaultImage
+  default: "true"
+  description: "Use default Docker image"
+  label: Use Default Image
+  type: boolean
+  show_subquestion_if: false
+  group: "Container Images"
+  subquestions:
+  - variable: global.hub
+    default: "docker.io/istio"
+    description: "Default hub for Istio images"
+    type: string
+    label: Global Hub For Istio Images
+  - variable: global.tag
+    default: "1.1.1"
+    description: "The image tag of istio image"
+    type: string
+    label: Global Tag For Istio Images
+  - variable: global.imagePullSecrets
+    default: ""
+    description: "ImagePullSecrets for all ServiceAccount, array of elements"
+    type: multiline
+    label: Global ImagePullSecrets
+  - variable: grafana.image.repository
+    default: "grafana/grafana"
+    description: "Image name of the grafana"
+    type: string
+    label: Grafana Image Name
+  - variable: grafana.image.tag
+    default: "5.4.0"
+    description: "Image tag of the grafana"
+    type: string
+    label: Grafana Image Name
+  - variable: tracing.jaeger.hub
+    default: "docker.io/jaegertracing"
+    description: "The jaeger image repository"
+    type: string
+    label: Jaeger Image Repository
+  - variable: tracing.jaeger.tag
+    default: "1.9"
+    description: "The jaeger image tag"
+    type: string
+    label: Jaeger Image Tag
+  - variable: prometheus.hub
+    default: "docker.io/prom"
+    description: "The prometheuscomponent image repository"
+    type: string
+    label: Prometheus Image Repository
+  - variable: prometheus.tag
+    default: "v2.3.1"
+    description: "The prometheus image tag"
+    type: string
+    label: Prometheus Image Tag
+  - variable: kiali.hub
+    default: "docker.io/kiali"
+    description: "The kiali image repository"
+    type: string
+    label: Kiali Image Repository
+  - variable: kiali.tag
+    default: "v0.14"
+    description: "The kiali image tag"
+    type: string
+    label: Kiali Image Tag
+  - variable: certmanager.hub
+    default: "quay.io/jetstack"
+    description: "The jetstack image repository"
+    type: string
+    label: Certmanager Image Repository
+  - variable: certmanager.tag
+    default: "v0.6.2"
+    description: "The jetstack image tag"
+    type: string
+    label: Certmanager Image Tag
+
+# gateways settings
+- variable: gateways.istio-ingressgateway.type
+  default: "NodePort"
+  description: "A Gateway configures a load balancer for HTTP/TCP traffic, most commonly operating at the edge of the mesh to enable ingress traffic for an application"
+  type: enum
+  label: Service Type of Istio Ingress Gateway
+  group: "Istio Gateways" 
+  options:
+    - "ClusterIP"
+    - "NodePort"
+- variable: gateways.istio-egressgateway.type
+  default: "ClusterIP"
+  description: "Enable to allows Istio to expose external services to Istio-enabled clients by defining ServiceEntry configurations"
+  type: enum
+  label: Service Type of Istio Egress Gateway
+  group: "Istio Gateways"
+  options:
+    - "ClusterIP"
+    - "NodePort"
+
+# tracing settings
+- variable: tracing.enabled
+  default: true
+  description: "Enabled the Tracing component of istio"
+  type: boolean
+  required: true
+  label: Enabled the Tracing Component
+  group: "Tracing Component Settings"
+- variable: tracing.service.uiType
+  default: "NodePort"
+  description: "Tracing service type"
+  type: enum
+  label: Tracing Service Type
+  show_if: "tracing.enabled=true"
+  group: "Tracing Component Settings"
+  options:
+    - "ClusterIP"
+    - "NodePort"
+- variable: tracing.ingress.enabled
+  default: false
+  description: "Expose tracing using Layer 7 Load Balancer - ingress"
+  type: boolean
+  label: Expose Tracing using Layer 7 Load Balancer
+  group: "Tracing Component Settings"
+  show_if: "tracing.enabled=true"
+  show_subquestion_if: "true"
+  subquestions:
+  - variable: tracing.ingress.hosts[0]
+    default: "xip.io"
+    description: "The hostname to access tracing"
+    type: hostname
+    label: Hostname to Access Tracing
+
+# kiali settings
+- variable: kiali.enabled
+  default: true
+  description: "Kiali works with Istio to visualise the service mesh topology, features like circuit breakers or request rates."
+  type: boolean
+  required: true
+  label: Enable Istio Kiali
+  group: "Kiali Configurations"
+- variable: kiali.service.type
+  default: "NodePort"
+  description: "Kiali service type"
+  type: enum
+  label: Kiali Service Type
+  group: "Kiali Configurations"
+  show_if: "kiali.enabled=true"
+  options:
+    - "ClusterIP"
+    - "NodePort"
+- variable: kiali.ingress.enabled
+  default: false
+  description: "Expose kiali using Layer 7 Load Balancer - ingress"
+  type: boolean
+  label: Expose Kiali using Layer 7 Load Balancer
+  show_if: "kiali.enabled=true"
+  show_subquestion_if: true
+  group: "Kiali Configurations"
+  subquestions:
+  - variable: kiali.ingress.hosts[0]
+    default: "xip.io"
+    description: "The hostname to access kiali server"
+    type: hostname 
+    label: Hostname to Access Kiali Server 
+    show_if: "kiali.enabled=true&&kiali.ingress.enabled=true"
+
+# Prometheus settings
+- variable: prometheus.enabled 
+  default: true
+  description: "Enabled prometheus server"
+  type: boolean 
+  required: true
+  label: Enable the prometheus Server 
+  show_subquestion_if: true
+  group: "Prometheus Settings"
+- variable: prometheus.service.nodePort.enabled
+  default: true
+  description: "Enable NodePort Service for Prometheus Server"
+  type: boolean
+  label: Enable Prometheus NodePort Service
+  group: "Prometheus Settings"
+  show_if: "prometheus.enabled=true"
+- variable: prometheus.service.nodePort.port
+  default: "32090"
+  description: "NodePort http port(to set explicitly, choose port between 30000-32767)"
+  type: int
+  min: 30000
+  max: 32767
+  show_if: "prometheus.enabled=true&&prometheus.service.nodePort.enabled=true"
+  group: "Prometheus Settings"
+  label: Prometheus NodePort Http Port
+
+# Grafana Settings
+- variable: grafana.enabled 
+  default: false
+  description: "Enabled the grafana component of istio"
+  type: boolean 
+  required: true
+  label: Enabled the Grafana Component 
+  group: "Grafana Settings"
+  show_subquestion_if: true
+  subquestions:
+  - variable: grafana.service.type
+    default: "NodePort"
+    description: "Grafana service type"
+    type: enum 
+    label: Grafana Service Type 
+    group: "Grafana Settings"
+    options:
+      - "ClusterIP"
+      - "NodePort"
+- variable: grafana.persistence.enabled
+  default: false
+  description: "Enable persistent volume for Grafana"
+  type: boolean
+  label: Grafana Persistent Volume Enabled
+  group: "Grafana Settings"
+  show_if: "grafana.enabled=true"
+- variable: grafana.persistence.size
+  default: "5Gi"
+  description: "Grafana Persistent Volume Size"
+  type: string
+  label: Grafana Volume Size
+  show_if: "grafana.enabled=true&&grafana.persistence.enabled=true"
+  group: "Grafana Settings"
+- variable: grafana.persistence.storageClass
+  default: ""
+  description: "If undefined or null, uses the default StorageClass. Default to null"
+  type: storageclass
+  label: Default StorageClass for Grafana
+  show_if: "grafana.enabled=true&&grafana.persistence.enabled=true"
+  group: "Grafana Settings"
+
+# certmanager settings
+- variable: certmanager.enabled
+  default: false
+  description: "Certmanager uses ACME to sign certificates"
+  type: boolean
+  required: true
+  label: Enabled Certmanager
+  group: "certmanager configurations"
+
