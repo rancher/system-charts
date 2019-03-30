@@ -3,7 +3,6 @@
   - role: pod
     namespaces:
       names:
-      - {{ .Release.Namespace }}
       - ingress-nginx
       - ingress-controller
       - kube-system

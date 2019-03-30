@@ -21,7 +21,6 @@ spec:
     - {{ .Release.Namespace | quote }}
   endpoints:
   - port: metrics
-    interval: 30s
     honorLabels: true
     relabelings:
     - sourceLabels:

@@ -36,7 +36,7 @@ spec:
       regex: (.+)
       replacement: $1
   - port: http-metrics
-    interval: 30s
+    interval: 15s
     relabelings:
     - sourceLabels:
       - __meta_kubernetes_pod_host_ip

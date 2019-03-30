@@ -26,7 +26,6 @@ spec:
   {{- if .Values.https }}
   - port: https-metrics
     scheme: https
-    interval: 15s
     bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
     tlsConfig:
       caFile: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
@@ -49,7 +48,6 @@ spec:
   - port: https-metrics
     scheme: https
     path: /metrics/cadvisor
-    interval: 30s
     honorLabels: true
     bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
     tlsConfig:
@@ -72,7 +70,6 @@ spec:
       replacement: $1
   {{- else }}
   - port: http-metrics
-    interval: 15s
     relabelings:
     - sourceLabels:
       - __meta_kubernetes_pod_host_ip
@@ -88,7 +85,6 @@ spec:
       replacement: $1
   - port: http-metrics
     path: /metrics/cadvisor
-    interval: 30s
     honorLabels: true
     relabelings:
     - sourceLabels:
