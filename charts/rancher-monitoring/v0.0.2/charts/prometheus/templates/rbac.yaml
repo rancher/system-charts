@@ -126,30 +126,27 @@ subjects:
     namespace: {{ .Release.Namespace }}
 {{- end }}
 
-{{- $rbacAPIVersion := include "rbac_api_version" .  }}
+{{- $projectId :=  index (index .Values.serviceMonitorNamespaceSelector.matchExpressions 0).values 0 }}
 {{- $appServiceAccountName := default (include "app.fullname" .) .Values.serviceAccountNameOverride }}
 {{- $appName := include "app.name" . }}
 {{- $appVersion := include "app.version" . }}
-{{- $root := . -}}
-{{ range .Values.additionalBindingClusterRoles }}
 ---
-apiVersion: {{ $rbacAPIVersion }}
+apiVersion: {{ template "rbac_api_version" . }}
 kind: ClusterRoleBinding
 metadata:
   labels:
     app: {{ $appName }}
     chart: {{ $appVersion }}
-    heritage: {{ $root.Release.Service }}
-    release: {{ $root.Release.Name }}
-  name: {{ . }}-additional-binding
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+  name: {{ $projectId }}-namespaces-readonly-additional-binding
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: {{ . }}
+  name: {{ $projectId }}-namespaces-readonly
 subjects:
   - kind: ServiceAccount
     name: {{ $appServiceAccountName }}
-    namespace: {{ $root.Release.Namespace }}
+    namespace: {{ .Release.Namespace }}
 
-{{ end }}
 {{- end }}
