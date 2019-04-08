@@ -338,7 +338,6 @@ prometheus:
   serviceMonitorNamespaceSelector: {}
   serviceMonitorSelector:
     matchExpressions: []
-  addtionalBindingClusterRoles: []
   securityContext:
     runAsUser: 1000
     runAsNonRoot: true

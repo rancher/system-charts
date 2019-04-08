@@ -11,6 +11,7 @@ metadata:
 imagePullSecrets: 
 {{ toYaml .Values.image.pullSecrets | indent 2 }}
 
+{{- if eq .Values.level "cluster" }}
 ---
 apiVersion: {{ template "rbac_api_version" . }}
 kind: ClusterRole
@@ -42,7 +43,6 @@ rules:
   - services
   - endpoints
   - pods
-{{- if eq .Values.level "cluster" }}
   - nodes
 - apiGroups:
   - ""
@@ -65,7 +65,6 @@ rules:
   - subjectaccessreviews
   verbs:
   - "create"
-{{- end }}
 
 ---
 apiVersion: {{ template "rbac_api_version" . }}
@@ -85,71 +84,5 @@ subjects:
   - kind: ServiceAccount
     name: {{ default (include "app.fullname" .) .Values.serviceAccountNameOverride }}
     namespace: {{ .Release.Namespace }}
-
-{{- if eq .Values.level "project" }}
----
-apiVersion: {{ template "rbac_api_version" . }}
-kind: Role
-metadata:
-  labels:
-    app: {{ template "app.name" . }}
-    chart: {{ template "app.version" . }}
-    heritage: {{ .Release.Service }}
-    release: {{ .Release.Name }}
-  name: {{ include "app.fullname" . }}
-rules:
-- apiGroups:
-  - "monitoring.cattle.io"
-  resources:
-  - prometheus
-  verbs:
-  - "view"
-
----
-apiVersion: {{ template "rbac_api_version" . }}
-kind: RoleBinding
-metadata:
-  labels:
-    app: {{ template "app.name" . }}
-    chart: {{ template "app.version" . }}
-    heritage: {{ .Release.Service }}
-    release: {{ .Release.Name }}
-  name: {{ include "app.fullname" . }}
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: Role
-  name: {{ include "app.fullname" . }}
-  namespace: {{ .Release.Namespace }}
-subjects:
-  - kind: ServiceAccount
-    name: {{ default (include "app.fullname" .) .Values.serviceAccountNameOverride }}
-    namespace: {{ .Release.Namespace }}
 {{- end }}
-
-{{- $rbacAPIVersion := include "rbac_api_version" .  }}
-{{- $appServiceAccountName := default (include "app.fullname" .) .Values.serviceAccountNameOverride }}
-{{- $appName := include "app.name" . }}
-{{- $appVersion := include "app.version" . }}
-{{- $root := . -}}
-{{ range .Values.additionalBindingClusterRoles }}
----
-apiVersion: {{ $rbacAPIVersion }}
-kind: ClusterRoleBinding
-metadata:
-  labels:
-    app: {{ $appName }}
-    chart: {{ $appVersion }}
-    heritage: {{ $root.Release.Service }}
-    release: {{ $root.Release.Name }}
-  name: {{ . }}-additional-binding
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: {{ . }}
-subjects:
-  - kind: ServiceAccount
-    name: {{ $appServiceAccountName }}
-    namespace: {{ $root.Release.Namespace }}
-
-{{ end }}
 {{- end }}
