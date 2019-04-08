@@ -125,7 +125,7 @@ spec:
 {{ toYaml .Values.secrets | indent 2 }}
 {{- end }}
 {{- if .Values.enabledRBAC }}
-  serviceAccountName: {{ default (default (include "app.fullname" .) .Values.serviceAccountName) .Values.serviceAccountNameOverride }}
+  serviceAccountName: {{ default (default (include "app.fullname" .) .Values.serviceAccountNameOverride) .Values.global.rancherInjectedServiceAccountName }}
 {{- end }}
 {{- if .Values.serviceMonitorNamespaceSelector }}
   serviceMonitorNamespaceSelector:

@@ -1,4 +1,4 @@
-{{- if and .Values.enabledRBAC (not .Values.serviceAccountName) }}
+{{- if and .Values.enabledRBAC (not .Values.global.rancherInjectedServiceAccountName) }}
 apiVersion: v1
 kind: ServiceAccount
 metadata:
