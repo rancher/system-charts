@@ -1,32 +1,32 @@
-enabled: false
-nameOverride: "prometheus-operator"
-enabledRBAC: true
-apiGroup: "monitoring.coreos.com"
-image:
-  repository: rancher/coreos-prometheus-operator
-  tag: v0.29.0
-  prometheusConfigReloader:
-    repository: rancher/coreos-prometheus-config-reloader
+operator:
+  nameOverride: "prometheus-operator"
+  enabledRBAC: true
+  apiGroup: "monitoring.coreos.com"
+  image:
+    repository: rancher/coreos-prometheus-operator
     tag: v0.29.0
-  configmapReload:
-    repository: rancher/coreos-configmap-reload
-    tag: v0.0.1
-resources:
-  limits:
-    cpu: 200m
-    memory: 100Mi
-  requests:
-    cpu: 100m
-    memory: 50Mi
-nodeSelectors: []
-tolerations: []
-logFormat: "logfmt"
-logLevel: "info"
-manageCRDs: false
-withValidation: true
-## Already exist ServiceAccount
-##
-serviceAccountName: ""
+    prometheusConfigReloader:
+      repository: rancher/coreos-prometheus-config-reloader
+      tag: v0.29.0
+    configmapReload:
+      repository: rancher/coreos-configmap-reload
+      tag: v0.0.1
+  resources:
+    limits:
+      cpu: 200m
+      memory: 100Mi
+    requests:
+      cpu: 100m
+      memory: 50Mi
+  nodeSelectors: []
+  tolerations: []
+  logFormat: "logfmt"
+  logLevel: "info"
+  manageCRDs: false
+  withValidation: true
+  ## Already exist ServiceAccount
+  ##
+  serviceAccountName: ""
 
 exporter-coredns:
   enabled: false
