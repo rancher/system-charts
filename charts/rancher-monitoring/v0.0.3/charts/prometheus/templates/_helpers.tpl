@@ -56,3 +56,52 @@
 {{- $name := include "app.name" . -}}
 {{- printf "%s-auth-%s" $name .Release.Name -}}
 {{- end -}}
+
+{{- define "namespace.selector" -}}
+{{- if and .selector .selector.matchLabels -}}
+matchLabels:
+{{ toYaml .selector.matchLabels | indent 2 }}
+{{- end }}
+matchExpressions:
+{{- if .projectName }}
+- key: "field.cattle.io/projectId"
+  operator: "In"
+  values: [ "{{ .projectName }}" ]
+{{- end }}
+{{- if and .selector .selector.matchExpressions }}
+{{ toYaml .selector.matchExpressions }}
+{{- end -}}
+{{- end -}}
+
+{{- define "serviceMonitor.namespace.selector" -}}
+{{- $rootContext := dict -}}
+{{- $_ := set $rootContext "projectName" .Values.global.projectName -}}
+{{- $_ := set $rootContext "selector" .Values.serviceMonitorNamespaceSelector -}}
+serviceMonitorNamespaceSelector:
+{{ include "namespace.selector" $rootContext | indent 2 }}
+{{- end -}}
+
+{{- define "rule.namespace.selector" -}}
+{{- $rootContext := dict -}}
+{{- $_ := set $rootContext "projectName" .Values.global.projectName -}}
+{{- $_ := set $rootContext "selector" .Values.ruleNamespaceSelector -}}
+ruleNamespaceSelector:
+{{ include "namespace.selector" $rootContext | indent 2 }}
+{{- end -}}
+
+{{- define "rule.selector" -}}
+ruleSelector:
+{{- if and .Values.ruleSelector .Values.ruleSelector.matchLabels }}
+  matchLabels:
+{{ toYaml .Values.ruleSelector.matchLabels | indent 4}}
+{{- end }}
+  matchExpressions:
+{{- if eq .Values.level "project" }}
+  - key: "source"
+    operator: "In"
+    values: [ "rancher-alert" ]
+{{- end }}
+{{- if and .Values.ruleSelector .Values.ruleSelector.matchExpressions }}
+{{ toYaml .Values.ruleSelector.matchExpressions | indent 2}}
+{{- end }}
+{{- end }}

@@ -119,7 +119,7 @@ spec:
         {{- end }}
         {{- end }}
     {{- if .Values.enabledRBAC }}
-      serviceAccountName: {{ default (include "app.fullname" .) .Values.serviceAccountName }}
+      serviceAccountName: {{ default (default (include "app.fullname" .) .Values.serviceAccountName) .Values.serviceAccountNameOverride }}
     {{- end }}
     {{- if .Values.tolerations }}
       tolerations:

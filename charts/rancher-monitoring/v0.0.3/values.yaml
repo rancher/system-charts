@@ -32,7 +32,7 @@ exporter-coredns:
   enabled: false
   apiGroup: "monitoring.coreos.com"
   endpoints: []
-  ports: 
+  ports:
     metrics:
       scheme: http
       name: metrics
@@ -46,7 +46,7 @@ exporter-kube-controller-manager:
   enabled: false
   apiGroup: "monitoring.coreos.com"
   endpoints: []
-  ports: 
+  ports:
     metrics:
       scheme: http
       name: metrics
@@ -60,7 +60,7 @@ exporter-kube-dns:
   enabled: false
   apiGroup: "monitoring.coreos.com"
   endpoints: []
-  ports: 
+  ports:
     metrics:
       dnsmasq:
         scheme: http
@@ -80,7 +80,7 @@ exporter-kube-etcd:
   enabled: false
   apiGroup: "monitoring.coreos.com"
   endpoints: []
-  ports: 
+  ports:
     metrics:
       scheme: https
       name: metrics
@@ -97,7 +97,7 @@ exporter-kube-scheduler:
   enabled: false
   apiGroup: "monitoring.coreos.com"
   endpoints: []
-  ports: 
+  ports:
     metrics:
       scheme: http
       name: http-metrics
@@ -120,7 +120,7 @@ exporter-kubelets:
 exporter-kubernetes:
   enabled: false
   apiGroup: "monitoring.coreos.com"
-  ports: 
+  ports:
     metrics:
       scheme: https
       name: https
@@ -132,7 +132,7 @@ exporter-kubernetes:
 exporter-fluentd:
   enabled: false
   apiGroup: "monitoring.coreos.com"
-  ports: 
+  ports:
     metrics:
       scheme: http
       name: metric
@@ -328,9 +328,8 @@ prometheus:
     size: 50Gi
   alertingEndpoints: []
   secrets: []
-  ## Already exist ServiceAccount
+  ## Override the default generated ServiceAccount name
   ##
-  serviceAccountName: ""
   serviceAccountNameOverride: ""
   ruleNamespaceSelector: {}
   ruleSelector:
@@ -346,6 +345,14 @@ prometheus:
     mode: "remote"
     path: "/api/v1/read"
     target: ""
+  project:
+    alertManagerTarget: ""
+    projectDisplayName: ""
+    clusterDisplayName: ""
+  cluster:
+    alertManagerNamespace: ""
 
 global:
   systemDefaultRegistry: ""
+  clusterName: ""
+  projectName: ""
