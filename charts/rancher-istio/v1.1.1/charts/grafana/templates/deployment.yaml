@@ -22,7 +22,8 @@ spec:
         scheduler.alpha.kubernetes.io/critical-pod: ""
     spec:
       securityContext:
-        runAsUser: 472
+        runAsNonRoot: false
+        runAsUser: 0
         fsGroup: 472
 {{- if .Values.global.priorityClassName }}
       priorityClassName: "{{ .Values.global.priorityClassName }}"
@@ -95,12 +96,38 @@ spec:
           - name: config
             mountPath: "/etc/grafana/provisioning/dashboards/dashboardproviders.yaml"
             subPath: dashboardproviders.yaml
+        - name: grafana-proxy
+          image: {{ .Values.image.proxy.repository }}:{{ .Values.image.proxy.tag }}
+          args:
+          - nginx
+          - -g
+          - daemon off;
+          - -c
+          - /nginx/nginx.conf
+          ports:
+          - name: http
+            containerPort: 80
+            protocol: TCP
+          volumeMounts:
+          - mountPath: /nginx/
+            name: grafana-nginx
+          {{- if and .Values.resources .Values.resources.proxy }}
+          resources:
+  {{ toYaml .Values.resources.proxy | indent 10 }}
+          {{- end }}
       affinity:
       {{- include "nodeaffinity" . | indent 6 }}
       volumes:
       - name: config
         configMap:
           name: istio-grafana
+      - name: grafana-nginx
+        configMap:
+          name: grafana-nginx
+          items:
+          - key: nginx.conf
+            mode: 438
+            path: nginx.conf
       - name: data
 {{- if .Values.persistence.enabled }}
         persistentVolumeClaim:

@@ -3,8 +3,13 @@
 #
 enabled: true
 replicaCount: 1
-hub: docker.io/prom
+
+repository: docker.io/prom/prometheus
 tag: v2.3.1
+proxy:
+  repository: rancher/nginx
+  tag: 1.15.8-alpine
+
 retention: 6h
 nodeSelector: {}
 
@@ -29,9 +34,8 @@ ingress:
 
 service:
   annotations: {}
-  nodePort:
-    enabled: false
-    port: 32090
-
+  type: ClusterIP
 security:
   enabled: true
+
+resources: {}

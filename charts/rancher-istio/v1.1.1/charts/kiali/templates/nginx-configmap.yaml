@@ -1,0 +1,68 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kiali-nginx
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: kiali-nginx
+    chart: {{ template "kiali.chart" . }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+data:
+  nginx.conf: |-
+    user                  nginx;
+    worker_processes      auto;
+    error_log             /dev/stdout warn;
+    pid                   /var/run/nginx.pid;
+
+    events {
+       worker_connections 1024;
+    }
+
+    http {
+      include       /etc/nginx/mime.types;
+      log_format    main '[$time_local - $status] $remote_addr - $remote_user $request ($http_referer)';
+
+      proxy_connect_timeout       10;
+      proxy_read_timeout          180;
+      proxy_send_timeout          5;
+      proxy_buffer_size           16k;
+      proxy_buffers               4 32k;
+      proxy_busy_buffers_size     64k;
+      proxy_temp_file_write_size  64k;
+      proxy_temp_path             /tmp/temp_dir;
+      proxy_cache_path            /tmp/nginx levels=1:2 keys_zone=my_zone:100m inactive=1d max_size=10g;
+
+      server {
+        listen          80;
+        access_log      off;
+
+        gzip            on;
+        gzip_min_length 1k;
+        gzip_comp_level 2;
+        gzip_types      text/plain application/javascript application/x-javascript text/css application/xml text/javascript image/jpeg image/gif image/png;
+        gzip_vary       on;
+        gzip_disable    "MSIE [1-6]\.";
+
+        proxy_set_header Host $host;
+
+        location / {
+          proxy_cache         my_zone;
+          proxy_cache_valid   200 302 1d;
+          proxy_cache_valid   301 30d;
+          proxy_cache_valid   any 5m;
+          proxy_cache_bypass  $http_cache_control;
+          add_header          X-Proxy-Cache $upstream_cache_status;
+          add_header          Cache-Control "public";
+          
+          proxy_pass     http://localhost:20001/;
+          sub_filter_types text/html;
+          sub_filter_once on;
+          sub_filter </head> '<script>var path = window.location.pathname; var pathName = path.substring(0, path.lastIndexOf("/proxy") + 6); window.WEB_ROOT = window.WEB_ROOT ? pathName + window.WEB_ROOT:pathName</script></head>';
+
+          if ($request_filename ~ .*\.(?:js|css|jpg|jpeg|gif|png|ico|cur|gz|svg|svgz|mp4|ogg|ogv|webm)$) {
+            expires             90d;
+          }
+        }
+      }
+    }

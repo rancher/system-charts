@@ -30,7 +30,7 @@ spec:
       priorityClassName: "{{ .Values.global.priorityClassName }}"
 {{- end }}
       containers:
-      - image: "{{ .Values.hub }}/kiali:{{ .Values.tag }}"
+      - image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         name: kiali
         command:
         - "/opt/kiali/kiali"
@@ -43,6 +43,8 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.namespace
+        - name: AUTH_STRATEGY
+          value: {{ .Values.dashboard.authStrategy }}
         - name: SERVER_CREDENTIALS_USERNAME
           valueFrom:
             secretKeyRef:
@@ -70,9 +72,35 @@ spec:
 {{- else }}
 {{ toYaml .Values.global.defaultResources | indent 10 }}
 {{- end }}
+      - name: kiali-proxy
+        image: {{ .Values.image.proxy.repository }}:{{ .Values.image.proxy.tag }}
+        args:
+        - nginx
+        - -g
+        - daemon off;
+        - -c
+        - /nginx/nginx.conf
+        ports:
+        - name: http
+          containerPort: 80
+          protocol: TCP
+        volumeMounts:
+        - mountPath: /nginx/
+          name: kiali-nginx
+        {{- if and .Values.resources .Values.resources.proxy }}
+        resources:
+{{ toYaml .Values.resources.proxy | indent 10 }}
+        {{- end }}
       volumes:
       - name: kiali-configuration
         configMap:
           name: kiali
+      - name: kiali-nginx
+        configMap:
+          name: kiali-nginx
+          items:
+          - key: nginx.conf
+            mode: 438
+            path: nginx.conf
       affinity:
       {{- include "nodeaffinity" . | indent 6 }}

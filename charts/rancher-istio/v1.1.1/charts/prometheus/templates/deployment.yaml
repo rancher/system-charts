@@ -41,7 +41,7 @@ spec:
 {{- end }}
       containers:
         - name: prometheus
-          image: "{{ .Values.hub }}/prometheus:{{ .Values.tag }}"
+          image: "{{ .Values.repository }}:{{ .Values.tag }}"
           imagePullPolicy: {{ .Values.global.imagePullPolicy }}
           args:
             - '--storage.tsdb.retention={{ .Values.retention }}'
@@ -58,8 +58,8 @@ spec:
               path: /-/ready
               port: 9090
           resources:
-{{- if .Values.resources }}
-{{ toYaml .Values.resources | indent 12 }}
+ {{- if and .Values.resources .Values.resources.core }}
+{{ toYaml .Values.resources.core | indent 12 }}
 {{- else }}
 {{ toYaml .Values.global.defaultResources | indent 12 }}
 {{- end }}
@@ -68,6 +68,31 @@ spec:
             mountPath: /etc/prometheus
           - mountPath: /etc/istio-certs
             name: istio-certs
+        - name: prometheus-nginx
+          command:
+          - /bin/sh
+          - -c 
+          - cp /nginx/run-sh.tmpl /var/run/nginx-start.sh; chmod +x /var/run/nginx-start.sh; /var/run/nginx-start.sh
+          env:
+          - name: POD_IP
+            valueFrom:
+              fieldRef:
+                fieldPath: status.podIP
+          image: "{{ .Values.proxy.repository }}:{{ .Values.proxy.tag }}"
+          ports:
+          - containerPort: 80
+            name: http
+            protocol: TCP
+          {{- if and .Values.resources .Values.resources.proxy }}
+          resources:
+      {{ toYaml .Values.resources.proxy | indent 6 }}
+          {{- end }}
+          securityContext:
+            runAsNonRoot: false
+            runAsUser: 0
+          volumeMounts:
+          - mountPath: /nginx
+            name: prometheus-nginx
       volumes:
       - name: config-volume
         configMap:
@@ -77,5 +102,8 @@ spec:
           defaultMode: 420
           optional: true
           secretName: istio.default
+      - name: prometheus-nginx
+        configMap:
+          name: {{ template "prometheus.chart" . }}-nginx
       affinity:
       {{- include "nodeaffinity" . | indent 6 }}

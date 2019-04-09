@@ -45,6 +45,15 @@ rules:
   - get
   - list
   - watch
+- apiGroups: ["rbac.istio.io"]
+  resources:
+  - rbacconfigs
+  - serviceroles
+  - servicerolebindings
+  verbs:
+  - get
+  - list
+  - watch
 - apiGroups: ["config.istio.io"]
   resources:
   - apikeys
@@ -96,6 +105,7 @@ rules:
 - apiGroups: ["authentication.istio.io"]
   resources:
   - policies
+  - meshpolicies
   verbs:
   - create
   - delete
