@@ -326,9 +326,8 @@ prometheus:
     size: 50Gi
   alertingEndpoints: []
   secrets: []
-  ## Already exist ServiceAccount
+  ## Override the default generated ServiceAccount name
   ##
-  serviceAccountName: ""
   serviceAccountNameOverride: ""
   ruleNamespaceSelector: {}
   ruleSelector:
@@ -347,3 +346,6 @@ prometheus:
 
 global:
   systemDefaultRegistry: ""
+  ## Rancher injected ServiceAccount
+  ##
+  rancherInjectedServiceAccountName: ""
