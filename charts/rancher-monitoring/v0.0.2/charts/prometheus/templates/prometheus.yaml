@@ -151,6 +151,10 @@ spec:
 {{- if or .Values.storageSpec .Values.persistence.enabled }}
   storage:
     volumeClaimTemplate:
+      {{- if .Values.persistence.useReleaseName }}
+      metadata:
+        name: {{ .Release.Name }}
+      {{- end }}
       spec:
 {{- if .Values.storageSpec }}
 {{ toYaml .Values.storageSpec | indent 8 }}

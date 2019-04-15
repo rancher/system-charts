@@ -320,6 +320,7 @@ prometheus:
         memory: 100Mi
         cpu: 100m
   persistence:
+    useReleaseName: false
     enabled: false
     storageClass: ""
     accessMode: "ReadWriteOnce"
