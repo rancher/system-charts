@@ -6,9 +6,6 @@ replicaCount: 1
 image:
   repository: grafana/grafana
   tag: 5.4.0
-  proxy:
-    repository: rancher/nginx
-    tag: 1.15.8-alpine
 ingress:
   enabled: false
   ## Used to create an Ingress record.
@@ -25,7 +22,8 @@ ingress:
 persistence:
   enabled: false
   storageClass: ""
-  accessMode: ReadWriteMany
+  accessMode: ReadWriteOnce
+  existingClaim: ""
   size: 5Gi
 security:
   enabled: false

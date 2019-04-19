@@ -77,7 +77,7 @@ spec:
             valueFrom:
               fieldRef:
                 fieldPath: status.podIP
-          image: "{{ .Values.proxy.repository }}:{{ .Values.proxy.tag }}"
+          image: {{ .Values.global.nginxProxy.repository }}:{{ .Values.global.nginxProxy.tag }}
           ports:
           - containerPort: 80
             name: http

@@ -72,7 +72,7 @@ spec:
 {{ toYaml .Values.global.defaultResources | indent 10 }}
 {{- end }}
       - name: kiali-proxy
-        image: {{ .Values.proxy.repository }}:{{ .Values.proxy.tag }}
+        image: {{ .Values.global.nginxProxy.repository }}:{{ .Values.global.nginxProxy.tag }}
         args:
         - nginx
         - -g

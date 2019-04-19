@@ -26,6 +26,16 @@ questions:
     description: "ImagePullSecrets for all ServiceAccount, array of elements"
     type: multiline
     label: Global ImagePullSecrets
+  - variable: global.nginxProxy.repository
+    default: "rancher/nginx"
+    description: "The nginx proxy image repository"
+    type: string
+    label: Kiali Image Repository
+  - variable: global.nginxProxy.tag
+    default: "1.15.8-alpine"
+    description: "The nginx proxy image tag"
+    type: string
+    label: Kiali Image Tag
   - variable: grafana.image.repository
     default: "grafana/grafana"
     description: "Image name of the grafana"
@@ -64,16 +74,6 @@ questions:
   - variable: kiali.tag
     default: "v0.17"
     description: "The kiali image tag"
-    type: string
-    label: Kiali Image Tag
-  - variable: kiali.proxy.repository
-    default: "rancher/nginx"
-    description: "The kiali proxy image repository"
-    type: string
-    label: Kiali Image Repository
-  - variable: kiali.proxy.tag
-    default: "1.15.8-alpine"
-    description: "The kiali proxy image tag"
     type: string
     label: Kiali Image Tag
   - variable: certmanager.hub

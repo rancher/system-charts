@@ -5,9 +5,6 @@ enabled: true
 replicaCount: 1
 hub: docker.io/prom
 tag: v2.3.1
-proxy:
-  repository: rancher/nginx
-  tag: 1.15.8-alpine
 
 retention: 6h
 nodeSelector: {}

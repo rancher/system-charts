@@ -6,9 +6,6 @@ replicaCount: 1
 hub: docker.io/kiali
 tag: v0.17
 contextPath: /
-proxy:
-  repository: rancher/nginx
-  tag: 1.15.8-alpine
 nodeSelector: {}
 
 # Specify the pod anti-affinity that allows you to constrain which nodes
@@ -58,7 +55,6 @@ dashboard:
 
   # Override the automatically detected Jaeger URL, useful when Jaeger service has no ExternalIPs
   jaegerURL:
-  grafanaDisplayLink: "false"
 prometheusAddr: http://prometheus:9090
 
 service:

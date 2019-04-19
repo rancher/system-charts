@@ -96,7 +96,7 @@ spec:
             mountPath: "/etc/grafana/provisioning/dashboards/dashboardproviders.yaml"
             subPath: dashboardproviders.yaml
         - name: grafana-proxy
-          image: {{ .Values.image.proxy.repository }}:{{ .Values.image.proxy.tag }}
+          image: {{ .Values.global.nginxProxy.repository }}:{{ .Values.global.nginxProxy.tag }}
           args:
           - nginx
           - -g
@@ -131,7 +131,7 @@ spec:
       - name: data
 {{- if .Values.persistence.enabled }}
         persistentVolumeClaim:
-          claimName: istio-grafana-pvc
+          claimName: {{ .Values.persistence.existingClaim | default ("istio-grafana-pvc") }}
 {{- else }}
         emptyDir: {}
 {{- end }}
