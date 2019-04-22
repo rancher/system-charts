@@ -1,6 +1,5 @@
 {{- if and (eq .Values.level "project") (eq .Values.sync.mode "federate") }}
 - job_name: 'federate'
-  scrape_interval: 15s
   honor_labels: true
   metrics_path: {{ .Values.sync.path }}
   params:

@@ -20,7 +20,6 @@ spec:
     - {{ .Release.Namespace | quote }}
   endpoints:
   - port: metrics
-    interval: 30s
     relabelings:
     - sourceLabels:
       - __meta_kubernetes_pod_host_ip
@@ -36,7 +35,6 @@ spec:
       replacement: $1
   {{- if eq .Values.level "cluster" }}
   - port: metrics
-    interval: 15s
     path: /_/metrics
     metricRelabelings: 
     - sourceLabels: 

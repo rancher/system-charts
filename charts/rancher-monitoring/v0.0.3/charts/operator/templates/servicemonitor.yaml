@@ -1,4 +1,3 @@
-{{- if .Values.enabled }}
 apiVersion: {{ template "operator_api_version" . }}
 kind: ServiceMonitor
 metadata:
@@ -21,7 +20,6 @@ spec:
     - {{ .Release.Namespace | quote }}
   endpoints:
   - port: metrics
-    interval: 30s
     honorLabels: true
     relabelings:
     - sourceLabels:
@@ -36,4 +34,3 @@ spec:
       targetLabel: node
       regex: (.+)
       replacement: $1
-{{- end }}

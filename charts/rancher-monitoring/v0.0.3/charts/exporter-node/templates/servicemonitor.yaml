@@ -20,7 +20,6 @@ spec:
     - {{ .Release.Namespace | quote }}
   endpoints:
   - port: metrics
-    interval: 15s
     relabelings:
     - sourceLabels:
       - __meta_kubernetes_pod_host_ip
