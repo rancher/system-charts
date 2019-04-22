@@ -24,7 +24,6 @@ spec:
     - cattle-logging
   endpoints:
   - port: {{ .Values.ports.metrics.name }}
-    interval: 15s
     honorLabels: true
     bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
     scheme: {{ .Values.ports.metrics.scheme }}

@@ -46,6 +46,10 @@ spec:
 {{- if or .Values.storageSpec .Values.persistence.enabled }}
   storage:
     volumeClaimTemplate:
+      {{- if .Values.persistence.name }}
+      metadata:
+        name: {{ .Values.persistence.name }}
+      {{- end }}
       spec:
 {{- if .Values.storageSpec }}
 {{ toYaml .Values.storageSpec | indent 8 }}

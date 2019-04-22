@@ -20,7 +20,6 @@ spec:
     - {{ .Release.Namespace | quote }}
   endpoints:
   - port: http
-    interval: 15s
     honorLabels: true
     relabelings:
     - sourceLabels:
@@ -36,7 +35,6 @@ spec:
       regex: (.+)
       replacement: $1
   - port: http-metrics
-    interval: 30s
     relabelings:
     - sourceLabels:
       - __meta_kubernetes_pod_host_ip

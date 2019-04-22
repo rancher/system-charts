@@ -59,6 +59,13 @@ rules:
   verbs: 
   - "list"
   - "watch"
+- apiGroups:
+  - "policy"
+  resources:
+  - "poddisruptionbudgets"
+  verbs: 
+  - "list"
+  - "watch"
 
 ---
 apiVersion: v1

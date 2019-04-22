@@ -113,6 +113,9 @@ spec:
   paused: {{ .Values.paused }}
   replicas: {{ .Values.replicaCount }}
   logLevel:  {{ .Values.logLevel }}
+  logFormat: {{ .Values.logFormat }}
+  scrapeInterval: {{ .Values.scrapeInterval }}
+  evaluationInterval: {{ .Values.evaluationInterval }}
 {{- if and .Values.resources .Values.resources.core }}
   resources:
 {{ toYaml .Values.resources.core | indent 4 }}
@@ -151,6 +154,10 @@ spec:
 {{- if or .Values.storageSpec .Values.persistence.enabled }}
   storage:
     volumeClaimTemplate:
+      {{- if .Values.persistence.name }}
+      metadata:
+        name: {{ .Values.persistence.name }}
+      {{- end }}
       spec:
 {{- if .Values.storageSpec }}
 {{ toYaml .Values.storageSpec | indent 8 }}
