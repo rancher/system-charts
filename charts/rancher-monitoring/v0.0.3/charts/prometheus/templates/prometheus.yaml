@@ -1,0 +1,192 @@
+apiVersion: {{ template "operator_api_version" . }}
+kind: Prometheus
+metadata:
+  labels:
+    app: {{ template "app.name" . }}
+    chart: {{ template "app.version" . }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+  name: {{ .Release.Name }}
+spec:
+{{- if .Values.securityContext }}
+  securityContext:
+{{ toYaml .Values.securityContext | indent 4 }}
+{{- end }}
+  containers:
+  - name: prometheus-proxy
+    command:
+    - /bin/sh
+    - -c 
+    - cp /nginx/run-sh.tmpl /var/run/nginx-start.sh; chmod +x /var/run/nginx-start.sh; /var/run/nginx-start.sh
+    env:
+    - name: POD_IP
+      valueFrom:
+        fieldRef:
+          fieldPath: status.podIP
+    image: {{ template "system_default_registry" . }}{{ .Values.image.proxy.repository }}:{{ .Values.image.proxy.tag }}
+    ports:
+    - containerPort: 80
+      name: http
+      protocol: TCP
+    {{- if and .Values.resources .Values.resources.proxy }}
+    resources:
+{{ toYaml .Values.resources.proxy | indent 6 }}
+    {{- end }}
+    securityContext:
+      runAsNonRoot: false
+      runAsUser: 0
+    volumeMounts:
+    - mountPath: /nginx
+      name: configmap-{{ template "app.nginx.fullname" . }}
+{{- if eq .Values.level "cluster" }}
+  - name: prometheus-agent
+    command:
+    - prometheus-auth
+    {{- if and .Values.auth .Values.auth.args }}
+    args:
+{{ toYaml .Values.auth.args | indent 6 }}
+    {{- end }}
+    {{- if and .Values.auth .Values.auth.env }}
+    env:
+{{ toYaml .Values.auth.env | indent 6 }}
+    {{- end }}
+    image: {{ template "system_default_registry" . }}{{ .Values.image.auth.repository }}:{{ .Values.image.auth.tag }}
+    ports:
+    - containerPort: 9090
+      name: web
+      protocol: TCP
+    livenessProbe:
+      failureThreshold: 6
+      httpGet:
+        path: /-/healthy
+        port: web
+        scheme: HTTP
+      periodSeconds: 10
+      successThreshold: 1
+      timeoutSeconds: 10
+    readinessProbe:
+      failureThreshold: 10
+      httpGet:
+        path: /-/ready
+        port: web
+        scheme: HTTP
+      periodSeconds: 10
+      successThreshold: 1
+      timeoutSeconds: 10
+    {{- if and .Values.resources .Values.resources.auth }}
+    resources:
+{{ toYaml .Values.resources.auth | indent 6 }}
+    {{- end }}
+  listenLocal: true
+{{- end }}
+  podMetadata:
+    labels:
+      app: {{ template "app.name" . }}
+      chart: {{ template "app.version" . }}
+      release: {{ .Release.Name }}
+{{- if .Values.alertingEndpoints }}
+  alerting:
+    alertmanagers:
+{{ toYaml .Values.alertingEndpoints | indent 6 }}
+{{- else if not (include "additional-alertmanager-configs.yaml" .) }}
+  alerting:
+    alertmanagers:
+      - namespace: {{ .Release.Namespace }}
+        name: alertmanager-operated
+        port: http
+{{- end }}
+  baseImage: {{ template "system_default_registry" . }}{{ .Values.image.repository }}
+{{- if .Values.externalLabels }}
+  externalLabels:
+{{ toYaml .Values.externalLabels | indent 4}}
+{{- end }}
+  nodeSelector:
+    beta.kubernetes.io/os: linux
+    {{- range .Values.nodeSelectors }}
+    {{- $pair := regexSplit "=" . 2 }}
+    {{- if eq 2 (len $pair) }}
+    {{ (index $pair 0) }}: {{ (index $pair 1) }}
+    {{- else }}
+    {{ (index $pair 0) }}: ""
+    {{- end }}
+    {{- end }}
+  paused: {{ .Values.paused }}
+  replicas: {{ .Values.replicaCount }}
+  logLevel:  {{ .Values.logLevel }}
+{{- if and .Values.resources .Values.resources.core }}
+  resources:
+{{ toYaml .Values.resources.core | indent 4 }}
+{{- end }}
+  retention: "{{ .Values.retention }}"
+  configMaps:
+  - {{ template "app.nginx.fullname" . }}
+{{- if .Values.secrets }}
+  secrets:
+{{ toYaml .Values.secrets | indent 2 }}
+{{- end }}
+{{- if .Values.enabledRBAC }}
+  serviceAccountName: {{ default (default (include "app.fullname" .) .Values.serviceAccountName) .Values.serviceAccountNameOverride }}
+{{- end }}
+{{- if .Values.serviceMonitorNamespaceSelector }}
+  serviceMonitorNamespaceSelector:
+{{ toYaml .Values.serviceMonitorNamespaceSelector | indent 4 }}
+{{- end }}
+{{- if .Values.serviceMonitorSelector }}
+  serviceMonitorSelector:
+{{ toYaml .Values.serviceMonitorSelector | indent 4 }}
+{{- end }}
+{{- if and (eq .Values.level "project") (eq .Values.sync.mode "remote") }}
+  remoteRead:
+  - bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+    url: {{ printf "%s%s" .Values.sync.target .Values.sync.path }}
+{{- end }}
+{{- if .Values.ruleNamespaceSelector }}
+  ruleNamespaceSelector:
+{{ toYaml .Values.ruleNamespaceSelector | indent 4 }}
+{{- end }}
+{{- if .Values.ruleSelector }}
+  ruleSelector:
+{{ toYaml .Values.ruleSelector | indent 4 }}
+{{- end }}
+{{- if or .Values.storageSpec .Values.persistence.enabled }}
+  storage:
+    volumeClaimTemplate:
+      spec:
+{{- if .Values.storageSpec }}
+{{ toYaml .Values.storageSpec | indent 8 }}
+{{- else }}
+        {{ if and .Values.persistence.storageClass (ne "default" .Values.persistence.storageClass) }}
+        storageClassName: {{ .Values.persistence.storageClass }}
+        {{ end }}
+        accessModes: 
+          - {{ default "ReadWriteOnce" .Values.persistence.accessMode }}
+        resources:
+          requests:
+            storage: {{ .Values.persistence.size | quote }}
+{{- end }}
+{{- end }}
+  version: "{{ .Values.image.tag }}"
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          topologyKey: kubernetes.io/hostname
+          labelSelector:
+            matchLabels:
+              app: {{ template "app.name" . }}
+              prometheus: {{ .Release.Name }}
+{{- if .Values.tolerations }}
+  tolerations:
+{{ toYaml .Values.tolerations | indent 4 }}
+{{- end }}
+{{- if (include "additional-scrape-configs.yaml" .) }}
+  additionalScrapeConfigs:
+    name: {{ template "app.fullname" . }}-additional-scrape-configs
+    key: additional-scrape-configs.yaml
+{{- end }}
+{{- if (include "additional-alertmanager-configs.yaml" .) }}
+  additionalAlertManagerConfigs:
+    name: {{ template "app.fullname" . }}-additional-alertmanager-configs
+    key: additional-alertmanager-configs.yaml
+{{- end }}
