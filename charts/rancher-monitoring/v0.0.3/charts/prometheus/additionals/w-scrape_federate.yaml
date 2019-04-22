@@ -1,0 +1,13 @@
+{{- if and (eq .Values.level "project") (eq .Values.sync.mode "federate") }}
+- job_name: 'federate'
+  scrape_interval: 15s
+  honor_labels: true
+  metrics_path: {{ .Values.sync.path }}
+  params:
+    'match[]':
+      - '{__name__=~".+"}'
+  bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+  static_configs:
+  - targets:
+    - {{ trimPrefix "https://" (trimPrefix "http://" .Values.sync.target) }}
+{{- end }}

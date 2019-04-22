@@ -1,0 +1,350 @@
+enabled: false
+nameOverride: "prometheus-operator"
+enabledRBAC: true
+apiGroup: "monitoring.coreos.com"
+image:
+  repository: rancher/coreos-prometheus-operator
+  tag: v0.29.0
+  prometheusConfigReloader:
+    repository: rancher/coreos-prometheus-config-reloader
+    tag: v0.29.0
+  configmapReload:
+    repository: rancher/coreos-configmap-reload
+    tag: v0.0.1
+resources:
+  limits:
+    cpu: 200m
+    memory: 100Mi
+  requests:
+    cpu: 100m
+    memory: 50Mi
+nodeSelectors: []
+tolerations: []
+logFormat: "logfmt"
+logLevel: "info"
+manageCRDs: false
+withValidation: true
+## Already exist ServiceAccount
+##
+serviceAccountName: ""
+
+exporter-coredns:
+  enabled: false
+  apiGroup: "monitoring.coreos.com"
+  endpoints: []
+  ports: 
+    metrics:
+      scheme: http
+      name: metrics
+      port: 9153
+      protocol: TCP
+  serviceSelectorLabels:
+    - "k8s-app=kube-dns"
+  insecureSkipVerify: true
+
+exporter-kube-controller-manager:
+  enabled: false
+  apiGroup: "monitoring.coreos.com"
+  endpoints: []
+  ports: 
+    metrics:
+      scheme: http
+      name: metrics
+      port: 10252
+      protocol: TCP
+  serviceSelectorLabels:
+  - "k8s-app=kube-controller-manager"
+  insecureSkipVerify: true
+
+exporter-kube-dns:
+  enabled: false
+  apiGroup: "monitoring.coreos.com"
+  endpoints: []
+  ports: 
+    metrics:
+      dnsmasq:
+        scheme: http
+        name: dnsmasq-metrics
+        port: 10054
+        protocol: TCP
+      skydns:
+        scheme: http
+        name: skydns-metrics
+        port: 10055
+        protocol: TCP
+  serviceSelectorLabels:
+  - "k8s-app=kube-dns"
+  insecureSkipVerify: true
+
+exporter-kube-etcd:
+  enabled: false
+  apiGroup: "monitoring.coreos.com"
+  endpoints: []
+  ports: 
+    metrics:
+      scheme: https
+      name: metrics
+      port: 4001
+      protocol: TCP
+  serviceSelectorLabels:
+  - "k8s-app=etcd-server"
+  insecureSkipVerify: true
+  caFile: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+  certFile: ""
+  keyFile: ""
+
+exporter-kube-scheduler:
+  enabled: false
+  apiGroup: "monitoring.coreos.com"
+  endpoints: []
+  ports: 
+    metrics:
+      scheme: http
+      name: http-metrics
+      port: 10251
+      protocol: TCP
+  serviceSelectorLabels:
+  - "component=kube-scheduler"
+  insecureSkipVerify: true
+
+exporter-kubelets:
+  enabled: false
+  apiGroup: "monitoring.coreos.com"
+  serviceSelectorLabels:
+  - "k8s-app=kubelet"
+  insecureSkipVerify: true
+  ## Set false when using GKE
+  ##
+  https: true
+
+exporter-kubernetes:
+  enabled: false
+  apiGroup: "monitoring.coreos.com"
+  ports: 
+    metrics:
+      scheme: https
+      name: https
+  serviceSelectorLabels:
+  - "component=apiserver"
+  - "provider=kubernetes"
+  insecureSkipVerify: true
+
+exporter-fluentd:
+  enabled: false
+  apiGroup: "monitoring.coreos.com"
+  ports: 
+    metrics:
+      scheme: http
+      name: metric
+  serviceSelectorLabels:
+  - "app=fluentd"
+  insecureSkipVerify: true
+
+exporter-node:
+  enabled: false
+  apiGroup: "monitoring.coreos.com"
+  image:
+    repository: rancher/prom-node-exporter
+    tag: v0.17.0
+  nodeSelectors: []
+  resources:
+    limits:
+      cpu: 200m
+      memory: 50Mi
+    requests:
+      cpu: 100m
+      memory: 30Mi
+  ports:
+    metrics:
+      port: 9100
+  collectors: {}
+  enabledHostNetwork: true
+  enabledHostPID: true
+  ## Already exist ServiceAccount
+  ##
+  serviceAccountName: ""
+
+exporter-kube-state:
+  enabled: false
+  apiGroup: "monitoring.coreos.com"
+  image:
+    repository: rancher/coreos-kube-state-metrics
+    tag: v1.5.0
+  nodeSelectors: []
+  resources:
+    limits:
+      cpu: 100m
+      memory: 200Mi
+    requests:
+      cpu: 100m
+      memory: 130Mi
+  ## Already exist ServiceAccount
+  ##
+  serviceAccountName: ""
+  securityContext: {}
+
+alertmanager:
+  enabled: false
+  apiGroup: "monitoring.coreos.com"
+  image:
+    repository: rancher/prom-alertmanager
+    tag: v0.16.1
+  nodeSelectors: []
+  resources:
+    core:
+      limits:
+        memory: 500Mi
+        cpu: 1000m
+      requests:
+        memory: 100Mi
+        cpu: 100m
+  config:
+    global:
+      resolve_timeout: 5m
+    route:
+      group_by: ['job']
+      group_wait: 30s
+      group_interval: 5m
+      repeat_interval: 12h
+      receiver: 'null'
+      routes:
+      - match:
+          alertname: DeadMansSwitch
+        receiver: 'null'
+    receivers:
+    - name: 'null'
+  persistence:
+    enabled: false
+    storageClass: ""
+    accessMode: "ReadWriteOnce"
+    size: 50Gi
+  ## Already exist ServiceAccount
+  ##
+  serviceAccountName: ""
+  securityContext:
+    runAsUser: 1000
+    runAsNonRoot: true
+    fsGroup: 2000
+
+grafana:
+  enabled: false
+  level: cluster
+  apiGroup: "monitoring.coreos.com"
+  image:
+    repository: rancher/grafana-grafana
+    tag: 5.4.3
+    tool:
+      repository: rancher/prometheus-auth
+      tag: v0.2.0
+    proxy:
+      repository: rancher/nginx
+      tag: 1.15.8-alpine
+  nodeSelectors: []
+  resources:
+    inits:
+      limits:
+        memory: 50Mi
+        cpu: 50m
+      requests:
+        memory: 50Mi
+        cpu: 50m
+    core:
+      limits:
+        memory: 200Mi
+        cpu: 200m
+      requests:
+        memory: 100Mi
+        cpu: 100m
+    proxy:
+      limits:
+        memory: 100Mi
+        cpu: 100m
+      requests:
+        memory: 50Mi
+        cpu: 50m
+  persistence:
+    enabled: false
+    storageClass: ""
+    accessMode: "ReadWriteOnce"
+    size: 50Gi
+  ## Already exist ServiceAccount
+  ##
+  serviceAccountName: ""
+  prometheusDatasourceURL: "http://prometheus-operated:9090"
+
+prometheus:
+  enabled: false
+  level: cluster
+  auth:
+    args:
+    - --proxy-url=http://localhost:9090
+    - --listen-address=$(POD_IP):9090
+    - --filter-reader-labels=prometheus
+    - --filter-reader-labels=prometheus_replica
+    env:
+    - name: POD_IP
+      valueFrom:
+        fieldRef:
+          fieldPath: status.podIP
+  apiGroup: "monitoring.coreos.com"
+  image:
+    repository: rancher/prom-prometheus
+    tag: v2.7.1
+    auth:
+      repository: rancher/prometheus-auth
+      tag: v0.2.0
+    proxy:
+      repository: rancher/nginx
+      tag: 1.15.8-alpine
+  nodeSelectors: []
+  resources:
+    core:
+      limits:
+        memory: 500Mi
+        cpu: 1000m
+      requests:
+        memory: 100Mi
+        cpu: 100m
+    proxy:
+      limits:
+        memory: 100Mi
+        cpu: 100m
+      requests:
+        memory: 50Mi
+        cpu: 50m
+    auth:
+      limits:
+        memory: 200Mi
+        cpu: 500m
+      requests:
+        memory: 100Mi
+        cpu: 100m
+  persistence:
+    enabled: false
+    storageClass: ""
+    accessMode: "ReadWriteOnce"
+    size: 50Gi
+  alertingEndpoints: []
+  secrets: []
+  ## Already exist ServiceAccount
+  ##
+  serviceAccountName: ""
+  serviceAccountNameOverride: ""
+  ruleNamespaceSelector: {}
+  ruleSelector:
+    matchExpressions: []
+  serviceMonitorNamespaceSelector: {}
+  serviceMonitorSelector:
+    matchExpressions: []
+  addtionalBindingClusterRoles: []
+  securityContext:
+    runAsUser: 1000
+    runAsNonRoot: true
+    fsGroup: 2000
+  sync:
+    mode: "remote"
+    path: "/api/v1/read"
+    target: ""
+
+global:
+  systemDefaultRegistry: ""
