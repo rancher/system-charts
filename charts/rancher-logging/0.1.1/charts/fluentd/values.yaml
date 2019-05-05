@@ -50,7 +50,7 @@ cluster:
 configmapReload:
   name: reloader
   image:
-    repository: jimmidyson/configmap-reload
+    repository: rancher/jimmidyson-configmap-reload
     tag: v0.2.2
     pullPolicy: IfNotPresent
   resources: {}
