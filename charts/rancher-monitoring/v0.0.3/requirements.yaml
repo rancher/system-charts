@@ -66,5 +66,5 @@ dependencies:
 
   - name: operator
     version: 0.0.1
-    condition: operator.enabled
+    condition: operator.enabled,enabled
     repository: "file://./charts/operator/"
