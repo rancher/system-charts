@@ -24,7 +24,7 @@ spec:
       - name: exporter-node
         image: {{ template "system_default_registry" . }}{{ .Values.image.repository }}:{{ .Values.image.tag }}
         args:
-        - --web.listen-address=$(POD_IP):{{ .Values.ports.metrics.port }}
+        - --web.listen-address=0.0.0.0:{{ .Values.ports.metrics.port }}
         - --path.procfs=/host/proc
         - --path.sysfs=/host/sys
         - --path.rootfs=/host
@@ -46,11 +46,6 @@ spec:
         - --no-collector.{{$collectorName}}
         {{- end }}
         {{- end }}
-        env:
-        - name: POD_IP
-          valueFrom:
-            fieldRef:
-              fieldPath: status.podIP
         ports:
         - name: http
           containerPort: {{ .Values.ports.metrics.port }}
