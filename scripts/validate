@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+set -e
+
+echo "-- validate --"
+
+cd $(dirname $0)/..
+
+# Check for helm
+hash helm >/dev/null 2>&1
+if [[ $? > 0 ]]; then
+    echo "helm not found. Helm is required to run tests."
+    exit 1
+fi
+
+do_lint(){
+  # make a link due to the limitation that helm linter does
+  # not allow directory name different from the chart name
+  # see https://github.com/helm/helm/issues/4683
+  local tmpdir name
+  tmpdir=`mktemp -d /tmp/chart.XXXXXXXX`
+  name=`dirname $1 | xargs basename`
+  lndir="$tmpdir/$name"
+  ln -s $1 $lndir 
+  echo "Linting: $name `basename $1`"
+  helm lint $lndir
+}
+
+
+for name in `ls ./charts`
+do
+  for version in `ls ./charts/$name`
+  do
+    do_lint $PWD/charts/$name/$version
+  done
+done
+
