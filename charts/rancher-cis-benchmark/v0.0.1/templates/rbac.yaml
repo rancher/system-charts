@@ -1,0 +1,54 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    app.kubernetes.io/name: {{ include "rancher-cis-benchmark.name" . }}
+    helm.sh/chart: {{ include "rancher-cis-benchmark.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+  # TODO: make the sa name configurable
+  # name: {{ include "rancher-cis-benchmark.fullname" . }}-serviceaccount
+  name: sonobuoy-serviceaccount
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/name: {{ include "rancher-cis-benchmark.name" . }}
+    helm.sh/chart: {{ include "rancher-cis-benchmark.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+  # TODO: make the sa name configurable
+  # name: {{ include "rancher-cis-benchmark.fullname" . }}-serviceaccount
+  name: sonobuoy-serviceaccount
+rules:
+- apiGroups:
+  - '*'
+  resources:
+  - '*'
+  verbs:
+  - '*'
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRoleBinding
+metadata:
+  labels:
+    app.kubernetes.io/name: {{ include "rancher-cis-benchmark.name" . }}
+    helm.sh/chart: {{ include "rancher-cis-benchmark.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+  # TODO: make the sa name configurable
+  # name: {{ include "rancher-cis-benchmark.fullname" . }}-serviceaccount
+  name: sonobuoy-serviceaccount
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  # TODO: make the sa name configurable
+  # name: {{ include "rancher-cis-benchmark.fullname" . }}-serviceaccount
+  name: sonobuoy-serviceaccount
+subjects:
+- kind: ServiceAccount
+  # TODO: make the sa name configurable
+  # name: {{ include "rancher-cis-benchmark.fullname" . }}-serviceaccount
+  name: sonobuoy-serviceaccount
+  namespace: {{ .Release.Namespace }}
