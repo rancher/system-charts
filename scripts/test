@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+set -e
+
+echo "-- chart/test --"
+
+cd $(dirname $0)/..
+
+# Check for helm
+hash helm >/dev/null 2>&1
+if [[ $? > 0 ]]; then
+    echo "helm not found. Helm is required to run tests."
+    exit 1
+fi
+
+# Check for unittest plugin
+helm unittest --help >/dev/null 2>&1
+if [[ $? > 0 ]]; then
+    echo "helm plugin unittest not found."
+    echo "Run to install plugin: helm plugin install https://github.com/lrills/helm-unittest"
+    exit 1
+fi
+
+do_test(){
+  local name
+  name=`dirname $1 | xargs basename`
+  echo "Testing: $name `basename $1`"
+  helm unittest $1
+}
+
+
+for name in `ls ./charts`
+do
+  for version in `ls ./charts/$name`
+  do
+    if [[ -d ./charts/$name/$version/tests ]];then
+      do_test $PWD/charts/$name/$version
+    fi
+  done
+done
