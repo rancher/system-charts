@@ -1,0 +1,66 @@
+suite: Test Enable/Disable Addons
+templates:
+- clair-cm.yaml
+- clair-dpl.yaml
+- clair-svc.yaml
+- notary-cm.yaml
+- notary-server.yaml
+- notary-signer.yaml
+- notary-svc.yaml
+- core-secret.yaml
+tests:
+- it: should enable clair and notary by default
+  asserts:
+  - template: clair/clair-cm.yaml
+    hasDocuments:
+      count: 1
+  - template: clair/clair-dpl.yaml
+    hasDocuments:
+      count: 1
+  - template: clair/clair-svc.yaml
+    hasDocuments:
+      count: 1
+  - template: notary/notary-cm.yaml
+    hasDocuments:
+      count: 1
+  - template: notary/notary-server.yaml
+    hasDocuments:
+      count: 1
+  - template: notary/notary-signer.yaml
+    hasDocuments:
+      count: 1
+  - template: notary/notary-svc.yaml
+    hasDocuments:
+      count: 2
+- it: should disable clair
+  set:
+    clair:
+      enabled: false
+  asserts:
+  - template: clair/clair-cm.yaml
+    hasDocuments:
+      count: 0
+  - template: clair/clair-dpl.yaml
+    hasDocuments:
+      count: 0
+  - template: clair/clair-svc.yaml
+    hasDocuments:
+      count: 0
+- it: should disable notary
+  set:
+    notary:
+      enabled: false
+  asserts:
+  - template: notary/notary-cm.yaml
+    hasDocuments:
+      count: 0
+  - template: notary/notary-server.yaml
+    hasDocuments:
+      count: 0
+  - template: notary/notary-signer.yaml
+    hasDocuments:
+      count: 0
+  - template: notary/notary-svc.yaml
+    hasDocuments:
+      count: 0
+
