@@ -1,0 +1,37 @@
+suite: Test Registry Configmap
+templates:
+- registry-cm.yaml
+- registry-dpl.yaml
+- registry-secret.yaml
+- jobservice-secrets.yaml
+- core-secret.yaml
+tests:
+- it: should use filesystem storage backend by default
+  asserts:
+  - template: registry/registry-cm.yaml
+    matchRegex:
+      path: data.config\.yml
+      pattern: "filesystem:"
+- it: should use s3 storage backend
+  set:
+    imageChartStorage:
+      type: s3
+      s3:
+        region: us-west-2
+        bucket: mybucket
+        accesskey: myaccesskey
+        secretkey: mysecretkey
+  asserts:
+  - template: registry/registry-cm.yaml
+    matchRegex:
+      path: data.config\.yml
+      pattern: "(?s)s3:.*region: us-west-2.*bucket: mybucket"
+  - template: registry/registry-secret.yaml
+    equal:
+      path: data.REGISTRY_STORAGE_S3_ACCESSKEY
+      value: bXlhY2Nlc3NrZXk=
+  - template: registry/registry-secret.yaml
+    equal:
+      path: data.REGISTRY_STORAGE_S3_SECRETKEY
+      value: bXlzZWNyZXRrZXk=
+
