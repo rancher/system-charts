@@ -49,8 +49,8 @@ data:
       result-type: rancher-kube-bench
     spec:
       name: rancher-kube-bench
-      image: rancher/cis-sonobuoy-plugin-kube-bench:latest
-      command: ["/bin/bash", "-c", "run.sh && sleep 3600"]
+      image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+      command: ["/bin/bash", "-c", "run_sonobuoy_plugin.sh && sleep 3600"]
       env:
       - name: NODE_NAME
         valueFrom:
