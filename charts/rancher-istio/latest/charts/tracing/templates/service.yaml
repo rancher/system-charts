@@ -46,13 +46,9 @@ items:
   spec:
     type: {{ .Values.service.uiType }}
     ports:
-      - name: http-query
+      - name: http-access-tracing
         port: 80
         protocol: TCP
-{{ if eq .Values.provider "jaeger" }}
-        targetPort: 16686
-{{ else }}
-        targetPort: 9411
-{{ end}}
+        targetPort: 80
     selector:
       app: {{ .Values.provider }}

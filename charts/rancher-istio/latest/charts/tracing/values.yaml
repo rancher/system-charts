@@ -11,6 +11,8 @@ jaeger:
   tag: 1.9
   memory:
     max_traces: 50000
+  proxy:
+    resources: {}
 
 zipkin:
   hub: docker.io/openzipkin
@@ -32,6 +34,8 @@ zipkin:
   maxSpans: 500000
   node:
     cpus: 2
+  proxy:
+    resources: {}
 
 service:
   annotations: {}
