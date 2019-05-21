@@ -188,7 +188,7 @@ alertmanager:
   apiGroup: "monitoring.coreos.com"
   image:
     repository: rancher/prom-alertmanager
-    tag: v0.16.1
+    tag: v0.17.0
   nodeSelectors: []
   resources:
     core:
