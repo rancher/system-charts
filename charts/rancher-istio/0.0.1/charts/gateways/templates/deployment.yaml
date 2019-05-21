@@ -43,7 +43,7 @@ spec:
 {{- if $.Values.global.proxy.enableCoreDump }}
       initContainers:
         - name: enable-core-dump
-          image: "{{ template "system_default_registry" . }}{{ $.Values.global.proxy_init.repository }}:{{ $.Values.global.proxy_init.tag }}"
+          image: "{{ template "system_default_registry" $ }}{{ $.Values.global.proxy_init.repository }}:{{ $.Values.global.proxy_init.tag }}"
           imagePullPolicy: IfNotPresent
           command:
             - /bin/sh
@@ -57,7 +57,7 @@ spec:
 {{- if $spec.sds }}
 {{- if $spec.sds.enabled }}
         - name: ingress-sds
-          image: "{{ template "system_default_registry" . }}{{ $.Values.global.nodeAgent.repository }}:{{ $.Values.global.nodeAgent.tag }}"
+          image: "{{ template "system_default_registry" $ }}{{ $.Values.global.nodeAgent.repository }}:{{ $.Values.global.nodeAgent.tag }}"
           imagePullPolicy: {{ $.Values.global.imagePullPolicy }}
           env:
           - name: "ENABLE_WORKLOAD_SDS"
@@ -75,7 +75,7 @@ spec:
 {{- end }}
 {{- end }}
         - name: istio-proxy
-          image: "{{ template "system_default_registry" . }}{{ $.Values.global.proxy.repository }}:{{ $.Values.global.proxy.tag }}"
+          image: "{{ template "system_default_registry" $ }}{{ $.Values.global.proxy.repository }}:{{ $.Values.global.proxy.tag }}"
           imagePullPolicy: {{ $.Values.global.imagePullPolicy }}
           ports:
             {{- range $key, $val := $spec.ports }}
