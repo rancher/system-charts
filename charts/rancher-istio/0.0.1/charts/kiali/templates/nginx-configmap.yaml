@@ -47,22 +47,7 @@ data:
         proxy_set_header Host $host;
 
         location / {
-          proxy_cache         my_zone;
-          proxy_cache_valid   200 302 1d;
-          proxy_cache_valid   301 30d;
-          proxy_cache_valid   any 5m;
-          proxy_cache_bypass  $http_cache_control;
-          add_header          X-Proxy-Cache $upstream_cache_status;
-          add_header          Cache-Control "public";
-          
           proxy_pass     http://localhost:20001/;
-          sub_filter_types text/html;
-          sub_filter_once on;
-          sub_filter </head> '<script>var path = window.location.pathname; var pathName = path.substring(0, path.lastIndexOf("/proxy") + 6); window.WEB_ROOT = window.WEB_ROOT ? pathName + window.WEB_ROOT:pathName</script></head>';
-
-          if ($request_filename ~ .*\.(?:js|css|jpg|jpeg|gif|png|ico|cur|gz|svg|svgz|mp4|ogg|ogv|webm)$) {
-            expires             90d;
-          }
         }
       }
     }
