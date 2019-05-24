@@ -1,0 +1,63 @@
+suite: Test Pilot Deployment
+templates:
+  - deployment.yaml
+tests:
+  - it: should pass all kinds of assertion
+    set:
+      service.internalPort: 8080
+      sidecar: true
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: istio/pilot:1.1.5
+      - notEqual:
+          path: spec.template.spec.containers[0].image
+          value: istio/pilot:1.1
+      - matchRegex:
+          path: metadata.name
+          pattern: .*istio-pilot.*
+      - contains:
+          path: spec.template.spec.containers[0].ports
+          content:
+            containerPort: 8080
+      - isNull:
+          path: spec.template.nodeSelector
+      - isNotNull:
+          path: spec.template
+      - isNotEmpty:
+          path: spec.template.spec.containers[0].resources
+      - isNotEmpty:
+          path: spec.template.spec.containers[0]
+      - isKind:
+          of: Deployment
+      - isAPIVersion:
+          of: extensions/v1beta1
+      - hasDocuments:
+          count: 1
+      # sidecar tests
+      - equal:
+          path: spec.template.spec.containers[1].name
+          value: istio-proxy
+      - notContains:
+          path: spec.template.spec.containers[0].ports
+          content:
+            containerPort: 15011
+  - it: should not set replicas
+    set:
+      autoscaleEnabled: true
+    asserts:
+      - equal:
+          path: spec.replicas
+          value: null
+  - it: should not add sidecar
+    set:
+      sidecar: false
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].ports
+          content:
+            containerPort: 15011
+      - contains:
+          path: spec.template.spec.containers[0].args
+          content:
+            --secureGrpcAddr

@@ -1,0 +1,27 @@
+suite: Test Istio CRDs
+templates:
+  - crds.yaml
+tests:
+  - it: should create custom resource definition
+    set:
+      enableCRDs: true
+    asserts:
+      - hasDocuments:
+          count: 53 #istio v1.1.5 contains total 53 CRDs
+      - isKind:
+          of: CustomResourceDefinition
+  - it: should not render custom resource definition
+    set:
+      enableCRDs: false
+    asserts:
+      - hasDocuments:
+          count: 0
+  - it: should set helm crd hook annotations
+    set:
+      enableCRDs: true
+    asserts:
+      - equal:
+          path: metadata.annotations
+          value:
+            helm.sh/resource-policy: keep
+            helm.sh/hook: "crd-install"
