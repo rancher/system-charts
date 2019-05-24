@@ -28,7 +28,7 @@ spec:
     spec:
       containers:
       - name: nginx
-        image: {{ .Values.nginx.image.repository }}:{{ .Values.nginx.image.tag }}
+        image: {{ template "system_default_registry" . }}{{ .Values.nginx.image.repository }}:{{ .Values.nginx.image.tag }}
         imagePullPolicy: "{{ .Values.imagePullPolicy }}"
         livenessProbe:
           httpGet:
@@ -68,6 +68,7 @@ spec:
           {{- end }}
     {{- with .Values.nginx.nodeSelector }}
       nodeSelector:
+        beta.kubernetes.io/os: linux
 {{ toYaml . | indent 8 }}
     {{- end }}
     {{- with .Values.nginx.affinity }}

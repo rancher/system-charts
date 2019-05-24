@@ -27,7 +27,7 @@ spec:
     spec:
       containers:
       - name: chartmuseum
-        image: {{ .Values.chartmuseum.image.repository }}:{{ .Values.chartmuseum.image.tag }}
+        image: {{ template "system_default_registry" . }}{{ .Values.chartmuseum.image.repository }}:{{ .Values.chartmuseum.image.tag }}
         imagePullPolicy: {{ .Values.imagePullPolicy }}
         livenessProbe:
           httpGet:
@@ -85,6 +85,7 @@ spec:
       {{- end }}
       {{- with .Values.chartmuseum.nodeSelector }}
       nodeSelector:
+        beta.kubernetes.io/os: linux
 {{ toYaml . | indent 8 }}
       {{- end }}
       {{- with .Values.chartmuseum.affinity }}

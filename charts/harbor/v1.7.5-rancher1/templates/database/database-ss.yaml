@@ -27,7 +27,7 @@ spec:
     spec:
       initContainers:
       - name: "remove-lost-found"
-        image: {{ .Values.database.internal.image.repository }}:{{ .Values.database.internal.image.tag }}
+        image: {{ template "system_default_registry" . }}{{ .Values.database.internal.image.repository }}:{{ .Values.database.internal.image.tag }}
         imagePullPolicy: {{ .Values.imagePullPolicy }}
         command: ["rm", "-Rf", "/var/lib/postgresql/data/lost+found"]
         volumeMounts:
@@ -35,7 +35,7 @@ spec:
           mountPath: /var/lib/postgresql/data
       containers:
       - name: database
-        image: {{ .Values.database.internal.image.repository }}:{{ .Values.database.internal.image.tag }}
+        image: {{ template "system_default_registry" . }}{{ .Values.database.internal.image.repository }}:{{ .Values.database.internal.image.tag }}
         imagePullPolicy: {{ .Values.imagePullPolicy }}
         livenessProbe:
           exec:
@@ -72,6 +72,7 @@ spec:
       {{- end -}}
     {{- with .Values.database.internal.nodeSelector }}
       nodeSelector:
+        beta.kubernetes.io/os: linux
 {{ toYaml . | indent 8 }}
     {{- end }}
     {{- with .Values.database.internal.affinity }}

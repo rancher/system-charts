@@ -27,7 +27,7 @@ spec:
     spec:
       containers:
       - name: registry
-        image: {{ .Values.registry.registry.image.repository }}:{{ .Values.registry.registry.image.tag }}
+        image: {{ template "system_default_registry" . }}{{ .Values.registry.registry.image.repository }}:{{ .Values.registry.registry.image.tag }}
         imagePullPolicy: {{ .Values.imagePullPolicy }}
         livenessProbe:
           httpGet:
@@ -68,7 +68,7 @@ spec:
           subPath: gcs-key.json
         {{- end }}
       - name: registryctl
-        image: {{ .Values.registry.controller.image.repository }}:{{ .Values.registry.controller.image.tag }}
+        image: {{ template "system_default_registry" . }}{{ .Values.registry.controller.image.repository }}:{{ .Values.registry.controller.image.tag }}
         imagePullPolicy: {{ .Values.imagePullPolicy }}
         livenessProbe:
           httpGet:
@@ -141,6 +141,7 @@ spec:
       {{- end }}
     {{- with .Values.registry.nodeSelector }}
       nodeSelector:
+        beta.kubernetes.io/os: linux
 {{ toYaml . | indent 8 }}
     {{- end }}
     {{- with .Values.registry.affinity }}

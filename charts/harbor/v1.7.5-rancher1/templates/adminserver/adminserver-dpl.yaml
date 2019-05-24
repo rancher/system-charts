@@ -27,7 +27,7 @@ spec:
     spec:
       containers:
       - name: adminserver
-        image: {{ .Values.adminserver.image.repository }}:{{ .Values.adminserver.image.tag }}
+        image: {{ template "system_default_registry" . }}{{ .Values.adminserver.image.repository }}:{{ .Values.adminserver.image.tag }}
         imagePullPolicy: "{{ .Values.imagePullPolicy }}"
         livenessProbe:
           httpGet:
@@ -80,6 +80,7 @@ spec:
             path: key
     {{- with .Values.adminserver.nodeSelector }}
       nodeSelector:
+        beta.kubernetes.io/os: linux
 {{ toYaml . | indent 8 }}
     {{- end }}
     {{- with .Values.adminserver.affinity }}

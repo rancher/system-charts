@@ -26,7 +26,7 @@ spec:
     spec:
       containers:
       - name: jobservice
-        image: {{ .Values.jobservice.image.repository }}:{{ .Values.jobservice.image.tag }}
+        image: {{ template "system_default_registry" . }}{{ .Values.jobservice.image.repository }}:{{ .Values.jobservice.image.tag }}
         imagePullPolicy: {{ .Values.imagePullPolicy }}
         livenessProbe:
           httpGet:
@@ -83,6 +83,7 @@ spec:
         {{- end }}
     {{- with .Values.jobservice.nodeSelector }}
       nodeSelector:
+        beta.kubernetes.io/os: linux
 {{ toYaml . | indent 8 }}
     {{- end }}
     {{- with .Values.jobservice.affinity }}
