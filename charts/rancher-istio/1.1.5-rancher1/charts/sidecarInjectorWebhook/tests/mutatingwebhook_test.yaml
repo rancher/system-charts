@@ -1,0 +1,41 @@
+suite: Test SidecarInjectorWebhook MutatingWebhook
+templates:
+  - mutatingwebhook.yaml
+tests:
+  - it: should pass all kinds of assertion
+    set:
+      enableNamespacesByDefault: false
+    asserts:
+      - isNull:
+          path: webhooks[0].namespaceSelector.matchExpressions
+      - isEmpty:
+          path: webhooks[0].namespaceSelector.matchExpressions
+      - isNotNull:
+          path: webhooks[0].namespaceSelector.matchLabels
+      - isNotEmpty:
+          path: webhooks[0].namespaceSelector.matchLabels
+      - contains:
+          path: webhooks[0].rules
+          content:
+            operations: [ "CREATE" ]
+            apiGroups: [""]
+            apiVersions: ["v1"]
+            resources: ["pods"]
+      - isKind:
+          of: MutatingWebhookConfiguration
+      - isAPIVersion:
+          of: admissionregistration.k8s.io/v1beta1
+      - hasDocuments:
+          count: 1
+  - it: should not set autoInjection selector
+    set:
+      enableNamespacesByDefault: true
+    asserts:
+      - isNotNull:
+          path: webhooks[0].namespaceSelector.matchExpressions
+      - isNotEmpty:
+          path: webhooks[0].namespaceSelector.matchExpressions
+      - isNull:
+          path: webhooks[0].namespaceSelector.matchLabels
+      - isEmpty:
+          path: webhooks[0].namespaceSelector.matchLabels

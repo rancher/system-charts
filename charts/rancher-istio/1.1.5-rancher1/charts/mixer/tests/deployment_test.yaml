@@ -1,0 +1,57 @@
+suite: Test Istio Mixer Deployment
+templates:
+  - deployment.yaml
+tests:
+  - it: should pass all kinds of assertion
+    set:
+      policy.enabled: true
+      telemetry.enabled: false
+    asserts:
+      - isNull:
+          path: spec.replicas
+      - isNull:
+          path: spec.template.nodeSelector
+      - isNotNull:
+          path: spec.template
+      - isNotEmpty:
+          path: spec.template.spec.containers[0].resources
+      - isNotEmpty:
+          path: spec.template.spec.containers[0]
+      - isKind:
+          of: Deployment
+      - isAPIVersion:
+          of: extensions/v1beta1
+      - hasDocuments:
+          count: 1
+  - it: should pass all kinds of assertion
+    set:
+      policy.enabled: false
+      telemetry.enabled: true
+    asserts:
+      - isNull:
+          path: spec.replicas
+      - isNull:
+          path: spec.template.nodeSelector
+      - isNotNull:
+          path: spec.template
+      - isNotEmpty:
+          path: spec.template.spec.containers[0].resources
+      - isNotEmpty:
+          path: spec.template.spec.containers[0]
+      - isKind:
+          of: Deployment
+      - isAPIVersion:
+          of: extensions/v1beta1
+      - hasDocuments:
+          count: 1
+  - it: should pass all kinds of assertion
+    set:
+      policy.enabled: true
+      telemetry.enabled: true
+    asserts:
+      - isKind:
+          of: Deployment
+      - isAPIVersion:
+          of: extensions/v1beta1
+      - hasDocuments:
+          count: 2

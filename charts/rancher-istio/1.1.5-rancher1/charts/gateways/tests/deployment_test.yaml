@@ -1,0 +1,55 @@
+suite: Test Gateway Deployment
+templates:
+  - deployment.yaml
+tests:
+  - it: should pass all kinds of assertion
+    set:
+      istio-ingressgateway.enabled: true
+      istio-ilbgateway.enabled: false
+      istio-egressgateway.enabled: false
+      istio-ingressgateway.autoscaleEnabled: true
+    asserts:
+      - isNull:
+          path: spec.replicas
+      - contains:
+          path: spec.template.spec.containers[0].ports
+          content:
+            containerPort: 80
+      - contains:
+          path: spec.template.spec.containers[0].ports
+          content:
+            containerPort: 443
+      - isNull:
+          path: spec.template.nodeSelector
+      - isNotNull:
+          path: spec.template
+      - isNotEmpty:
+          path: spec.template.spec.containers[0].resources
+      - isNotEmpty:
+          path: spec.template.spec.containers[0]
+      - isKind:
+          of: Deployment
+      - isAPIVersion:
+          of: extensions/v1beta1
+      - hasDocuments:
+          count: 1
+  - it: should deploy 3 gateways
+    set:
+      istio-ingressgateway.enabled: true
+      istio-ilbgateway.enabled: true
+      istio-egressgateway.enabled: true
+    asserts:
+      - isKind:
+          of: Deployment
+      - isAPIVersion:
+          of: extensions/v1beta1
+      - hasDocuments:
+          count: 3
+  - it: should not deploy gateways
+    set:
+      istio-ingressgateway.enabled: false
+      istio-ilbgateway.enabled: false
+      istio-egressgateway.enabled: false
+    asserts:
+      - hasDocuments:
+          count: 0

@@ -1,0 +1,24 @@
+suite: Test SidecarInjectorWebhook RBAC
+templates:
+  - clusterrole.yaml
+tests:
+  - it: should pass all kinds of assertion
+    set:
+      provider: jaeger
+    asserts:
+      - isNotNull:
+          path: rules
+      - isNotEmpty:
+          path: rules
+      - contains:
+          path: rules
+          content:
+            apiGroups: ["admissionregistration.k8s.io"]
+            resources: ["mutatingwebhookconfigurations"]
+            verbs: ["get", "list", "watch", "patch"]
+      - isKind:
+          of: ClusterRole
+      - isAPIVersion:
+          of: rbac.authorization.k8s.io/v1
+      - hasDocuments:
+          count: 1

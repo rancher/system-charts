@@ -1,0 +1,38 @@
+suite: Test Jaeger Deployment
+templates:
+  - deployment-jaeger.yaml
+  - deployment-zipkin.yaml
+tests:
+  - it: should pass all kinds of assertion
+    set:
+      provider: jaeger
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: jaegertracing/all-in-one:1.9
+      - equal:
+          path: spec.template.metadata.labels.app
+          value: jaeger
+      - equal:
+          path: spec.template.spec.containers[0].name
+          value: jaeger
+      - isNull:
+          path: spec.template.nodeSelector
+      - isNotNull:
+          path: spec.template
+      - isNotEmpty:
+          path: spec.template.spec.containers[0].resources
+      - isNotEmpty:
+          path: spec.template.spec.containers[0]
+      - isKind:
+          of: Deployment
+      - isAPIVersion:
+          of: extensions/v1beta1
+      - hasDocuments:
+          count: 1
+  - it: should not deploy jaeger
+    set:
+      provider: zipkin
+    asserts:
+      - hasDocuments:
+          count: 0

@@ -1,0 +1,37 @@
+suite: Test Zipkinn Deployment
+templates:
+  - deployment-zipkin.yaml
+tests:
+  - it: should pass all kinds of assertion
+    set:
+      provider: zipkin
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: openzipkin/zipkin:2
+      - equal:
+          path: spec.template.metadata.labels.app
+          value: zipkin
+      - equal:
+          path: spec.template.spec.containers[0].name
+          value: tracing
+      - isNull:
+          path: spec.template.nodeSelector
+      - isNotNull:
+          path: spec.template
+      - isNotEmpty:
+          path: spec.template.spec.containers[0].resources
+      - isNotEmpty:
+          path: spec.template.spec.containers[0]
+      - isKind:
+          of: Deployment
+      - isAPIVersion:
+          of: extensions/v1beta1
+      - hasDocuments:
+          count: 1
+  - it: should not deploy zipkin
+    set:
+      provider: jaeger
+    asserts:
+      - hasDocuments:
+          count: 0
