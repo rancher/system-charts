@@ -26,7 +26,7 @@ spec:
     spec:
       containers:
       - name: core
-        image: {{ .Values.core.image.repository }}:{{ .Values.core.image.tag }}
+        image: {{ template "system_default_registry" . }}{{ .Values.core.image.repository }}:{{ .Values.core.image.tag }}
         imagePullPolicy: {{ .Values.imagePullPolicy }}
         livenessProbe:
           httpGet:
@@ -98,7 +98,12 @@ spec:
           {{- end }}
       - name: ca-download
         secret:
-        {{- if eq (include "harbor.autoGenCert" .) "true" }}
+        {{- if .Values.globalRegistryMode }}
+          secretName: "tls-rancher"
+          items:
+            - key: tls.crt
+              path: ca.crt
+        {{- else if eq (include "harbor.autoGenCert" .) "true" }}
           secretName: {{ template "harbor.ingress.core" . }}
           items:
             - key: ca.crt
@@ -113,6 +118,7 @@ spec:
         emptyDir: {}
     {{- with .Values.core.nodeSelector }}
       nodeSelector:
+        beta.kubernetes.io/os: linux
 {{ toYaml . | indent 8 }}
     {{- end }}
     {{- with .Values.core.affinity }}

@@ -26,7 +26,7 @@ spec:
     spec:
       containers:
       - name: redis
-        image: {{ .Values.redis.internal.image.repository }}:{{ .Values.redis.internal.image.tag }}
+        image: {{ template "system_default_registry" . }}{{ .Values.redis.internal.image.repository }}:{{ .Values.redis.internal.image.tag }}
         imagePullPolicy: {{ .Values.imagePullPolicy }}
         livenessProbe:
           tcpSocket:
@@ -58,6 +58,7 @@ spec:
       {{- end -}}
     {{- with .Values.redis.internal.nodeSelector }}
       nodeSelector:
+        beta.kubernetes.io/os: linux
 {{ toYaml . | indent 8 }}
     {{- end }}
     {{- with .Values.redis.internal.affinity }}

@@ -31,7 +31,9 @@ app: "{{ template "harbor.name" . }}"
 {{- end -}}
 
 {{- define "harbor.autoGenCert" -}}
-  {{- if and .Values.expose.tls.enabled (not .Values.expose.tls.secretName) -}}
+  {{- if .Values.globalRegistryMode -}}
+    {{- printf "false" -}}
+  {{- else if and .Values.expose.tls.enabled (not .Values.expose.tls.secretName) -}}
     {{- printf "true" -}}
   {{- else -}}
     {{- printf "false" -}}
@@ -266,6 +268,10 @@ host:port,pool_size,password
   {{- printf "%s-notary-signer" (include "harbor.fullname" .) -}}
 {{- end -}}
 
+{{- define "harbor.proxy" -}}
+  {{- printf "%s-proxy" (include "harbor.fullname" .) -}}
+{{- end -}}
+
 {{- define "harbor.nginx" -}}
   {{- printf "%s-nginx" (include "harbor.fullname" .) -}}
 {{- end -}}
@@ -295,4 +301,12 @@ when the type is "clusterIP" or "nodePort" and "secretName" is null
 {{- define "harbor.tlsCommonName" -}}
   {{- $trimURL := (include "harbor.externalURL" .)  | trimPrefix "https://"  | trimPrefix "http://" -}}
   {{ regexReplaceAll ":.*$" $trimURL "${1}" }}
+{{- end -}}
+
+{{- define "system_default_registry" -}}
+{{- if .Values.global.systemDefaultRegistry -}}
+{{- printf "%s/" .Values.global.systemDefaultRegistry -}}
+{{- else -}}
+{{- "" -}}
+{{- end -}}
 {{- end -}}

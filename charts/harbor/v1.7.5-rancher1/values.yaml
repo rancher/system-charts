@@ -67,6 +67,9 @@ expose:
 # If Harbor is deployed behind the proxy, set it as the URL of proxy
 externalURL: https://harbor.local
 
+# Use the Harbor instance as the global registry in Rancher
+globalRegistryMode: true
+
 # The persistence is enabled by default and a default StorageClass
 # is needed in the k8s cluster to provision volumes dynamicly. 
 # Specify another StorageClass in the "storageClass" or set "existingClaim"
@@ -159,7 +162,7 @@ imageChartStorage:
     #regionendpoint: http://myobjects.local
     #encrypt: false
     #keyid: mykeyid
-    #secure: true
+    #insecure: false
     #v4auth: true
     #chunksize: "5242880"
     #rootdirectory: /s3/object/name/prefix
@@ -192,7 +195,7 @@ imageChartStorage:
     #endpoint: endpoint
     #internal: false
     #encrypt: false
-    #secure: true
+    #insecure: false
     #chunksize: 10M
     #rootdirectory: rootdirectory
 
@@ -203,6 +206,23 @@ logLevel: debug
 harborAdminPassword: "Harbor12345"
 # The secret key used for encryption. Must be a string of 16 chars.
 secretKey: "not-a-secure-key"
+
+# nginx proxy adapter for global registry, it is used when globalRegistryMode is true.
+proxy:
+  image:
+    repository: library/nginx
+    tag: 1.14.2
+    pullPolicy: IfNotPresent
+    resources: 
+      requests:
+        cpu: 50m
+        memory: 64Mi
+      # limits:
+      #   cpu: 50m
+      #   memory: 64Mi
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
 
 # If expose the service via "ingress", the Nginx will not be used
 nginx:
@@ -489,3 +509,6 @@ redis:
     password: ""
   ## Additional deployment annotations
   podAnnotations: {}
+
+global:
+  systemDefaultRegistry: ""

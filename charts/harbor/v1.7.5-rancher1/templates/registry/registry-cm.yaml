@@ -47,8 +47,8 @@ data:
         {{- if $storage.s3.encrypt }}
         encrypt: {{ $storage.s3.encrypt }}
         {{- end }}
-        {{- if $storage.s3.secure }}
-        secure: {{ $storage.s3.secure }}
+        {{- if $storage.s3.insecure }}
+        secure: false
         {{- end }}
         {{- if $storage.s3.v4auth }}
         v4auth: {{ $storage.s3.v4auth }}
@@ -120,8 +120,8 @@ data:
         {{- if $storage.oss.encrypt }}
         encrypt: {{ $storage.oss.encrypt }}
         {{- end }}
-        {{- if $storage.oss.secure }}
-        secure: {{ $storage.oss.secure }}
+        {{- if $storage.oss.insecure }}
+        secure: false
         {{- end }}
         {{- if $storage.oss.chunksize }}
         chunksize: {{ $storage.oss.chunksize }}
@@ -152,7 +152,11 @@ data:
     auth:
       token:
         issuer: harbor-token-issuer
+        {{- if .Values.globalRegistryMode }}
+        realm: "{{ template "harbor.externalURL" . }}/registry/service/token"
+        {{- else }}
         realm: "{{ template "harbor.externalURL" . }}/service/token"
+        {{- end }}
         rootcertbundle: /etc/registry/root.crt
         service: harbor-registry
     validation:

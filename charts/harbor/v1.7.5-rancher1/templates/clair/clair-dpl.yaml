@@ -25,7 +25,7 @@ spec:
     spec:
       containers:
       - name: clair
-        image: {{ .Values.clair.image.repository }}:{{ .Values.clair.image.tag }}
+        image: {{ template "system_default_registry" . }}{{ .Values.clair.image.repository }}:{{ .Values.clair.image.tag }}
         imagePullPolicy: {{ .Values.imagePullPolicy }}
         livenessProbe:
           httpGet:
@@ -70,6 +70,7 @@ spec:
               path: config.yaml
     {{- with .Values.clair.nodeSelector }}
       nodeSelector:
+        beta.kubernetes.io/os: linux
 {{ toYaml . | indent 8 }}
     {{- end }}
     {{- with .Values.clair.affinity }}
