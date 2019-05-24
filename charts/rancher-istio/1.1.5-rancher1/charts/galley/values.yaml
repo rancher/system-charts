@@ -3,7 +3,6 @@
 #
 enabled: true
 replicaCount: 1
-image: galley
 nodeSelector: {}
 
 # Specify the pod anti-affinity that allows you to constrain which nodes

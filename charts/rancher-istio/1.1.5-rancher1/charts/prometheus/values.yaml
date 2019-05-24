@@ -3,8 +3,7 @@
 #
 enabled: true
 replicaCount: 1
-hub: docker.io/prom
-tag: v2.3.1
+
 retention: 6h
 nodeSelector: {}
 
@@ -50,9 +49,8 @@ ingress:
 
 service:
   annotations: {}
-  nodePort:
-    enabled: false
-    port: 32090
 
 security:
   enabled: true
+
+resources: {}

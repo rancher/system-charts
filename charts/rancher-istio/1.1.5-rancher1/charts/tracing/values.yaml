@@ -28,14 +28,12 @@ podAntiAffinityLabelSelector: {}
 podAntiAffinityTermLabelSelector: {}
 
 jaeger:
-  hub: docker.io/jaegertracing
-  tag: 1.9
   memory:
     max_traces: 50000
+  proxy:
+    resources: {}
 
 zipkin:
-  hub: docker.io/openzipkin
-  tag: 2
   probeStartupDelay: 200
   queryPort: 9411
   resources:
@@ -53,11 +51,14 @@ zipkin:
   maxSpans: 500000
   node:
     cpus: 2
+  proxy:
+    resources: {}
 
 service:
   annotations: {}
   name: http
   type: ClusterIP
+  uiType: ClusterIP
   externalPort: 9411
 
 ingress:

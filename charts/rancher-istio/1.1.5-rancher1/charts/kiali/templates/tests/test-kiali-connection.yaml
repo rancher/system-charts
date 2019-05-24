@@ -19,12 +19,11 @@ spec:
 {{- end }}
   containers:
     - name: "{{ template "kiali.fullname" . }}-test"
-      image: {{ .Values.global.hub }}/{{ .Values.global.proxy.image }}:{{ .Values.global.tag }}
+      image: "{{ template "system_default_registry" . }}{{ .Values.global.proxy.repository }}:{{ .Values.global.proxy.tag }}"
       imagePullPolicy: "{{ .Values.global.imagePullPolicy }}"
       command: ['curl']
       args: ['http://kiali:20001']
   restartPolicy: Never
   affinity:
     {{- include "nodeaffinity" . | indent 4 }}
-    {{- include "podAntiAffinity" . | indent 4 }}
 {{- end }}
