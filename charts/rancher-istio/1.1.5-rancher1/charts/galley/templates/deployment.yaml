@@ -32,7 +32,7 @@ spec:
 {{- end }}
       containers:
         - name: galley
-          image: "{{ .Values.global.hub }}/{{ .Values.image }}:{{ .Values.global.tag }}"
+          image: "{{ template "system_default_registry" . }}{{ .Values.repository }}:{{ .Values.tag }}"
           imagePullPolicy: {{ .Values.global.imagePullPolicy }}
           ports:
           - containerPort: 443

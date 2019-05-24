@@ -45,6 +45,16 @@ spec:
       {{ $pkey}}: {{ $pval }}
       {{- end }}
     {{- end }}
+
+    # range addon ports
+    {{- range $key, $val := $spec.addOnPorts }}
+    -
+      {{- range $pkey, $pval := $val }}
+      {{ $pkey}}: {{ $pval }}
+      {{- end }}
+    {{- end }}
+
+    # range meshExpansion ports
     {{- if $.Values.global.meshExpansion.enabled }}
     {{- range $key, $val := $spec.meshExpansionPorts }}
     -

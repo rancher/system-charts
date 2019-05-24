@@ -20,11 +20,7 @@ data:
       {{ "[[ if ne (annotation .ObjectMeta `sidecar.istio.io/interceptionMode` .ProxyConfig.InterceptionMode) \"NONE\" ]]" }}
 {{- if not .Values.istio_cni.enabled }}
       - name: istio-init
-{{- if contains "/" .Values.global.proxy_init.image }}
-        image: "{{ .Values.global.proxy_init.image }}"
-{{- else }}
-        image: "{{ .Values.global.hub }}/{{ .Values.global.proxy_init.image }}:{{ .Values.global.tag }}"
-{{- end }}
+        image: "{{ template "system_default_registry" . }}{{ $.Values.global.proxy_init.repository }}:{{ $.Values.global.proxy_init.tag }}"
         args:
         - "-p"
         - {{ "[[ .MeshConfig.ProxyListenPort ]]" }}
@@ -71,11 +67,7 @@ data:
         - sysctl -w kernel.core_pattern=/var/lib/istio/core.proxy && ulimit -c unlimited
         command:
           - /bin/sh
-  {{- if contains "/" .Values.global.proxy_init.image }}
-        image: "{{ .Values.global.proxy_init.image }}"
-  {{- else }}
-        image: "{{ .Values.global.hub }}/{{ .Values.global.proxy_init.image }}:{{ .Values.global.tag }}"
-  {{- end }}
+        image: "{{ template "system_default_registry" . }}{{ $.Values.global.proxy_init.repository }}:{{ $.Values.global.proxy_init.tag }}"
         imagePullPolicy: IfNotPresent
         resources: {}
         securityContext:
@@ -86,11 +78,7 @@ data:
 {{- end }}
       containers:
       - name: istio-proxy
-{{- if contains "/" .Values.global.proxy.image }}
-        image: {{ "[[ annotation .ObjectMeta `sidecar.istio.io/proxyImage` " }} "{{ .Values.global.proxy.image }}" {{ " ]]" }}
-{{- else }}
-        image: {{ "[[ annotation .ObjectMeta `sidecar.istio.io/proxyImage` " }} "{{ .Values.global.hub }}/{{ .Values.global.proxy.image }}:{{ .Values.global.tag }}" {{ " ]]" }}
-{{- end }}
+        image: {{ "[[ annotation .ObjectMeta `sidecar.istio.io/proxyImage` " }} "{{ template "system_default_registry" . }}{{ $.Values.global.proxy.repository }}:{{ $.Values.global.proxy.tag }}" {{ " ]]" }}
         ports:
         - containerPort: 15090
           protocol: TCP
@@ -131,9 +119,6 @@ data:
         - --datadogAgentAddress
         - {{ "[[ .ProxyConfig.GetTracing.GetDatadog.GetAddress ]]" }}
       {{- end }}
-      {{- if $.Values.global.proxy.logLevel }}
-        - --proxyLogLevel={{ .Values.global.proxy.logLevel }}
-      {{- end}}
         - --connectTimeout
         - {{ "[[ formatDuration .ProxyConfig.ConnectTimeout ]]" }}
       {{- if .Values.global.proxy.envoyStatsd.enabled }}

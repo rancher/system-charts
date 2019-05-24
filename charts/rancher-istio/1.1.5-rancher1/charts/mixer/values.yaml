@@ -2,7 +2,6 @@
 # mixer configuration
 #
 enabled: true
-image: mixer
 
 env:
   GODEBUG: gctrace=1

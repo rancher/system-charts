@@ -2,7 +2,7 @@
 # security configuration
 #
 enabled: true
-image: citadel
+replicaCount: 1
 selfSigned: true # indicate if self-signed CA is used.
 createMeshPolicy: true
 nodeSelector: {}

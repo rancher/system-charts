@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: {{ .Chart.Name }}
-          image: "{{ .Values.zipkin.hub }}/zipkin:{{ .Values.zipkin.tag }}"
+          image: "{{ template "system_default_registry" . }}{{ .Values.zipkin.repository }}:{{ .Values.zipkin.tag }}"
           ports:
             - containerPort: {{ .Values.zipkin.queryPort }}
           livenessProbe:
@@ -51,6 +51,33 @@ spec:
               value: "mem"
             - name: ZIPKIN_STORAGE_MEM_MAXSPANS
               value: "{{ .Values.zipkin.maxSpans }}"
+        - name: zipkin-proxy
+          image: "{{ template "system_default_registry" . }}{{ .Values.global.nginxProxy.repository }}:{{ .Values.global.nginxProxy.tag }}"
+          args:
+          - nginx
+          - -g
+          - daemon off;
+          - -c
+          - /nginx/nginx.conf
+          ports:
+          - name: http
+            containerPort: 80
+            protocol: TCP
+          volumeMounts:
+          - mountPath: /nginx/
+            name: tracing-nginx
+          {{- if and .Values.zipkin.proxy .Values.zipkin.proxy.resources }}
+          resources:
+  {{ toYaml .Values.zipkin.proxy.resources | indent 12 }}
+          {{- end }}
+      volumes:
+      - name: tracing-nginx
+        configMap:
+          name: tracing-nginx
+          items:
+          - key: nginx.conf
+            mode: 438
+            path: nginx.conf
       affinity:
       {{- include "nodeaffinity" . | indent 6 }}
       {{- include "podAntiAffinity" . | indent 6 }}

@@ -11,6 +11,10 @@
 {{- define "gatewayNodeAffinityRequiredDuringScheduling" }}
       nodeSelectorTerms:
       - matchExpressions:
+        - key: beta.kubernetes.io/os
+          operator: In
+          values:
+          - linux
         - key: beta.kubernetes.io/arch
           operator: In
           values:

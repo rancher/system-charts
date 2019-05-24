@@ -14,32 +14,31 @@ metadata:
     heritage: {{ .Release.Service }}
     release: {{ .Release.Name }}
 spec:
+  type: ClusterIP
   selector:
     app: prometheus
   ports:
-  - name: http-prometheus
+  - name: prometheus
     protocol: TCP
     port: 9090
-
-{{- if .Values.service.nodePort.enabled }}
-# Using separate ingress for nodeport, to avoid conflict with pilot e2e test configs.
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: prometheus-nodeport
+  name: prometheus-http
   namespace: {{ .Release.Namespace }}
+  annotations:
   labels:
     app: prometheus
     chart: {{ template "prometheus.chart" . }}
     heritage: {{ .Release.Service }}
     release: {{ .Release.Name }}
+    kubernetes.io/cluster-service: "true"
 spec:
-  type: NodePort
-  ports:
-  - port: 9090
-    nodePort: {{ .Values.service.nodePort.port }}
-    name: http-prometheus
+  type: ClusterIP
   selector:
     app: prometheus
-{{- end }}
+  ports:
+  - name: access-prometheus
+    protocol: TCP
+    port: 80

@@ -11,7 +11,7 @@ metadata:
     release: {{ .Release.Name }}
     istio: citadel
 spec:
-  replicas: 1
+  replicas: {{ .Values.replicaCount }}
   strategy:
     rollingUpdate:
       maxSurge: 1
@@ -33,7 +33,7 @@ spec:
 {{- end }}
       containers:
         - name: citadel
-          image: "{{ .Values.global.hub }}/{{ .Values.image }}:{{ .Values.global.tag }}"
+          image: "{{ template "system_default_registry" . }}{{ .Values.repository }}:{{ .Values.tag }}"
           imagePullPolicy: {{ .Values.global.imagePullPolicy }}
           args:
             - --append-dns-names=true
