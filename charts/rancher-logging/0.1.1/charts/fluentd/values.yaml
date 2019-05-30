@@ -31,8 +31,7 @@ annotations: {}
 #   type: RollingUpdate
 
 tolerations:
-  - effect: NoSchedule
-    operator: Exists
+  - operator: Exists
 
 
 nodeSelector: {}

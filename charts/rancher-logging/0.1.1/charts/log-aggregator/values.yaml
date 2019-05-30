@@ -13,8 +13,7 @@ nodeSelector: {}
 #   type: RollingUpdate
 
 tolerations:
-  - effect: NoSchedule
-    operator: Exists
+  - operator: Exists
 
 ## Resource limits & requests
 ## Ref: https://kubernetes.io/docs/user-guide/compute-resources/

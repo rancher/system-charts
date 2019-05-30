@@ -27,8 +27,6 @@ annotations: {}
 # updateStrategy:
 #   type: RollingUpdate
 
-tolerations:
-  - effect: NoSchedule
-    operator: Exists
+tolerations: []
 
 nodeSelector: {}
