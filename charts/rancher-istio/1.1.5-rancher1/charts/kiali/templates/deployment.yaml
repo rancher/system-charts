@@ -38,6 +38,16 @@ spec:
         - "-v"
         - "4"
         env:
+        {{- if and .Values.global.rancher (and .Values.global.rancher.domain .Values.global.rancher.clusterId) }}
+        {{- if not .Values.dashboard.jaegerURL }}
+        - name: JAEGER_URL
+          value: 'https://{{ .Values.global.rancher.domain }}/k8s/clusters/{{ .Values.global.rancher.clusterId }}/api/v1/namespaces/{{ .Release.Namespace }}/services/tracing:80/proxy/jaeger'
+        {{- end }}
+        {{- if not .Values.dashboard.grafanaURL }}
+        - name: GRAFANA_URL
+          value: 'https://{{ .Values.global.rancher.domain }}/k8s/clusters/{{ .Values.global.rancher.clusterId }}/api/v1/namespaces/{{ .Release.Namespace }}/services/http:grafana:80/proxy/'
+        {{- end }}
+        {{- end }}
         - name: ACTIVE_NAMESPACE
           valueFrom:
             fieldRef:

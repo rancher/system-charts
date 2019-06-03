@@ -133,6 +133,12 @@ certmanager:
 
 # Common settings used among istio subcharts.
 global:
+  # Specify rancher domain and clusterId of external tracing config
+  # https://github.com/istio/istio.io/issues/4146#issuecomment-493543032
+  rancher:
+    domain:
+    clusterId:
+
   systemDefaultRegistry: ""
   # Default hub for Istio images.
   # Releases are published to docker hub under 'istio' project.
