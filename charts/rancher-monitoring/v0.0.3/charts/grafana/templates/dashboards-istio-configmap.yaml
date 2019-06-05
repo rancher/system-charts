@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    app: {{ template "app.name" . }}
+    chart: {{ template "app.version" . }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+  name: {{ template "app.dashboards.istio-fullname" . }}
+data:
+{{- if eq .Values.level "cluster" }}
+{{ (.Files.Glob "dashboards/istio/istio_*.json").AsConfig | indent 2 }}
+{{- end }}

@@ -51,3 +51,6 @@ resources:
     requests:
       memory: 50Mi
       cpu: 50m
+
+istioDashboard:
+  enabled: false
