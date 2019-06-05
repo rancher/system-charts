@@ -4,6 +4,7 @@ templates:
 tests:
   - it: should pass all kinds of assertion
     set:
+      enabled: true
       replicaCount: 1
     asserts:
       - equal:

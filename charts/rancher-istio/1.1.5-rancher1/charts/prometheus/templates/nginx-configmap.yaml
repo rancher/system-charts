@@ -1,3 +1,4 @@
+{{- if and .Values.enabled (eq .Values.global.monitoring.type "internal") -}}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -80,3 +81,4 @@ data:
         }
       }
     }
+{{- end -}}

@@ -21,8 +21,7 @@ data:
         {{- if .Values.dashboard.jaegerURL }}
         url: {{ .Values.dashboard.jaegerURL }}
         {{- end }}
+      {{- if .Values.dashboard.grafanaURL }}
       grafana:
-        custom_metrics_url: "http://prometheus.{{ .Release.Namespace }}:9090"
-        {{- if .Values.dashboard.grafanaURL }}
         url: {{ .Values.dashboard.grafanaURL }}
-        {{- end }}
+      {{- end }}

@@ -1,3 +1,4 @@
+{{- if and .Values.enabled (eq .Values.global.monitoring.type "internal") -}}
 apiVersion: v1
 kind: Service
 metadata:
@@ -22,3 +23,4 @@ spec:
     port: 80
   selector:
     app: grafana
+{{- end -}}

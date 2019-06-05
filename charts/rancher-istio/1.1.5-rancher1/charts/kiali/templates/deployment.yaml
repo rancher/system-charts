@@ -38,16 +38,24 @@ spec:
         - "-v"
         - "4"
         env:
-        {{- if and .Values.global.rancher (and .Values.global.rancher.domain .Values.global.rancher.clusterId) }}
+{{- if and .Values.global.rancher (and .Values.global.rancher.domain .Values.global.rancher.clusterId) }}
         {{- if not .Values.dashboard.jaegerURL }}
         - name: JAEGER_URL
           value: 'https://{{ .Values.global.rancher.domain }}/k8s/clusters/{{ .Values.global.rancher.clusterId }}/api/v1/namespaces/{{ .Release.Namespace }}/services/tracing:80/proxy/jaeger'
         {{- end }}
-        {{- if not .Values.dashboard.grafanaURL }}
+        # Use cluster-monitoring Grafana if the monitoring type is cluster-monitoring
+        {{- if eq .Values.global.monitoring.type "cluster-monitoring" }}
+        - name: GRAFANA_URL
+          value: 'https://{{ .Values.global.rancher.domain }}/k8s/clusters/{{ .Values.global.rancher.clusterId }}/api/v1/namespaces/cattle-prometheus/services/http:access-grafana:80/proxy/'
+        - name: GRAFANA_SERVICE_NAMESPACE
+          value: cattle-prometheus
+        - name: GRAFANA_SERVICE
+          value: access-grafana
+        {{- else if not .Values.dashboard.grafanaURL }}
         - name: GRAFANA_URL
           value: 'https://{{ .Values.global.rancher.domain }}/k8s/clusters/{{ .Values.global.rancher.clusterId }}/api/v1/namespaces/{{ .Release.Namespace }}/services/http:grafana:80/proxy/'
         {{- end }}
-        {{- end }}
+{{- end }}
         - name: ACTIVE_NAMESPACE
           valueFrom:
             fieldRef:
@@ -67,7 +75,13 @@ spec:
               key: passphrase
               optional: true
         - name: PROMETHEUS_SERVICE_URL
+        {{- if eq .Values.global.monitoring.type "internal" }}
+          value: "http://prometheus:9090"
+        {{- else if eq .Values.global.monitoring.type "cluster-monitoring" }}
+          value: "http://access-prometheus.cattle-prometheus:80"
+        {{- else }}
           value: {{ .Values.prometheusAddr }}
+        {{- end }}
 {{- if .Values.contextPath }}
         - name: SERVER_WEB_ROOT
           value: {{ .Values.contextPath }}

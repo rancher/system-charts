@@ -53,6 +53,7 @@ dashboard:
 
   # Override the automatically detected Jaeger URL, useful when Jaeger service has no ExternalIPs
   jaegerURL:
+
 prometheusAddr: http://prometheus:9090
 
 service:
