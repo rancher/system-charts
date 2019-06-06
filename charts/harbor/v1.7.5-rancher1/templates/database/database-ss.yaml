@@ -31,7 +31,7 @@ spec:
         imagePullPolicy: {{ .Values.imagePullPolicy }}
         command: ["rm", "-Rf", "/var/lib/postgresql/data/lost+found"]
         volumeMounts:
-        - name: database-data
+        - name: {{ template "harbor.data-volume-name" . }}
           mountPath: /var/lib/postgresql/data
       containers:
       - name: database
@@ -57,16 +57,16 @@ spec:
           - secretRef:
               name: "{{ template "harbor.database" . }}"
         volumeMounts:
-        - name: database-data
+        - name: {{ template "harbor.data-volume-name" . }}
           mountPath: /var/lib/postgresql/data
           subPath: {{ $database.subPath }}
       {{- if not .Values.persistence.enabled }}
       volumes:
-      - name: "database-data"
+      - name: {{ template "harbor.data-volume-name" . }}
         emptyDir: {}
       {{- else if $database.existingClaim }}
       volumes:
-      - name: "database-data"
+      - name: {{ template "harbor.data-volume-name" . }}
         persistentVolumeClaim:
           claimName: {{ $database.existingClaim }}
       {{- end -}}
@@ -86,7 +86,7 @@ spec:
   {{- if and .Values.persistence.enabled (not $database.existingClaim) }}
   volumeClaimTemplates:
   - metadata:
-      name: "database-data"
+      name: {{ template "harbor.data-volume-name" . }}
       labels:
 {{ include "harbor.labels" . | indent 8 }}
     spec:

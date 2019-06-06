@@ -130,7 +130,7 @@ spec:
       - name: registry-data
       {{- if and .Values.persistence.enabled (eq .Values.imageChartStorage.type "filesystem") }}
         persistentVolumeClaim:
-          claimName: {{ .Values.persistence.persistentVolumeClaim.registry.existingClaim | default (include "harbor.registry" .) }}
+          claimName: {{ .Values.persistence.persistentVolumeClaim.registry.existingClaim | default (include "harbor.registry-pvc" .) }}
       {{- else }}
         emptyDir: {}
       {{- end }}

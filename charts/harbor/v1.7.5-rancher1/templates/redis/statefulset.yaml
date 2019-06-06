@@ -43,16 +43,16 @@ spec:
 {{ toYaml .Values.redis.internal.resources | indent 10 }}
 {{- end }}
         volumeMounts:
-        - name: data
+        - name: {{ template "harbor.data-volume-name" . }}
           mountPath: /var/lib/redis
           subPath: {{ $redis.subPath }}
       {{- if not .Values.persistence.enabled }}
       volumes:
-      - name: data
+      - name: {{ template "harbor.data-volume-name" . }}
         emptyDir: {}
       {{- else if $redis.existingClaim }}
       volumes:
-      - name: data
+      - name: {{ template "harbor.data-volume-name" . }}
         persistentVolumeClaim:
           claimName: {{ $redis.existingClaim }}
       {{- end -}}
@@ -72,7 +72,7 @@ spec:
   {{- if and .Values.persistence.enabled (not $redis.existingClaim) }}
   volumeClaimTemplates:
   - metadata:
-      name: data
+      name: {{ template "harbor.data-volume-name" . }}
       labels:
 {{ include "harbor.labels" . | indent 8 }}
     spec:

@@ -284,6 +284,18 @@ host:port,pool_size,password
   {{- printf "%s-ingress-notary" (include "harbor.fullname" .) -}}
 {{- end -}}
 
+{{- define "harbor.data-volume-name" -}}
+  {{- if .Values.persistence.affix }}
+    {{- printf "data-%s" (lower .Values.persistence.affix) -}}
+  {{- else }}
+    {{- "data" -}}
+  {{- end }}
+{{- end -}}
+
+{{- define "harbor.registry-pvc" -}}
+    {{- printf "%s-%s" (include "harbor.data-volume-name" .) (include "harbor.registry" .) -}}
+{{- end -}}
+
 {{- define "harbor.externalURL" -}}
     {{- if eq .Values.expose.type "ingress" }}
       {{- printf "https://%s" .Values.expose.ingress.host -}}

@@ -79,6 +79,8 @@ globalRegistryMode: true
 # "swift" or "oss". Set it in the "imageChartStorage" section
 persistence:
   enabled: true
+  # It is added to generated PVC names so that they are different between releases even the release name does not change
+  affix: ""
   # Setting it to "keep" to avoid removing PVCs during a helm delete
   # operation. Leaving it empty will delete PVCs after the chart deleted
   resourcePolicy: "keep"
