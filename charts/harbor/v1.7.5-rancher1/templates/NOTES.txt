@@ -1,7 +1,9 @@
 Please wait for several minutes for Harbor deployment to complete.
-{{- if .Values.globalRegistryMode -}}
-Then you should be able to visit the Harbor portal at {{ .Values.externalURL }}.
-{{- else -}}
+
+{{- if .Values.globalRegistryMode }}
 Then you should be able to visit the Harbor portal at {{ .Values.externalURL }}/registry.
-{{- end -}}
+{{- else }}
+Then you should be able to visit the Harbor portal at {{ .Values.externalURL }}.
+{{- end }}
+
 For more details, please visit https://github.com/goharbor/harbor.
