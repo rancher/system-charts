@@ -210,7 +210,7 @@ secretKey: "not-a-secure-key"
 # nginx proxy adapter for global registry, it is used when globalRegistryMode is true.
 proxy:
   image:
-    repository: library/nginx
+    repository: rancher/nginx
     tag: 1.14.2
     pullPolicy: IfNotPresent
     resources: 
@@ -227,7 +227,7 @@ proxy:
 # If expose the service via "ingress", the Nginx will not be used
 nginx:
   image:
-    repository: goharbor/nginx-photon
+    repository: rancher/goharbor-nginx-photon
     tag: v1.7.5
   replicas: 1
   resources: 
@@ -245,7 +245,7 @@ nginx:
 
 portal:
   image:
-    repository: goharbor/harbor-portal
+    repository: rancher/goharbor-harbor-portal
     tag: v1.7.5
   replicas: 1
   resources:
@@ -263,7 +263,7 @@ portal:
 
 adminserver:
   image:
-    repository: goharbor/harbor-adminserver
+    repository: rancher/goharbor-harbor-adminserver
     tag: v1.7.5
   replicas: 1
   resources:
@@ -281,7 +281,7 @@ adminserver:
 
 core:
   image:
-    repository: goharbor/harbor-core
+    repository: rancher/goharbor-harbor-core
     tag: v1.7.5
   replicas: 1
   resources:
@@ -310,7 +310,7 @@ core:
 
 jobservice:
   image:
-    repository: goharbor/harbor-jobservice
+    repository: rancher/goharbor-harbor-jobservice
     tag: v1.7.5
   replicas: 1
   maxJobWorkers: 10
@@ -336,7 +336,7 @@ jobservice:
 registry:
   registry:
     image:
-      repository: goharbor/registry-photon
+      repository: rancher/goharbor-registry-photon
       tag: v2.6.2-v1.7.5 
     resources:
       requests:
@@ -347,7 +347,7 @@ registry:
       #   memory: 256Mi
   controller:
     image:
-      repository: goharbor/harbor-registryctl
+      repository: rancher/goharbor-harbor-registryctl
       tag: v1.7.5
     resources:
       requests:
@@ -372,7 +372,7 @@ registry:
 chartmuseum:
   enabled: false
   image:
-    repository: goharbor/chartmuseum-photon
+    repository: rancher/goharbor-chartmuseum-photon
     tag: v0.8.1-v1.7.5
   replicas: 1
   resources:
@@ -391,7 +391,7 @@ chartmuseum:
 clair:
   enabled: true
   image:
-    repository: goharbor/clair-photon
+    repository: rancher/goharbor-clair-photon
     tag: v2.0.8-v1.7.5
   replicas: 1
   # The http(s) proxy used to update vulnerabilities database from internet
@@ -417,7 +417,7 @@ notary:
   enabled: true
   server:
     image:
-      repository: goharbor/notary-server-photon
+      repository: rancher/goharbor-notary-server-photon
       tag: v0.6.1-v1.7.5
     replicas: 1
     resources:
@@ -429,7 +429,7 @@ notary:
       #   memory: 128Mi
   signer:
     image:
-      repository: goharbor/notary-signer-photon
+      repository: rancher/goharbor-notary-signer-photon
       tag: v0.6.1-v1.7.5
     replicas: 1
     resources:
@@ -458,7 +458,7 @@ database:
   type: internal
   internal:
     image:
-      repository: goharbor/harbor-db
+      repository: rancher/goharbor-harbor-db
       tag: v1.7.5
     # The initial superuser password for internal database
     password: "changeit"
@@ -488,7 +488,7 @@ redis:
   type: internal
   internal:
     image:
-      repository: goharbor/redis-photon
+      repository: rancher/goharbor-redis-photon
       tag: v1.7.5
     resources:
      requests:
