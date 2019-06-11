@@ -22,7 +22,7 @@ gateways:
 # charts/sidecarInjectorWebhook/values.yaml for detailed configuration
 #
 sidecarInjectorWebhook:
-  repository: istio/sidecar_injector
+  repository: rancher/istio-sidecar_injector
   tag: "1.1.5"
   enabled: true
 
@@ -31,7 +31,7 @@ sidecarInjectorWebhook:
 # for detailed configuration
 #
 galley:
-  repository: istio/galley
+  repository: rancher/istio-galley
   tag: 1.1.5
   enabled: true
 
@@ -40,7 +40,7 @@ galley:
 #
 # @see charts/mixer/values.yaml, it takes precedence
 mixer:
-  repository: istio/mixer
+  repository: rancher/istio-mixer
   tag: "1.1.5"
   enabled: true
   policy:
@@ -54,7 +54,7 @@ mixer:
 #
 # @see charts/pilot/values.yaml
 pilot:
-  repository: istio/pilot
+  repository: rancher/istio-pilot
   tag: "1.1.5"
   enabled: true
 
@@ -62,7 +62,7 @@ pilot:
 # security configuration
 #
 security:
-  repository: istio/citadel
+  repository: rancher/istio-citadel
   tag: "1.1.5"
   enabled: true
 
@@ -76,7 +76,7 @@ nodeagent:
 # addon grafana configuration
 #
 grafana:
-  repository: grafana/grafana
+  repository: rancher/grafana-grafana
   tag: 5.4.0
   enabled: false
 
@@ -84,7 +84,7 @@ grafana:
 # addon prometheus configuration
 #
 prometheus:
-  repository: prom/prometheus
+  repository: rancher/prom-prometheus
   tag: v2.3.1
   enabled: true
 
@@ -93,10 +93,10 @@ prometheus:
 #
 tracing:
   jaeger:
-    repository: jaegertracing/all-in-one
+    repository: rancher/jaegertracing-all-in-one
     tag: 1.9
   zipkin:
-    repository: openzipkin/zipkin
+    repository: rancher/openzipkin-zipkin
     tag: 2
   enabled: true
 
@@ -104,7 +104,7 @@ tracing:
 # addon kiali tracing configuration
 #
 kiali:
-  repository: kiali/kiali
+  repository: rancher/kiali-kiali
   tag: v0.17
   enabled: true
 
@@ -121,10 +121,10 @@ istio_cni:
 #
 istiocoredns:
   image:
-    repository: coredns/coredns
+    repository: rancher/coredns-coredns
     tag: 1.1.2
   pluginImage:
-    repository: istio/coredns-plugin
+    repository: rancher/istio-coredns-plugin
     tag: 0.2-istio-1.1
   enabled: false
 
@@ -157,7 +157,7 @@ global:
     level: "default:info"
 
   kubectl:
-    repository: istio/kubectl
+    repository: rancher/istio-kubectl
     tag: 1.1.5
 
   # monitoring port used by mixer, pilot, galley
@@ -181,7 +181,7 @@ global:
     enableHttps: false
 
   proxy:
-    repository: istio/proxyv2
+    repository: rancher/istio-proxyv2
     tag: 1.1.5
 
     # cluster domain. Default value is "cluster.local".
@@ -290,7 +290,7 @@ global:
 
   proxy_init:
     # Base name for the proxy_init container, used to configure iptables.
-    repository: istio/proxy_init
+    repository: rancher/istio-proxy_init
     tag: "1.1.5"
 
   # imagePullPolicy is applied to istio control plane components.
@@ -465,7 +465,7 @@ global:
   #- '*'
 
   nodeAgent:
-    repository: istio/node-agent-k8s
+    repository: rancher/istio-node-agent-k8s
     tag: "1.1.5"
   sds:
     # SDS enabled. IF set to true, mTLS certificates for the sidecars will be
