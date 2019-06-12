@@ -6,9 +6,8 @@
 #       configuration key in this file. This file overrides the values specified
 #       by the charts/${chartname}/values.yaml.
 #       Check the chart level values file for exhaustive list of configuration options.
-
-#
-enableCRDs: true
+istio-init:
+  enabled: true
 
 #
 # Gateways Configuration, refer to the charts/gateways/values.yaml
@@ -133,6 +132,7 @@ certmanager:
 
 # Common settings used among istio subcharts.
 global:
+  enableCRDs: true
   # Specify rancher domain and clusterId of external tracing config
   # https://github.com/istio/istio.io/issues/4146#issuecomment-493543032
   rancher:
