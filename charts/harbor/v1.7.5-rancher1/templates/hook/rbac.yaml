@@ -1,0 +1,50 @@
+{{- if eq (include "harbor.autoRemovePVCs" .) "true" }}
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  annotations:
+    "helm.sh/hook": post-delete
+    "helm.sh/hook-delete-policy": "hook-succeeded, hook-failed"
+    "helm.sh/hook-weight": "1"
+  name: {{ .Release.Name }}-cleanup-sa
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: Role
+metadata:
+  annotations:
+    "helm.sh/hook": post-delete
+    "helm.sh/hook-delete-policy": "hook-succeeded, hook-failed"
+    "helm.sh/hook-weight": "1"
+  name: {{ .Release.Name }}-cleanup-r
+rules:
+- apiGroups: [""]
+  resources: 
+  - persistentvolumeclaims
+  - serviceaccounts
+  verbs:
+  - delete
+- apiGroups:
+  - rbac.authorization.k8s.io
+  resources:
+  - roles
+  - rolebindings
+  verbs:
+  - delete
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: RoleBinding
+metadata:
+  annotations:
+    "helm.sh/hook": post-delete
+    "helm.sh/hook-delete-policy": "hook-succeeded, hook-failed"
+    "helm.sh/hook-weight": "2"
+  name: {{ .Release.Name }}-cleanup-rb
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{ .Release.Name }}-cleanup-r
+subjects:
+- kind: ServiceAccount
+  name: {{ .Release.Name }}-cleanup-sa
+  namespace: {{ .Release.Namespace }}
+{{- end }}

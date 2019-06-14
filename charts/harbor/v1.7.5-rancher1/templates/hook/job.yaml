@@ -1,0 +1,36 @@
+{{- if eq (include "harbor.autoRemovePVCs" .) "true" }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  annotations:
+    "helm.sh/hook": post-delete
+    "helm.sh/hook-delete-policy": "hook-succeeded, hook-failed"
+    "helm.sh/hook-weight": "3"
+  name: {{ .Release.Name }}-cleanup
+  namespace: {{ .Release.Namespace }}
+spec:
+  activeDeadlineSeconds: 900
+  backoffLimit: 1
+  template:
+    metadata:
+      name: cleanup
+    spec:
+      containers:
+      - name: cleanup
+        image: bitnami/kubectl:1.14.1
+        imagePullPolicy: Always
+        command:
+        - kubectl
+        - -n
+        - {{ .Release.Namespace }}
+        - delete
+        {{- if eq .Values.persistence.persistentVolumeClaim.database.existingClaim "" }}
+        - pvc/database-data-{{ template "harbor.database" . }}-0
+        {{- end }}
+        {{- if eq .Values.persistence.persistentVolumeClaim.redis.existingClaim "" }}
+        - pvc/data-{{ template "harbor.redis" . }}-0
+        {{- end }}
+        - --ignore-not-found=true
+      serviceAccountName: {{ .Release.Name }}-cleanup-sa
+      restartPolicy: OnFailure
+{{- end }}

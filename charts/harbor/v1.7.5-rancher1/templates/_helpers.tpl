@@ -56,6 +56,16 @@ app: "{{ template "harbor.name" . }}"
   {{- end -}}
 {{- end -}}
 
+{{- define "harbor.autoRemovePVCs" -}}
+  {{- with .Values.persistence.persistentVolumeClaim -}}
+    {{- if and $.Values.persistence.enabled (ne $.Values.persistence.resourcePolicy "keep") (or (eq .database.existingClaim "") (eq .redis.existingClaim "")) -}}
+      {{- printf "true" -}}
+    {{- else -}}
+      {{- printf "false" -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
 {{- define "harbor.database.host" -}}
   {{- if eq .Values.database.type "internal" -}}
     {{- template "harbor.database" . }}
