@@ -68,3 +68,8 @@ dependencies:
     version: 0.0.2
     condition: operator.enabled,enabled
     repository: "file://./charts/operator/"
+
+  - name: operator-init
+    version: 0.1.0
+    condition: operator-init.enabled
+    repository: "file://./charts/operator-init/"
