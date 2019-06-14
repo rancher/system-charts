@@ -1,0 +1,91 @@
+{{- if and .Values.enabledRBAC (not .Values.serviceAccountName) }}
+apiVersion: {{ template "rbac_api_version" . }}
+kind: ClusterRole
+metadata:
+  name: {{ template "app.fullname" . }}
+  labels:
+    app: {{ template "app.name" . }}
+    chart: {{ template "app.version" . }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+rules:
+- apiGroups: 
+  - {{ template "operator_api_group" . }}
+  resources: 
+  - alertmanager
+  - alertmanagers
+  - prometheus
+  - prometheuses
+  - service-monitor
+  - servicemonitors
+  - prometheusrules
+  - prometheuses/finalizers
+  - alertmanagers/finalizers
+  verbs: 
+  - "*"
+- apiGroups:
+  - apps
+  resources:
+  - statefulsets
+  verbs: 
+  - "*"
+- apiGroups: [""]
+  resources:
+  - configmaps
+  - secrets
+  verbs: 
+  - "*"
+- apiGroups: [""]
+  resources:
+  - pods
+  verbs: 
+  - list
+  - delete
+- apiGroups: [""]
+  resources:
+  - services
+  - endpoints
+  verbs: 
+  - get
+  - create
+  - update
+- apiGroups: [""]
+  resources:
+  - nodes
+  - namespaces
+  verbs: 
+  - list
+  - watch
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    app: {{ template "app.name" . }}
+    chart: {{ template "app.version" . }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+  name: {{ template "app.fullname" . }}
+imagePullSecrets: 
+{{ toYaml .Values.imagePullSecrets | indent 2 }}
+
+---
+apiVersion: {{ template "rbac_api_version" . }}
+kind: ClusterRoleBinding
+metadata:
+  name: {{ template "app.fullname" . }}
+  labels:
+    app: {{ template "app.name" . }}
+    chart: {{ template "app.version" . }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ template "app.fullname" . }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ template "app.fullname" . }}
+    namespace: {{ .Release.Namespace }}
+{{- end }}
