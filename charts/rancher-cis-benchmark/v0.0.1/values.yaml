@@ -4,6 +4,8 @@
 
 replicaCount: 1
 
+owner: ""
+
 image:
   repository: rancher/cis-k8s
   tag: latest
