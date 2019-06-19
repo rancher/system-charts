@@ -4,11 +4,11 @@ initContainers:
 {{ if ne (annotation .ObjectMeta `sidecar.istio.io/interceptionMode` .ProxyConfig.InterceptionMode) `NONE` }}
 {{- if not .Values.istio_cni.enabled }}
 - name: istio-init
-{{- if contains "/" .Values.global.proxy_init.image }}
-  image: "{{ .Values.global.proxy_init.image }}"
-{{- else }}
-  image: "{{ .Values.global.hub }}/{{ .Values.global.proxy_init.image }}:{{ .Values.global.tag }}"
-{{- end }}
+  {{- if .Values.global.systemDefaultRegistry }}
+  image: "{{ .Values.global.systemDefaultRegistry }}/{{ .Values.global.proxy_init.repository }}:{{ .Values.global.proxy_init.tag }}"
+  {{- else }}
+  image: "{{ .Values.global.proxy_init.repository }}:{{ .Values.global.proxy_init.tag }}"
+  {{- end }}
   args:
   - "-p"
   - "15001"
@@ -64,11 +64,11 @@ initContainers:
   - sysctl -w kernel.core_pattern=/var/lib/istio/core.proxy && ulimit -c unlimited
   command:
     - /bin/sh
-{{- if contains "/" .Values.global.proxy_init.image }}
-  image: "{{ .Values.global.proxy_init.image }}"
-{{- else }}
-  image: "{{ .Values.global.hub }}/{{ .Values.global.proxy_init.image }}:{{ .Values.global.tag }}"
-{{- end }}
+  {{- if .Values.global.systemDefaultRegistry }}
+  image: "{{ .Values.global.systemDefaultRegistry }}/{{ .Values.global.proxy_init.repository }}:{{ .Values.global.proxy_init.tag }}"
+  {{- else }}
+  image: "{{ .Values.global.proxy_init.repository }}:{{ .Values.global.proxy_init.tag }}"
+  {{- end }}
   imagePullPolicy: IfNotPresent
   resources: {}
   securityContext:
@@ -79,11 +79,11 @@ initContainers:
 {{- end }}
 containers:
 - name: istio-proxy
-{{- if contains "/" .Values.global.proxy.image }}
-  image: "{{ annotation .ObjectMeta `sidecar.istio.io/proxyImage` .Values.global.proxy.image }}"
-{{- else }}
-  image: "{{ annotation .ObjectMeta `sidecar.istio.io/proxyImage` .Values.global.hub }}/{{ .Values.global.proxy.image }}:{{ .Values.global.tag }}"
-{{- end }}
+  {{- if .Values.global.systemDefaultRegistry }}
+  image: "{{ .Values.global.systemDefaultRegistry }}/{{ .Values.global.proxy.repository }}:{{ .Values.global.proxy.tag }}"
+  {{- else }}
+  image: "{{ annotation .ObjectMeta `sidecar.istio.io/proxyImage` .Values.global.proxy.repository}}:{{ .Values.global.proxy.tag }}"
+  {{- end }}
   ports:
   - containerPort: 15090
     protocol: TCP

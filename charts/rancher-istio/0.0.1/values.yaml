@@ -8,6 +8,9 @@
 #       Check the chart level values file for exhaustive list of configuration options.
 
 #
+enableCRDs: true
+
+#
 # Gateways Configuration, refer to the charts/gateways/values.yaml
 # for detailed configuration
 #
@@ -19,6 +22,8 @@ gateways:
 # charts/sidecarInjectorWebhook/values.yaml for detailed configuration
 #
 sidecarInjectorWebhook:
+  repository: rancher/istio-sidecar_injector
+  tag: "1.2.0"
   enabled: true
 
 #
@@ -26,6 +31,8 @@ sidecarInjectorWebhook:
 # for detailed configuration
 #
 galley:
+  repository: rancher/istio-galley
+  tag: 1.2.0
   enabled: true
 
 #
@@ -33,6 +40,9 @@ galley:
 #
 # @see charts/mixer/values.yaml, it takes precedence
 mixer:
+  repository: rancher/istio-mixer
+  tag: "1.2.0"
+  enabled: true
   policy:
     # if policy is enabled the global.disablePolicyChecks has affect.
     enabled: true
@@ -44,12 +54,16 @@ mixer:
 #
 # @see charts/pilot/values.yaml
 pilot:
+  repository: rancher/istio-pilot
+  tag: "1.2.0"
   enabled: true
 
 #
 # security configuration
 #
 security:
+  repository: rancher/istio-citadel
+  tag: "1.2.0"
   enabled: true
 
 #
@@ -62,25 +76,37 @@ nodeagent:
 # addon grafana configuration
 #
 grafana:
+  repository: rancher/grafana-grafana
+  tag: 6.1.6
   enabled: false
 
 #
 # addon prometheus configuration
 #
 prometheus:
+  repository: rancher/prom-prometheus
+  tag: v2.8.0
   enabled: true
 
 #
 # addon jaeger tracing configuration
 #
 tracing:
-  enabled: false
+  jaeger:
+    repository: rancher/jaegertracing-all-in-one
+    tag: 1.9
+  zipkin:
+    repository: rancher/openzipkin-zipkin
+    tag: 2
+  enabled: true
 
 #
 # addon kiali tracing configuration
 #
 kiali:
-  enabled: false
+  repository: rancher/kiali-kiali
+  tag: v0.20
+  enabled: true
 
 #
 # addon certmanager configuration
@@ -100,17 +126,32 @@ istio_cni:
 # addon Istio CoreDNS configuration
 #
 istiocoredns:
+  image:
+    repository: rancher/coredns-coredns
+    tag: 1.1.2
+  pluginImage:
+    repository: rancher/istio-coredns-plugin
+    tag: 0.2-istio-1.1
   enabled: false
 
 # Common settings used among istio subcharts.
 global:
+  # Specify rancher domain and clusterId of external tracing config
+  # https://github.com/istio/istio.io/issues/4146#issuecomment-493543032
+  rancher:
+    domain:
+    clusterId:
+
+  systemDefaultRegistry: ""
   # Default hub for Istio images.
   # Releases are published to docker hub under 'istio' project.
   # Daily builds from prow are on gcr.io, and nightly builds from circle on docker.io/istionightly
-  hub: gcr.io/istio-release
+  # hub: gcr.io/istio-release
+  hub: docker.io/istio
 
   # Default tag for Istio images.
-  tag: release-1.2-latest-daily
+  # tag: release-1.1-latest-daily
+  tag: 1.2.0
 
   # Comma-separated minimum per-scope logging level of messages to output, in the form of <scope>:<level>,<scope>:<level>
   # The control plane has different scopes depending on component, but can configure default log level across all components
@@ -118,8 +159,16 @@ global:
   logging:
     level: "default:info"
 
+  kubectl:
+    repository: rancher/istio-kubectl
+    tag: 1.2.0
+
   # monitoring port used by mixer, pilot, galley
   monitoringPort: 15014
+
+  nginxProxy:
+    repository: rancher/nginx
+    tag: 1.15.8-alpine
 
   k8sIngress:
     enabled: false
@@ -135,7 +184,8 @@ global:
     enableHttps: false
 
   proxy:
-    image: proxyv2
+    repository: rancher/istio-proxyv2
+    tag: 1.2.0
 
     # cluster domain. Default value is "cluster.local".
     clusterDomain: "cluster.local"
@@ -235,7 +285,7 @@ global:
     # available to scrape via the Envoy admin port at either /stats or /stats/prometheus.
     #
     # See https://www.envoyproxy.io/docs/envoy/latest/api-v2/config/metrics/v2/metrics_service.proto
-    # for details about Envoy's Metrics Service API. 
+    # for details about Envoy's Metrics Service API.
     #
     # Disabled by default.
     envoyMetricsService:
@@ -248,7 +298,8 @@ global:
 
   proxy_init:
     # Base name for the proxy_init container, used to configure iptables.
-    image: proxy_init
+    repository: rancher/istio-proxy_init
+    tag: "1.2.0"
 
   # imagePullPolicy is applied to istio control plane components.
   # local tests require IfNotPresent, to avoid uploading to dockerhub.
@@ -402,7 +453,7 @@ global:
   #   services or ServiceEntries for the destination port
   # REGISTRY_ONLY - restrict outbound traffic to services defined in the service registry as well
   #   as those defined through ServiceEntries
-  # ALLOW_ANY is the default in 1.1.  This means each pod will be able to make outbound requests 
+  # ALLOW_ANY is the default in 1.1.  This means each pod will be able to make outbound requests
   # to services outside of the mesh without any ServiceEntry.
   # REGISTRY_ONLY was the default in 1.0.  If this behavior is desired, set the value below to REGISTRY_ONLY.
   outboundTrafficPolicy:
@@ -417,10 +468,13 @@ global:
   # rules should be exported to. Currently only one value can be provided in this list. This value
   # should be one of the following two options:
   # * implies these objects are visible to all namespaces, enabling any sidecar to talk to any other sidecar.
-  # . implies these objects are visible to only to sidecars in the same namespace, or if imported as a Sidecar.egress.host  
+  # . implies these objects are visible to only to sidecars in the same namespace, or if imported as a Sidecar.egress.host
   #defaultConfigVisibilitySettings:
   #- '*'
 
+  nodeAgent:
+    repository: rancher/istio-node-agent-k8s
+    tag: "1.2.0"
   sds:
     # SDS enabled. IF set to true, mTLS certificates for the sidecars will be
     # distributed through the SecretDiscoveryService instead of using K8S secrets to mount the certificates.

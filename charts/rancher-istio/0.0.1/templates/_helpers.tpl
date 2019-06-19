@@ -44,3 +44,12 @@ Configmap checksum.
 {{- define "istio.configmap.checksum" -}}
 {{- print $.Template.BasePath "/configmap.yaml" | sha256sum -}}
 {{- end -}}
+
+
+{{- define "system_default_registry" -}}
+{{- if .Values.global.systemDefaultRegistry -}}
+{{- printf "%s/" .Values.global.systemDefaultRegistry -}}
+{{- else -}}
+{{- "" -}}
+{{- end -}}
+{{- end -}}

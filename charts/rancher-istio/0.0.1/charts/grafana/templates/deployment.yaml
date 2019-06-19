@@ -25,7 +25,6 @@ spec:
         prometheus.io/scrape: "true"
     spec:
       securityContext:
-        runAsUser: 472
         fsGroup: 472
 {{- if .Values.global.priorityClassName }}
       priorityClassName: "{{ .Values.global.priorityClassName }}"
@@ -38,7 +37,7 @@ spec:
 {{- end }}
       containers:
         - name: {{ .Chart.Name }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          image: "{{ template "system_default_registry" . }}{{ .Values.repository }}:{{ .Values.tag }}"
           imagePullPolicy: {{ .Values.global.imagePullPolicy }}
           ports:
           - containerPort: 3000
@@ -98,6 +97,25 @@ spec:
           - name: config
             mountPath: "/etc/grafana/provisioning/dashboards/dashboardproviders.yaml"
             subPath: dashboardproviders.yaml
+        - name: grafana-proxy
+          image: "{{ template "system_default_registry" . }}{{ .Values.global.nginxProxy.repository }}:{{ .Values.global.nginxProxy.tag }}"
+          args:
+          - nginx
+          - -g
+          - daemon off;
+          - -c
+          - /nginx/nginx.conf
+          ports:
+          - name: http
+            containerPort: 80
+            protocol: TCP
+          volumeMounts:
+          - mountPath: /nginx/
+            name: grafana-nginx
+          {{- if and .Values.resources .Values.resources.proxy }}
+          resources:
+  {{ toYaml .Values.resources.proxy | indent 10 }}
+          {{- end }}
       affinity:
       {{- include "nodeaffinity" . | indent 6 }}
       {{- include "podAntiAffinity" . | indent 6 }}
@@ -109,10 +127,17 @@ spec:
       - name: config
         configMap:
           name: istio-grafana
+      - name: grafana-nginx
+        configMap:
+          name: grafana-nginx
+          items:
+          - key: nginx.conf
+            mode: 438
+            path: nginx.conf
       - name: data
-{{- if .Values.persist }}
+{{- if .Values.persistence.enabled }}
         persistentVolumeClaim:
-          claimName: istio-grafana-pvc
+          claimName: {{ .Values.persistence.existingClaim | default ("istio-grafana-pvc") }}
 {{- else }}
         emptyDir: {}
 {{- end }}

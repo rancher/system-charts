@@ -23,6 +23,7 @@ spec:
 {{- end }}
   selector:
     matchLabels:
+      release: {{ $.Release.Name }}
       {{- range $key, $val := $spec.labels }}
       {{ $key }}: {{ $val }}
       {{- end }}
@@ -48,11 +49,7 @@ spec:
 {{- if $.Values.global.proxy.enableCoreDump }}
       initContainers:
         - name: enable-core-dump
-{{- if contains "/" $.Values.global.proxy_init.image }}
-          image: "{{ $.Values.global.proxy_init.image }}"
-{{- else }}
-          image: "{{ $.Values.global.hub }}/{{ $.Values.global.proxy_init.image }}:{{ $.Values.global.tag }}"
-{{- end }}
+          image: "{{ template "system_default_registry" $ }}{{ $.Values.global.proxy_init.repository }}:{{ $.Values.global.proxy_init.tag }}"
           imagePullPolicy: {{ $.Values.global.imagePullPolicy }}
           command:
             - /bin/sh
@@ -66,11 +63,7 @@ spec:
 {{- if $spec.sds }}
 {{- if $spec.sds.enabled }}
         - name: ingress-sds
-{{- if contains "/" $spec.sds.image }}
-          image: "{{ $spec.sds.image }}"
-{{- else }}
-          image: "{{ $.Values.global.hub }}/{{ $spec.sds.image }}:{{ $.Values.global.tag }}"
-{{- end }}
+          image: "{{ template "system_default_registry" $ }}{{ $.Values.global.nodeAgent.repository }}:{{ $.Values.global.nodeAgent.tag }}"
           imagePullPolicy: {{ $.Values.global.imagePullPolicy }}
           resources:
 {{- if $spec.sds.resources }}
@@ -94,11 +87,7 @@ spec:
 {{- end }}
 {{- end }}
         - name: istio-proxy
-{{- if contains "/" $.Values.global.proxy.image }}
-          image: "{{ $.Values.global.proxy.image }}"
-{{- else }}
-          image: "{{ $.Values.global.hub }}/{{ $.Values.global.proxy.image }}:{{ $.Values.global.tag }}"
-{{- end }}
+          image: "{{ template "system_default_registry" $ }}{{ $.Values.global.proxy.repository }}:{{ $.Values.global.proxy.tag }}"
           imagePullPolicy: {{ $.Values.global.imagePullPolicy }}
           ports:
             {{- range $key, $val := $spec.ports }}
@@ -166,10 +155,6 @@ spec:
           - istio-pilot.{{ $.Values.global.istioNamespace }}:15010
           {{- else }}
           - istio-pilot:15010
-          {{- end }}
-          {{- if $spec.applicationPorts }}
-          - --applicationPorts
-          - "{{ $spec.applicationPorts }}"
           {{- end }}
         {{- end }}
         {{- if $.Values.global.trustDomain }}

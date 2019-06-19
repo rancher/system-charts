@@ -1,8 +1,6 @@
 #
 # mixer configuration
 #
-image: mixer
-
 env:
   GODEBUG: gctrace=1
   # max procs should be ceil(cpu limit + 1)
