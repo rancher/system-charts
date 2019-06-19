@@ -11,17 +11,15 @@ metadata:
 data:
   config.yaml: |
     istio_namespace: {{ .Release.Namespace }}
-    auth:
-      strategy: "login"
     server:
       port: 20001
-{{- if .Values.contextPath }}
-      web_root: {{ .Values.contextPath }}
-{{- end }}
     external_services:
       tracing:
+        {{- if .Values.dashboard.jaegerURL }}
         url: {{ .Values.dashboard.jaegerURL }}
+        {{- end }}
       grafana:
+        custom_metrics_url: "http://prometheus.{{ .Release.Namespace }}:9090"
+        {{- if .Values.dashboard.grafanaURL }}
         url: {{ .Values.dashboard.grafanaURL }}
-      prometheus:
-        url: {{ .Values.prometheusAddr }}
+        {{- end }}
