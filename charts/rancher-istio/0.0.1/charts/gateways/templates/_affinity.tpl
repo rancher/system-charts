@@ -11,10 +11,6 @@
 {{- define "gatewayNodeAffinityRequiredDuringScheduling" }}
       nodeSelectorTerms:
       - matchExpressions:
-        - key: beta.kubernetes.io/os
-          operator: In
-          values:
-          - linux
         - key: beta.kubernetes.io/arch
           operator: In
           values:
@@ -66,7 +62,7 @@
         matchExpressions:
         - key: {{ $item.key }}
           operator: {{ $item.operator }}
-          {{- if $item.value }}
+          {{- if $item.values }}
           values:
           {{- $vals := split "," $item.values }}
           {{- range $i, $v := $vals }}

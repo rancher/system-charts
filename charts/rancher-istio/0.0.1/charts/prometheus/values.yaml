@@ -6,6 +6,7 @@ replicaCount: 1
 
 retention: 6h
 nodeSelector: {}
+tolerations: []
 
 # Specify the pod anti-affinity that allows you to constrain which nodes
 # your pod is eligible to be scheduled based on labels on pods that are
@@ -25,8 +26,8 @@ nodeSelector: {}
 # This pod anti-affinity rule says that the pod requires not to be scheduled
 # onto a node if that node is already running a pod with label having key
 # “security” and value “S1”.
-podAntiAffinityLabelSelector: {}
-podAntiAffinityTermLabelSelector: {}
+podAntiAffinityLabelSelector: []
+podAntiAffinityTermLabelSelector: []
 
 # Controls the frequency of prometheus scraping
 scrapeInterval: 15s
@@ -49,6 +50,9 @@ ingress:
 
 service:
   annotations: {}
+  nodePort:
+    enabled: false
+    port: 32090
 
 security:
   enabled: true

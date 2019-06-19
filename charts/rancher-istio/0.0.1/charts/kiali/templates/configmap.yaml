@@ -14,12 +14,12 @@ data:
     server:
       port: 20001
     external_services:
-      istio:
-        url_service_version: http://istio-pilot:8080/version
-      jaeger:
-        service: "jaeger-query"
-        {{- if .Values.dashboard.jaegerURL }}
-        url: {{ .Values.dashboard.jaegerURL }}
+      tracing:
+        service: "tracing/jaeger"
+        {{- if and .Values.global.rancher (and .Values.global.rancher.domain .Values.global.rancher.clusterId) }}
+        {{- if not .Values.dashboard.jaegerURL }}
+        url: 'https://{{ .Values.global.rancher.domain }}/k8s/clusters/{{ .Values.global.rancher.clusterId }}/api/v1/namespaces/{{ .Release.Namespace }}/services/http:tracing:80/proxy/jaeger'
+        {{- end }}
         {{- end }}
       grafana:
         custom_metrics_url: "http://prometheus.{{ .Release.Namespace }}:9090"

@@ -1,4 +1,4 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: istio-galley
@@ -11,6 +11,9 @@ metadata:
     istio: galley
 spec:
   replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      istio: galley
   strategy:
     rollingUpdate:
       maxSurge: 1
@@ -46,6 +49,7 @@ spec:
           - --livenessProbePath=/healthliveness
           - --readinessProbePath=/healthready
           - --readinessProbeInterval=1s
+          - --deployment-namespace={{ .Release.Namespace }}
 {{- if $.Values.global.controlPlaneSecurityEnabled}}
           - --insecure=false
 {{- else }}
@@ -107,3 +111,7 @@ spec:
       affinity:
       {{- include "nodeaffinity" . | indent 6 }}
       {{- include "podAntiAffinity" . | indent 6 }}
+{{- if .Values.tolerations }}
+      tolerations:
+{{ toYaml .Values.tolerations | indent 6 }}
+{{- end }}

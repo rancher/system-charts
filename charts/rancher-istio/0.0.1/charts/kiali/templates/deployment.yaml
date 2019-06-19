@@ -1,4 +1,4 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: kiali
@@ -23,6 +23,9 @@ spec:
         release: {{ .Release.Name }}
       annotations:
         sidecar.istio.io/inject: "false"
+        scheduler.alpha.kubernetes.io/critical-pod: ""
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9090"
     spec:
       serviceAccountName: kiali-service-account
 {{- if .Values.global.priorityClassName }}
@@ -39,10 +42,6 @@ spec:
         - "4"
         env:
         {{- if and .Values.global.rancher (and .Values.global.rancher.domain .Values.global.rancher.clusterId) }}
-        {{- if not .Values.dashboard.jaegerURL }}
-        - name: JAEGER_URL
-          value: 'https://{{ .Values.global.rancher.domain }}/k8s/clusters/{{ .Values.global.rancher.clusterId }}/api/v1/namespaces/{{ .Release.Namespace }}/services/tracing:80/proxy/jaeger'
-        {{- end }}
         {{- if not .Values.dashboard.grafanaURL }}
         - name: GRAFANA_URL
           value: 'https://{{ .Values.global.rancher.domain }}/k8s/clusters/{{ .Values.global.rancher.clusterId }}/api/v1/namespaces/{{ .Release.Namespace }}/services/http:grafana:80/proxy/'
@@ -75,6 +74,8 @@ spec:
         volumeMounts:
         - name: kiali-configuration
           mountPath: "/kiali-configuration"
+        - name: kiali-secret
+          mountPath: "/kiali-secret"
         resources:
 {{- if .Values.resources }}
 {{ toYaml .Values.resources | indent 10 }}
@@ -111,6 +112,10 @@ spec:
           - key: nginx.conf
             mode: 438
             path: nginx.conf
+      - name: kiali-secret
+        secret:
+          secretName: {{ .Values.dashboard.secretName }}
+          optional: true
       affinity:
       {{- include "nodeaffinity" . | indent 6 }}
       {{- include "podAntiAffinity" . | indent 6 }}

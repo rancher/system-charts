@@ -1,5 +1,5 @@
 # TODO: the original template has service account, roles, etc
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: prometheus
@@ -89,7 +89,9 @@ spec:
       - name: istio-certs
         secret:
           defaultMode: 420
+{{- if not .Values.security.enabled }}
           optional: true
+{{- end }}
           secretName: istio.default
       - name: prometheus-nginx
         configMap:
@@ -97,3 +99,7 @@ spec:
       affinity:
       {{- include "nodeaffinity" . | indent 6 }}
       {{- include "podAntiAffinity" . | indent 6 }}
+{{- if .Values.tolerations }}
+      tolerations:
+{{ toYaml .Values.tolerations | indent 6 }}
+{{- end }}
