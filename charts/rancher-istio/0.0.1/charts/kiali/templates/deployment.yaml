@@ -32,8 +32,7 @@ spec:
       priorityClassName: "{{ .Values.global.priorityClassName }}"
 {{- end }}
       containers:
-      - image: "{{ .Values.hub }}/kiali:{{ .Values.tag }}"
-        imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+      - image: "{{ template "system_default_registry" . }}{{ .Values.repository }}:{{ .Values.tag }}"
         name: kiali
         command:
         - "/opt/kiali/kiali"
@@ -42,10 +41,36 @@ spec:
         - "-v"
         - "4"
         env:
+        {{- if and .Values.global.rancher (and .Values.global.rancher.domain .Values.global.rancher.clusterId) }}
+        {{- if not .Values.dashboard.grafanaURL }}
+        - name: GRAFANA_URL
+          value: 'https://{{ .Values.global.rancher.domain }}/k8s/clusters/{{ .Values.global.rancher.clusterId }}/api/v1/namespaces/{{ .Release.Namespace }}/services/http:grafana:80/proxy/'
+        {{- end }}
+        {{- end }}
         - name: ACTIVE_NAMESPACE
           valueFrom:
             fieldRef:
               fieldPath: metadata.namespace
+        - name: AUTH_STRATEGY
+          value: {{ .Values.dashboard.authStrategy }}
+        - name: SERVER_CREDENTIALS_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.dashboard.secretName }}
+              key: username
+              optional: true
+        - name: SERVER_CREDENTIALS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.dashboard.secretName }}
+              key: passphrase
+              optional: true
+        - name: PROMETHEUS_SERVICE_URL
+          value: {{ .Values.prometheusAddr }}
+{{- if .Values.contextPath }}
+        - name: SERVER_WEB_ROOT
+          value: {{ .Values.contextPath }}
+{{- end }}
         volumeMounts:
         - name: kiali-configuration
           mountPath: "/kiali-configuration"
@@ -57,10 +82,36 @@ spec:
 {{- else }}
 {{ toYaml .Values.global.defaultResources | indent 10 }}
 {{- end }}
+      - name: kiali-proxy
+        image: "{{ template "system_default_registry" . }}{{ .Values.global.nginxProxy.repository }}:{{ .Values.global.nginxProxy.tag }}"
+        args:
+        - nginx
+        - -g
+        - daemon off;
+        - -c
+        - /nginx/nginx.conf
+        ports:
+        - name: http
+          containerPort: 80
+          protocol: TCP
+        volumeMounts:
+        - mountPath: /nginx/
+          name: kiali-nginx
+        {{- if and .Values.resources .Values.resources.proxy }}
+        resources:
+{{ toYaml .Values.resources.proxy | indent 10 }}
+        {{- end }}
       volumes:
       - name: kiali-configuration
         configMap:
           name: kiali
+      - name: kiali-nginx
+        configMap:
+          name: kiali-nginx
+          items:
+          - key: nginx.conf
+            mode: 438
+            path: nginx.conf
       - name: kiali-secret
         secret:
           secretName: {{ .Values.dashboard.secretName }}

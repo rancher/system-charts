@@ -3,8 +3,7 @@
 #
 enabled: true
 replicaCount: 1
-hub: docker.io/prom
-tag: v2.8.0
+
 retention: 6h
 nodeSelector: {}
 tolerations: []
@@ -57,3 +56,5 @@ service:
 
 security:
   enabled: true
+
+resources: {}
