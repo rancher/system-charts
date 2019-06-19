@@ -42,7 +42,7 @@ spec:
 {{- end }}
       containers:
         - name: jaeger
-          image: "{{ .Values.jaeger.hub }}/all-in-one:{{ .Values.jaeger.tag }}"
+          image: "{{ template "system_default_registry" . }}{{ .Values.jaeger.repository }}:{{ .Values.jaeger.tag }}"
           imagePullPolicy: {{ .Values.global.imagePullPolicy }}
           ports:
             - containerPort: 9411
@@ -79,6 +79,33 @@ spec:
 {{- else }}
 {{ toYaml .Values.global.defaultResources | indent 12 }}
 {{- end }}
+        - name: jaeger-proxy
+          image: "{{ template "system_default_registry" . }}{{ .Values.global.nginxProxy.repository }}:{{ .Values.global.nginxProxy.tag }}"
+          args:
+          - nginx
+          - -g
+          - daemon off;
+          - -c
+          - /nginx/nginx.conf
+          ports:
+          - name: http
+            containerPort: 80
+            protocol: TCP
+          volumeMounts:
+          - mountPath: /nginx/
+            name: tracing-nginx
+          {{- if and .Values.jaeger.proxy .Values.jaeger.proxy.resources }}
+          resources:
+  {{ toYaml .Values.jaeger.proxy.resources | indent 12 }}
+          {{- end }}
+      volumes:
+      - name: tracing-nginx
+        configMap:
+          name: tracing-nginx
+          items:
+          - key: nginx.conf
+            mode: 438
+            path: nginx.conf
       affinity:
       {{- include "nodeaffinity" . | indent 6 }}
       {{- include "podAntiAffinity" . | indent 6 }}

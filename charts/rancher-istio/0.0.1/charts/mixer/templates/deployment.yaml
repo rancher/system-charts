@@ -38,11 +38,7 @@
 {{- end }}
       containers:
       - name: mixer
-{{- if contains "/" .Values.image }}
-        image: "{{ .Values.image }}"
-{{- else }}
-        image: "{{ $.Values.global.hub }}/{{ $.Values.image }}:{{ $.Values.global.tag }}"
-{{- end }}
+        image: "{{ template "system_default_registry" . }}{{ $.Values.repository }}:{{ $.Values.tag }}"
         imagePullPolicy: {{ $.Values.global.imagePullPolicy }}
         ports:
         - containerPort: {{ .Values.global.monitoringPort }}
@@ -109,11 +105,7 @@
           initialDelaySeconds: 5
           periodSeconds: 5
       - name: istio-proxy
-{{- if contains "/" $.Values.global.proxy.image }}
-        image: "{{ $.Values.global.proxy.image }}"
-{{- else }}
-        image: "{{ $.Values.global.hub }}/{{ $.Values.global.proxy.image }}:{{ $.Values.global.tag }}"
-{{- end }}
+        image: "{{ template "system_default_registry" . }}{{ $.Values.global.proxy.repository }}:{{ $.Values.global.proxy.tag }}"
         imagePullPolicy: {{ $.Values.global.imagePullPolicy }}
         ports:
         - containerPort: 9091
@@ -218,11 +210,7 @@
 {{- end }}
       containers:
       - name: mixer
-{{- if contains "/" .Values.image }}
-        image: "{{ .Values.image }}"
-{{- else }}
-        image: "{{ $.Values.global.hub }}/{{ $.Values.image }}:{{ $.Values.global.tag }}"
-{{- end }}
+        image: "{{ template "system_default_registry" . }}{{ $.Values.repository }}:{{ $.Values.tag }}"
         imagePullPolicy: {{ $.Values.global.imagePullPolicy }}
         ports:
         - containerPort: {{ .Values.global.monitoringPort }}
@@ -299,11 +287,7 @@
           initialDelaySeconds: 5
           periodSeconds: 5
       - name: istio-proxy
-{{- if contains "/" $.Values.global.proxy.image }}
-        image: "{{ $.Values.global.proxy.image }}"
-{{- else }}
-        image: "{{ $.Values.global.hub }}/{{ $.Values.global.proxy.image }}:{{ $.Values.global.tag }}"
-{{- end }}
+        image: "{{ template "system_default_registry" . }}{{ $.Values.global.proxy.repository }}:{{ $.Values.global.proxy.tag }}"
         imagePullPolicy: {{ $.Values.global.imagePullPolicy }}
         ports:
         - containerPort: 9091

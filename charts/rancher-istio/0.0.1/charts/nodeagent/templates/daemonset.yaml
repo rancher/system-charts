@@ -30,11 +30,7 @@ spec:
 {{- end }}
       containers:
       - name: nodeagent
-{{- if contains "/" .Values.image }}
-        image: "{{ .Values.image }}"
-{{- else }}
-        image: "{{ .Values.global.hub }}/{{ .Values.image }}:{{ .Values.global.tag }}"
-{{- end }}
+        image: "{{ template "system_default_registry" . }}{{ $.Values.global.nodeAgent.repository }}:{{ $.Values.global.nodeAgent.tag }}"
         imagePullPolicy: {{ .Values.global.imagePullPolicy }}
         volumeMounts:
         - mountPath: /var/run/sds

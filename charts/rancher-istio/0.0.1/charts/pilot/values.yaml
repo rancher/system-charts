@@ -7,7 +7,6 @@ autoscaleMin: 1
 autoscaleMax: 5
 # specify replicaCount when autoscaleEnabled: false
 # replicaCount: 1
-image: pilot
 sidecar: true
 traceSampling: 1.0
 # Resources for a small pilot install
