@@ -139,6 +139,12 @@ istiocoredns:
 
 # Common settings used among istio subcharts.
 global:
+  # Specify members that can access istio service proxy
+  # members:
+  # - kind: User
+  #   name: u-abcba
+  # - kind: Group
+  #   name: github_org://1234567
   # Specify rancher domain and clusterId of external tracing config
   # https://github.com/istio/istio.io/issues/4146#issuecomment-493543032
   rancher:
