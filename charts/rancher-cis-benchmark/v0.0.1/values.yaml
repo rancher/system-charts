@@ -7,8 +7,8 @@ replicaCount: 1
 owner: ""
 
 image:
-  repository: rancher/cis-k8s
-  tag: latest
+  repository: rancher/security-scan
+  tag: v0.1.0
   pullPolicy: Always
 
 nameOverride: ""
