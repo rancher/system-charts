@@ -1,10 +1,10 @@
 system-charts
 ============
 
-Rancher 2.0 system library charts.
+Rancher 2.x system library charts.
 
 ## License
-Copyright (c) 2018 [Rancher Labs, Inc.](http://rancher.com)
+Copyright (c) 2019 [Rancher Labs, Inc.](http://rancher.com)
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

@@ -1,0 +1,72 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    app.kubernetes.io/name: {{ include "rancher-cis-benchmark.name" . }}
+    helm.sh/chart: {{ include "rancher-cis-benchmark.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+  name: sonobuoy-config-cm
+data:
+  config.json: |
+    {
+        "Description": "kube-bench plugin for CIS benchmarks",
+        "Filters": {
+            "LabelSelector": "",
+            "Namespaces": "[^\\w-.]+"
+        },
+        "PluginNamespace": "{{ .Release.Namespace }}",
+        "Plugins": [
+            {
+                "name": "rancher-kube-bench"
+            }
+        ],
+        "Resources": [],
+        "ResultsDir": "/tmp/sonobuoy",
+        "Server": {
+            "advertiseaddress": "{{ include "rancher-cis-benchmark.fullname" . }}",
+            "bindaddress": "0.0.0.0",
+            "bindport": 443,
+            "timeoutseconds": 5400
+        },
+        "Version": "v0.13.0"
+    }
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    app.kubernetes.io/name: {{ include "rancher-cis-benchmark.name" . }}
+    helm.sh/chart: {{ include "rancher-cis-benchmark.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+  name: sonobuoy-plugins-cm
+data:
+  rancher-kube-bench.yaml: |
+    sonobuoy-config:
+      driver: DaemonSet
+      plugin-name: rancher-kube-bench
+      result-type: rancher-kube-bench
+    spec:
+      name: rancher-kube-bench
+      image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+      command: ["/bin/bash", "-c", "run_sonobuoy_plugin.sh && sleep 3600"]
+      env:
+      - name: NODE_NAME
+        valueFrom:
+          fieldRef:
+            fieldPath: spec.nodeName
+      - name: RESULTS_DIR
+        value: /tmp/results
+      - name: CHROOT_DIR
+        value: /node
+      imagePullPolicy: Always
+      securityContext:
+        privileged: true
+      volumeMounts:
+      - mountPath: /tmp/results
+        name: results
+        readOnly: false
+      - mountPath: /node
+        name: root
+        readOnly: false

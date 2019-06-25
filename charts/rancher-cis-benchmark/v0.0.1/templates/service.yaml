@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "rancher-cis-benchmark.fullname" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "rancher-cis-benchmark.name" . }}
+    helm.sh/chart: {{ include "rancher-cis-benchmark.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: 443
+      protocol: TCP
+  selector:
+    app.kubernetes.io/name: {{ include "rancher-cis-benchmark.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
