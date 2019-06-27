@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kiali
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ template "kiali.name" . }}
+    chart: {{ template "kiali.chart" . }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+data:
+  config.yaml: |
+    istio_namespace: {{ .Release.Namespace }}
+    server:
+      port: 20001
+    external_services:
+      tracing:
+        service: "tracing/jaeger"
+        {{- if and .Values.global.rancher (and .Values.global.rancher.domain .Values.global.rancher.clusterId) }}
+        {{- if not .Values.dashboard.jaegerURL }}
+        url: 'https://{{ .Values.global.rancher.domain }}/k8s/clusters/{{ .Values.global.rancher.clusterId }}/api/v1/namespaces/{{ .Release.Namespace }}/services/http:tracing:80/proxy/jaeger'
+        {{- end }}
+        {{- end }}
+      grafana:
+        custom_metrics_url: "http://prometheus.{{ .Release.Namespace }}:9090"
+        {{- if .Values.dashboard.grafanaURL }}
+        url: {{ .Values.dashboard.grafanaURL }}
+        {{- end }}
