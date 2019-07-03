@@ -10,6 +10,9 @@
 #
 enableCRDs: true
 
+istio-init:
+  enable: true
+
 #
 # Gateways Configuration, refer to the charts/gateways/values.yaml
 # for detailed configuration
