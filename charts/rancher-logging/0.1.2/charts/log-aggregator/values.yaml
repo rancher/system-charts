@@ -1,0 +1,31 @@
+enabledRBAC: true
+
+labels: {}
+## Log Aggregator container image
+##
+image:
+  repository: rancher/log-aggregator
+  tag: v0.1.5
+
+nodeSelector: {}
+
+# updateStrategy:
+#   type: RollingUpdate
+
+tolerations:
+  - effect: NoSchedule
+    operator: Exists
+
+## Resource limits & requests
+## Ref: https://kubernetes.io/docs/user-guide/compute-resources/
+##
+resources: {}
+  # requests:
+  #   memory: 400Mi
+
+serviceAccount:
+  # Specifies whether a ServiceAccount should be created
+  create: true
+
+## flexvolume dir
+flexVolumeDir: /usr/libexec/kubernetes/kubelet-plugins/volume/exec
