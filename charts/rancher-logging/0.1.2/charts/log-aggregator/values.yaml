@@ -1,5 +1,3 @@
-enabledRBAC: true
-
 labels: {}
 ## Log Aggregator container image
 ##
@@ -22,10 +20,6 @@ tolerations:
 resources: {}
   # requests:
   #   memory: 400Mi
-
-serviceAccount:
-  # Specifies whether a ServiceAccount should be created
-  create: true
 
 ## flexvolume dir
 flexVolumeDir: /usr/libexec/kubernetes/kubelet-plugins/volume/exec
