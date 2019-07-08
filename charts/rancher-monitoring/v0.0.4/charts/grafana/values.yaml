@@ -1,0 +1,53 @@
+enabledRBAC: true
+
+## Tolerations for use with node taints
+## Ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
+##
+tolerations: []
+  #  - key: "key"
+  #    operator: "Equal"
+  #    value: "value"
+  #    effect: "NoSchedule"
+
+## Pass extra environment variables to the Grafana container.
+##
+# extraVars:
+# - name: EXTRA_VAR_1
+#   value: extra-var-value-1
+# - name: EXTRA_VAR_2
+#   value: extra-var-value-2
+extraVars:
+
+storageSpec: {}
+#   storageClassName: default
+#   accessModes:
+#     - ReadWriteOnce
+#   resources:
+#     requests:
+#       storage: 2Gi
+#   selector: {}
+
+## Resource limits & requests
+## Ref: https://kubernetes.io/docs/user-guide/compute-resources/
+resources:
+  inits:
+    limits:
+      memory: 50Mi
+      cpu: 50m
+    requests:
+      memory: 50Mi
+      cpu: 50m
+  core:
+    limits:
+      memory: 200Mi
+      cpu: 200m
+    requests:
+      memory: 100Mi
+      cpu: 100m
+  proxy:
+    limits:
+      memory: 100Mi
+      cpu: 100m
+    requests:
+      memory: 50Mi
+      cpu: 50m
