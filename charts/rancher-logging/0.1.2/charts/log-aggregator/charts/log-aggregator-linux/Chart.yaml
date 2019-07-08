@@ -1,4 +1,4 @@
-name: log-aggregator
+name: log-aggregator-linux
 version: 0.0.1
 appVersion: 0.1.4
 home: https://github.com/rancher/log-aggregator
@@ -8,6 +8,7 @@ keywords:
 - fluentd
 - flexvolume driver
 - logging
+- linux
 maintainers:
 - name: michelia
   email: support@rancher.com

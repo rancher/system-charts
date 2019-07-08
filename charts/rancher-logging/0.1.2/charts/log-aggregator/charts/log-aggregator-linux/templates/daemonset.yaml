@@ -1,7 +1,7 @@
 apiVersion: extensions/v1beta1
 kind: DaemonSet
 metadata:
-  name: {{ template "log-aggregator.fullname" . }}
+  name: {{ template "log-aggregator.fullname" . }}-linux
   labels:
     app: {{ template "log-aggregator.name" . }}
     chart: {{ template "log-aggregator.version" . }}
