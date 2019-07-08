@@ -1,7 +1,7 @@
 apiVersion: {{ template "daemonset_api_version" . }}
 kind: DaemonSet
 metadata:
-  name: {{ template "fluentd.fullname" . }}
+  name: {{ template "fluentd.fullname" . }}-linux
   labels:
     app: {{ template "fluentd.name" . }}
     chart: {{ template "fluentd.version" . }}

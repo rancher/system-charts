@@ -1,3 +1,4 @@
+nameOverride: fluentd
 labels: {}
 
 image:
@@ -16,12 +17,6 @@ resources: {}
 
 command: '["fluentd", "-c", "/fluentd/etc/config/entry/fluent.conf"]'
 
-rbac:
-  create: true
-
-serviceAccount:
-  create: true
-
 livenessProbe:
   enabled: true
 
@@ -35,7 +30,8 @@ tolerations:
     operator: Exists
 
 
-nodeSelector: {}
+nodeSelector: 
+  beta.kubernetes.io/os: linux
 
 service:
   type: ClusterIP
@@ -46,6 +42,12 @@ service:
 
 cluster:
   dockerRoot: /var/lib/docker
+
+service:
+  ports:
+    - name: metric
+      port: 24231
+      targetPort: metric
 
 configmapReload:
   name: reloader
