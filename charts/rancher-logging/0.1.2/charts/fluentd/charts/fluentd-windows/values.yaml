@@ -1,0 +1,51 @@
+nameOverride: fluentd
+labels: {}
+
+image:
+  repository: micheliac/fluentd
+  tag: dev-windows-1809
+  pullPolicy: IfNotPresent
+
+resources: {}
+  # limits:
+  #   cpu: 100m
+  #   memory: 500Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 200Mi
+# env:
+
+command: '["powershell", "-command",  "fluentd", "-c", "/fluentd/etc/config/entry/fluent.conf"]'
+
+livenessProbe:
+  enabled: true
+
+annotations: {}
+
+# updateStrategy:
+#   type: RollingUpdate
+
+tolerations:
+  - effect: NoSchedule
+    operator: Exists
+
+
+nodeSelector:
+  beta.kubernetes.io/os: windows
+
+cluster:
+  dockerRoot: C:\ProgramData\docker
+
+service:
+  ports:
+    - name: metric
+      port: 24231
+      targetPort: metric
+
+configmapReload:
+  name: reloader
+  image:
+    repository: micheliac/configmap-reload
+    tag: v0.2.2
+    pullPolicy: IfNotPresent
+  resources: {}
