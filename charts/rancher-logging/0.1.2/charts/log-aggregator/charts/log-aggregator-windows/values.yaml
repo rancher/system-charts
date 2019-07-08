@@ -1,0 +1,28 @@
+nameOverride: log-aggregator
+
+labels: {}
+## Log Aggregator container image
+##
+image:
+  repository: micheliac/log-aggregator
+  tag: windows
+
+nodeSelector: 
+  beta.kubernetes.io/os: windows
+
+# updateStrategy:
+#   type: RollingUpdate
+
+tolerations:
+  - effect: NoSchedule
+    operator: Exists
+
+## Resource limits & requests
+## Ref: https://kubernetes.io/docs/user-guide/compute-resources/
+##
+resources: {}
+  # requests:
+  #   memory: 400Mi
+
+## flexvolume dir
+flexVolumeDir: C:/var/lib/kubelet/volumeplugins
