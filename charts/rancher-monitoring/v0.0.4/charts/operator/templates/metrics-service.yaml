@@ -17,5 +17,5 @@ spec:
     release: {{ .Release.Name }}
   ports:
     - name: metrics
-      port: 8080
+      port: 47323
       targetPort: http
