@@ -17,6 +17,14 @@ data:
       updateIntervalSeconds: 0 #never
       options:
         path: /var/lib/grafana/rancher-dashboards
+    - name: RANCHER_ISTIO_MONITORING
+      orgId: 2
+      folder: 'istio'
+      type: file
+      disableDeletion: false
+      updateIntervalSeconds: 0 #never
+      options:
+        path: /var/lib/grafana/rancher-istio-dashboards
 
 
   datasources.yaml: |+

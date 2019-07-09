@@ -40,7 +40,7 @@ remoteWrite: []
 retention: 24h
 
 logLevel: "info"
-logFormat: ""
+logFormat: "logfmt"
 scrapeInterval: "60s"
 evaluationInterval: "60s"
 
@@ -71,3 +71,7 @@ additionalAlertManagerConfigs: []
 # - static_configs:
 #   - targets:
 #     - "localhost:9093"
+
+istioMonitoring:
+  enabled: true
+  namespace: istio-system

@@ -67,6 +67,8 @@ spec:
           subPath: grafana/plugin.json
         - name: grafana-dashboards
           mountPath: /var/lib/grafana/rancher-dashboards
+        - name: grafana-istio-dashboards
+          mountPath: /var/lib/grafana/rancher-istio-dashboards
         - name: grafana-provisionings
           mountPath: /etc/grafana/provisioning/dashboards/all.yaml
           subPath: dashboards.yaml
@@ -153,6 +155,9 @@ spec:
       - name: grafana-dashboards
         configMap:
           name: {{ template "app.dashboards.fullname" . }}
+      - name: grafana-istio-dashboards
+        configMap:
+          name: {{ template "app.dashboards.istio-fullname" . }}
       - name: grafana-provisionings
         configMap:
           name: {{ template "app.provisionings.fullname" . }}
