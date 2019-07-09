@@ -1,3 +1,4 @@
+{{- if and .Values.enabled (eq .Values.global.monitoring.type "built-in") -}}
 {{- $files := .Files }}
 {{- range $path, $bytes := .Files.Glob "dashboards/*.json" }}
 {{- $filename := trimSuffix (ext $path) (base $path) }}
@@ -16,3 +17,4 @@ data:
   {{ base $path }}: '{{ $files.Get $path }}'
 ---
 {{- end }}
+{{- end -}}

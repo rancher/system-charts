@@ -1,3 +1,4 @@
+{{- if and .Values.enabled (eq .Values.global.monitoring.type "built-in") -}}
 {{- if .Values.ingress.enabled -}}
 apiVersion: extensions/v1beta1
 kind: Ingress
@@ -37,4 +38,5 @@ spec:
   tls:
 {{ toYaml .Values.ingress.tls | indent 4 }}
   {{- end -}}
+{{- end -}}
 {{- end -}}
