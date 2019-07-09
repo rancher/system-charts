@@ -545,3 +545,8 @@ global:
   # This field is set to false by default, so 'helm template ...'
   # will ignore the helm test yaml files when generating the template
   enableHelmTest: false
+
+  # Specify the monitoring server config of istio
+  monitoring:
+    # options includes built-in, cluster-monitoring and custom, default to internal
+    type: built-in

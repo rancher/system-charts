@@ -41,12 +41,6 @@ spec:
         - "-v"
         - "4"
         env:
-        {{- if and .Values.global.rancher (and .Values.global.rancher.domain .Values.global.rancher.clusterId) }}
-        {{- if not .Values.dashboard.grafanaURL }}
-        - name: GRAFANA_URL
-          value: 'https://{{ .Values.global.rancher.domain }}/k8s/clusters/{{ .Values.global.rancher.clusterId }}/api/v1/namespaces/{{ .Release.Namespace }}/services/http:grafana:80/proxy/'
-        {{- end }}
-        {{- end }}
         - name: ACTIVE_NAMESPACE
           valueFrom:
             fieldRef:
@@ -65,8 +59,6 @@ spec:
               name: {{ .Values.dashboard.secretName }}
               key: passphrase
               optional: true
-        - name: PROMETHEUS_SERVICE_URL
-          value: {{ .Values.prometheusAddr }}
 {{- if .Values.contextPath }}
         - name: SERVER_WEB_ROOT
           value: {{ .Values.contextPath }}
