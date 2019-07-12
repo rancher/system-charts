@@ -1,3 +1,4 @@
+{{- if .Values.enabled -}}
 apiVersion: extensions/v1beta1
 kind: DaemonSet
 metadata:
@@ -55,3 +56,4 @@ spec:
       - name: flexvolume-driver
         hostPath:
           path: {{ .Values.flexVolumeDir }}
+{{- end }}
