@@ -1,5 +1,5 @@
-name: log-aggregator
-version: 0.0.2
+name: log-aggregator-windows
+version: 0.0.1
 appVersion: 0.1.4
 home: https://github.com/rancher/log-aggregator
 description: Deploy flexvolume driver log-aggregator to collect log.
@@ -8,6 +8,7 @@ keywords:
 - fluentd
 - flexvolume driver
 - logging
+- windows
 maintainers:
 - name: michelia
   email: support@rancher.com

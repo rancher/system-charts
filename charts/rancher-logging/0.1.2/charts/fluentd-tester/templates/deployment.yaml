@@ -68,8 +68,9 @@ spec:
 {{- if .Values.extraVolumes }}
 {{ toYaml .Values.extraVolumes | indent 6 }}
 {{- end }}
-{{- if .Values.nodeSelector }}
       nodeSelector:
+{{- include "linux-node-selector" . | nindent 8 }}
+{{- if .Values.nodeSelector }}
 {{ toYaml .Values.nodeSelector | indent 8 }}
 {{- end }}
 {{- if .Values.tolerations }}
