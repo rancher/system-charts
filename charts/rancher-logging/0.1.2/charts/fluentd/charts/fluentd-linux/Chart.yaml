@@ -1,4 +1,4 @@
-name: fluentd
+name: fluentd-linux
 version: 0.0.2
 appVersion: 1.6.3
 home: https://www.fluentd.org/
@@ -8,6 +8,7 @@ keywords:
 - fluentd
 - rancher
 - logging
+- linux
 sources:
 - https://github.com/helm/charts/stable/fluentd-elasticsearch
 maintainers:

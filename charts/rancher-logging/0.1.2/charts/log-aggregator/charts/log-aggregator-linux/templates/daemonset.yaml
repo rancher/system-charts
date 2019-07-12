@@ -1,7 +1,7 @@
 apiVersion: {{ template "daemonset_api_version" . }}
 kind: DaemonSet
 metadata:
-  name: {{ template "log-aggregator.fullname" . }}
+  name: {{ template "log-aggregator.fullname" . }}-linux
   labels:
     app: {{ template "log-aggregator.name" . }}
     chart: {{ template "log-aggregator.version" . }}
@@ -26,7 +26,6 @@ spec:
         chart: {{ template "log-aggregator.version" . }}
         release: {{ .Release.Name }}
     spec:
-      serviceAccountName: {{ template "log-aggregator.fullname" . }}
       containers:
       - name: log-aggregator
         image: {{ template "system_default_registry" . }}{{ .Values.image.repository }}:{{ .Values.image.tag }}
@@ -43,8 +42,9 @@ spec:
         resources:
 {{ toYaml .Values.resources | indent 10 }}
       terminationGracePeriodSeconds: 10
-    {{- if .Values.nodeSelector }}
       nodeSelector:
+{{- include "linux-node-selector" . | nindent 8 }}
+    {{- if .Values.nodeSelector }}
 {{ toYaml .Values.nodeSelector | indent 8 }}
     {{- end }}
       tolerations:

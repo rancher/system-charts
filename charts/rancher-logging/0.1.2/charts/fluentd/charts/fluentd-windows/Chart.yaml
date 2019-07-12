@@ -1,5 +1,5 @@
-name: fluentd
-version: 0.0.2
+name: fluentd-windows
+version: 0.0.1
 appVersion: 1.6.3
 home: https://www.fluentd.org/
 description: A Fluentd Helm chart for Rancher system logging
@@ -8,6 +8,7 @@ keywords:
 - fluentd
 - rancher
 - logging
+- windows
 sources:
 - https://github.com/helm/charts/stable/fluentd-elasticsearch
 maintainers:
