@@ -4,7 +4,12 @@ kind: Job
 metadata:
   namespace: {{ .Release.Namespace }}
   name: istio-init-crd-certmanager-11
+  annotations:
+    "helm.sh/hook": post-install
+    "helm.sh/hook-delete-policy": hook-succeeded
+    "helm.sh/hook-weight": "-5"
 spec:
+  ttlSecondsAfterFinished: 100
   template:
     metadata:
       annotations:
@@ -35,7 +40,7 @@ metadata:
   name: istio-init-delete-crd-certmanager-11
   annotations:
     "helm.sh/hook": "pre-delete"
-    "helm.sh/hook-delete-policy": "hook-succeeded, before-hook-creation"
+    "helm.sh/hook-delete-policy": "hook-succeeded, before-hook-creation, hook-failed"
 spec:
   template:
     metadata:
@@ -60,6 +65,6 @@ spec:
         configMap:
           name: istio-crd-certmanager-11
       restartPolicy: Never
-  backoffLimit: 4
+  backoffLimit: 1
 {{- end }}
 {{- end }}

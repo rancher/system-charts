@@ -3,7 +3,12 @@ kind: Job
 metadata:
   namespace: {{ .Release.Namespace }}
   name: istio-init-crd-11
+  annotations:
+    "helm.sh/hook": post-install
+    "helm.sh/hook-delete-policy": hook-succeeded
+    "helm.sh/hook-weight": "-5"
 spec:
+  ttlSecondsAfterFinished: 100
   template:
     metadata:
       annotations:
