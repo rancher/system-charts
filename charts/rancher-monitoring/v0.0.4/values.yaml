@@ -164,6 +164,21 @@ exporter-node:
   ##
   serviceAccountName: ""
 
+exporter-node-windows:
+  enabled: false
+  apiGroup: "monitoring.coreos.com"
+  endpoints: []
+  nodeSelectors: []
+  image:
+    repository: rancher/wmi_exporter-package
+    tag: v0.0.1
+  ports:
+    metrics:
+      name: windows-metrics
+      scheme: https
+      port: 9796
+      protocol: TCP
+
 exporter-kube-state:
   enabled: false
   apiGroup: "monitoring.coreos.com"

@@ -49,6 +49,11 @@ dependencies:
     condition: exporter-node.enabled
     repository: "file://./charts/exporter-node/"
 
+  - name: exporter-node-windows
+    version: 0.0.1
+    condition: exporter-node-windows.enabled
+    repository: "file://./charts/exporter-node-windows/"
+
   - name: grafana
     version: 0.0.1
     condition: grafana.enabled
