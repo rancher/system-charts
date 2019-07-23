@@ -27,6 +27,11 @@ storageSpec: {}
 #       storage: 2Gi
 #   selector: {}
 
+securityContext:
+  runAsUser: 472
+  runAsGroup: 472
+  fsGroup: 472
+
 ## Resource limits & requests
 ## Ref: https://kubernetes.io/docs/user-guide/compute-resources/
 resources:

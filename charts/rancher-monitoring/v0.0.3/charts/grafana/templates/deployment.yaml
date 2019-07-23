@@ -99,7 +99,7 @@ spec:
         - /nginx/nginx.conf
         ports:
         - name: http
-          containerPort: 80
+          containerPort: 8080
           protocol: TCP
         volumeMounts:
         - mountPath: /nginx/
@@ -108,6 +108,9 @@ spec:
         resources:
 {{ toYaml .Values.resources.proxy | indent 10 }}
         {{- end }}
+        securityContext:
+          runAsUser: 100
+          runAsGroup: 101
       nodeSelector:
         beta.kubernetes.io/os: linux
         {{- range .Values.nodeSelectors }}
@@ -126,7 +129,7 @@ spec:
 {{ toYaml .Values.tolerations | indent 8 }}
     {{- end }}
       securityContext:
-        fsGroup: 472
+{{ toYaml .Values.securityContext | indent 8 }}      
       volumes:
       - name: grafana-static-contents
         emptyDir: {}

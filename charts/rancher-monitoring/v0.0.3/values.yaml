@@ -160,6 +160,7 @@ exporter-node:
   collectors: {}
   enabledHostNetwork: true
   enabledHostPID: true
+  enabledPSP: true
   ## Already exist ServiceAccount
   ##
   serviceAccountName: ""
@@ -181,7 +182,10 @@ exporter-kube-state:
   ## Already exist ServiceAccount
   ##
   serviceAccountName: ""
-  securityContext: {}
+  securityContext:  
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 1000
 
 alertmanager:
   enabled: false
@@ -271,6 +275,10 @@ grafana:
   ## Already exist ServiceAccount
   ##
   serviceAccountName: ""
+  securityContext:
+    runAsUser: 472
+    runAsGroup: 472
+    fsGroup: 472
   prometheusDatasourceURL: "http://prometheus-operated:9090"
 
 prometheus:

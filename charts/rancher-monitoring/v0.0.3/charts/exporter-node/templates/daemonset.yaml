@@ -1,3 +1,4 @@
+---
 apiVersion: {{ template "daemonset_api_version" . }}
 kind: DaemonSet
 metadata:

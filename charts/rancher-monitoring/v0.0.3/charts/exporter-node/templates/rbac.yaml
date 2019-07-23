@@ -1,4 +1,71 @@
 {{- if and .Values.enabledRBAC (not .Values.serviceAccountName) }}
+{{- if .Values.enabledPSP }}
+---
+apiVersion: extensions/v1beta1
+kind: PodSecurityPolicy
+metadata:
+  labels:
+    app: {{ template "app.name" . }}
+    chart: {{ template "app.version" . }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+  name: {{ template "app.fullname" . }}
+spec:
+  privileged: false
+  allowPrivilegeEscalation: false
+  requiredDropCapabilities:
+   - ALL
+  defaultAllowPrivilegeEscalation: false
+  readOnlyRootFilesystem: false
+  fsGroup:
+    rule: RunAsAny
+  runAsUser:
+    rule: RunAsAny
+  seLinux:
+    rule: RunAsAny
+  supplementalGroups:
+    rule: RunAsAny
+  hostPorts:
+    - min: 1
+      max: 65535
+  volumes:
+   - secret
+   - configMap
+   - hostPath
+  AllowedHostPaths:
+    - pathPrefix: /proc
+      readOnly: true
+    - pathPrefix: /sys
+      readOnly: true
+    - pathPrefix: /
+      readOnly: true
+{{- if .Values.enabledHostNetwork }}
+  hostNetwork: true
+{{- end }}
+{{- if .Values.enabledHostPID }}
+  hostPID: true
+{{- end }}
+  hostIPC: false
+
+---
+apiVersion: {{ template "rbac_api_version" . }}
+kind: ClusterRole
+metadata:
+  labels:
+    app: {{ template "app.name" . }}
+    chart: {{ template "app.version" . }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+  name: {{ template "app.fullname" . }}-psp
+rules:
+- apiGroups: ['policy']
+  resources: ['podsecuritypolicies']
+  verbs: ['use']
+  resourceNames:
+  - {{ template "app.fullname" . }}
+{{- end }}
+
+---
 apiVersion: {{ template "rbac_api_version" . }}
 kind: ClusterRole
 metadata:
@@ -20,7 +87,7 @@ rules:
   resources:
   - subjectaccessreviews
   verbs:
-  - creat
+  - create
 
 ---
 apiVersion: v1
@@ -53,4 +120,27 @@ subjects:
 - kind: ServiceAccount
   name: {{ template "app.fullname" . }}
   namespace: {{ .Release.Namespace }}
+
+{{- if .Values.enabledRBAC }}
+{{- if .Values.enabledPSP }}
+---
+apiVersion: {{ template "rbac_api_version" . }}
+kind: ClusterRoleBinding
+metadata:
+  labels:
+    app: {{ template "app.name" . }}
+    chart: {{ template "app.version" . }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+  name: {{ template "app.fullname" . }}-psp
+roleRef:
+  apiGroup: {{ template "rbac_api_version" . }}
+  kind: ClusterRole
+  name: {{ template "app.fullname" . }}-psp
+subjects:
+- kind: ServiceAccount
+  name: {{ template "app.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+{{- end }}
+{{- end }}
 {{- end }}

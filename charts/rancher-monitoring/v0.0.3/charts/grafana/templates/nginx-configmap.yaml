@@ -46,7 +46,7 @@ data:
     user                  nginx;
     worker_processes      auto;
     error_log             /dev/stdout warn;
-    pid                   /var/run/nginx.pid;
+    pid                   /var/cache/nginx/nginx.pid;
 
     events {
        worker_connections 1024;
@@ -63,7 +63,7 @@ data:
       proxy_cache_path            /tmp/nginx levels=1:2 keys_zone=my_zone:100m inactive=1d max_size=10g;
 
       server {
-        listen          80;
+        listen          8080;
         access_log      off;
 
         gzip            on;
