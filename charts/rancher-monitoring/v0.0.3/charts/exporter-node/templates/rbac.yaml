@@ -134,7 +134,7 @@ metadata:
     release: {{ .Release.Name }}
   name: {{ template "app.fullname" . }}-psp
 roleRef:
-  apiGroup: {{ template "rbac_api_version" . }}
+  apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
   name: {{ template "app.fullname" . }}-psp
 subjects:

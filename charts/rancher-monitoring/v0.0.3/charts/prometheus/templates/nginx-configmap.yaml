@@ -13,22 +13,24 @@ data:
     set -e
 
     srcpath="/nginx/nginx-conf.tmpl"
-    dstpath="/var/run/nginx.conf"
+    dstpath="/var/cache/nginx/nginx.conf"
 
     if ! [ -f $srcpath ]; then
       exit 1
     fi
 
+    mkdir -p /var/cache/nginx/cache
+
     token=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)
     sed "s/REPLACE_PARAM_AUTHORIZATION/Bearer ${token}/g" $srcpath | sed "s/REPLACE_PARAM_IP/${POD_IP}/g" > $dstpath
-    
-    exec nginx -g "daemon off;" -c /var/run/nginx.conf
+
+    exec nginx -g "daemon off;" -c /var/cache/nginx/nginx.conf
 
   nginx-conf.tmpl: |-
     user                  nginx;
     worker_processes      auto;
     error_log             /dev/stdout warn;
-    pid                   /var/run/nginx.pid;
+    pid                   /var/cache/nginx/nginx.pid;
 
     events {
        worker_connections 1024;
@@ -42,10 +44,10 @@ data:
       proxy_read_timeout          180;
       proxy_send_timeout          5;
       proxy_buffering             off;
-      proxy_cache_path            /tmp/nginx levels=1:2 keys_zone=my_zone:100m inactive=1d max_size=10g;
+      proxy_cache_path           /var/cache/nginx/cache levels=1:2 keys_zone=my_zone:100m inactive=1d max_size=10g;
 
       server {
-        listen          80;
+        listen          8080;
         access_log      off;
 
         gzip            on;

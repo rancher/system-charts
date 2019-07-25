@@ -1,8 +1,9 @@
 apiVersion: v1
-description: Creates Kube-state Exporter instance for Kubernetes which maintaining by Rancher 2.
+description: Creates Kube-state Exporter instance for Kubernetes which maintaining
+  by Rancher 2.
 engine: gotpl
 maintainers:
-- name: thxCode
-  email: frank@rancher.com
+- email: frank@rancher.com
+  name: thxCode
 name: exporter-kube-state
 version: 0.0.1

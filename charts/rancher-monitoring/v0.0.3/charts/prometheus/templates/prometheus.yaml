@@ -17,7 +17,7 @@ spec:
     command:
     - /bin/sh
     - -c 
-    - cp /nginx/run-sh.tmpl /var/run/nginx-start.sh; chmod +x /var/run/nginx-start.sh; /var/run/nginx-start.sh
+    - cp /nginx/run-sh.tmpl /var/cache/nginx/nginx-start.sh; chmod +x /var/cache/nginx/nginx-start.sh; /var/cache/nginx/nginx-start.sh
     env:
     - name: POD_IP
       valueFrom:
@@ -25,7 +25,7 @@ spec:
           fieldPath: status.podIP
     image: {{ template "system_default_registry" . }}{{ .Values.image.proxy.repository }}:{{ .Values.image.proxy.tag }}
     ports:
-    - containerPort: 80
+    - containerPort: 8080
       name: http
       protocol: TCP
     {{- if and .Values.resources .Values.resources.proxy }}
@@ -33,8 +33,9 @@ spec:
 {{ toYaml .Values.resources.proxy | indent 6 }}
     {{- end }}
     securityContext:
-      runAsNonRoot: false
-      runAsUser: 0
+      # runAsNonRoot: false
+      runAsUser: 100
+      runAsGroup: 101
     volumeMounts:
     - mountPath: /nginx
       name: configmap-{{ template "app.nginx.fullname" . }}

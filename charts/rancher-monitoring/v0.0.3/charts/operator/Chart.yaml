@@ -2,7 +2,7 @@ apiVersion: v1
 description: Creates Prometheus Operator for Kubernetes.
 engine: gotpl
 maintainers:
-- name: thxCode
-  email: frank@rancher.com
+- email: frank@rancher.com
+  name: thxCode
 name: operator
 version: 0.0.2
