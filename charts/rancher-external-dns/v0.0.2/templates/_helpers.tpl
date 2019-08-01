@@ -57,3 +57,15 @@ accessKeySecret: {{ .Values.alibabacloud.secretKey }}
 {{- "" -}}
 {{- end -}}
 {{- end -}}
+
+{{- define "deployment_api_version" -}}
+{{- if .Capabilities.APIVersions.Has "apps/v1" -}}
+{{- "apps/v1" -}}
+{{- else if .Capabilities.APIVersions.Has "apps/v1beta2" -}}
+{{- "apps/v1beta2" -}}
+{{- else if .Capabilities.APIVersions.Has "apps/v1beta1" -}}
+{{- "apps/v1beta1" -}}
+{{- else -}}
+{{- "extensions/v1beta1" -}}
+{{- end -}}
+{{- end -}}
