@@ -80,6 +80,9 @@ spec:
   listenLocal: true
 {{- end }}
   podMetadata:
+    {{- if .Release.IsInstall }}
+    creationTimestamp: {{ now | date "2006-01-02T15:04:05Z" | quote }}
+    {{- end }}
     labels:
       app: {{ template "app.name" . }}
       chart: {{ template "app.version" . }}
