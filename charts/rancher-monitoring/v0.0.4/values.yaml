@@ -232,7 +232,7 @@ grafana:
   apiGroup: "monitoring.coreos.com"
   image:
     repository: rancher/grafana-grafana
-    tag: 5.4.3
+    tag: 6.3.2
     tool:
       repository: rancher/prometheus-auth
       tag: v0.2.0
@@ -290,7 +290,7 @@ prometheus:
   apiGroup: "monitoring.coreos.com"
   image:
     repository: rancher/prom-prometheus
-    tag: v2.7.1
+    tag: v2.11.1
     auth:
       repository: rancher/prometheus-auth
       tag: v0.2.0
