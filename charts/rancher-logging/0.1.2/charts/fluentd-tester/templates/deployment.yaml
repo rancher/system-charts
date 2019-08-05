@@ -18,7 +18,6 @@ spec:
   selector:
     matchLabels:
       app: {{ template "fluentd-tester.name" . }}
-      chart: {{ template "fluentd-tester.version" . }}
       release: {{ .Release.Name }}
   template:
     metadata:
