@@ -5,6 +5,9 @@ metadata:
     chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
   name: {{ template "external-dns.fullname" . }}
 spec:
+  selector:
+    matchLabels:
+      {{ include "external-dns.labels" . | indent 6 }}
   template:
     metadata:
       annotations:
