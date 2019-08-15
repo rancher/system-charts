@@ -156,6 +156,10 @@ spec:
           {{- else }}
           - istio-pilot:15010
           {{- end }}
+          {{- if $spec.applicationPorts }}
+          - --applicationPorts
+          - "{{ $spec.applicationPorts }}"
+          {{- end }}
         {{- end }}
         {{- if $.Values.global.trustDomain }}
           - --trust-domain={{ $.Values.global.trustDomain }}
@@ -290,10 +294,13 @@ spec:
       affinity:
       {{- include "gatewaynodeaffinity" (dict "root" $ "nodeSelector" $spec.nodeSelector) | indent 6 }}
       {{- include "gatewaypodAntiAffinity" (dict "podAntiAffinityLabelSelector" $spec.podAntiAffinityLabelSelector "podAntiAffinityTermLabelSelector" $spec.podAntiAffinityTermLabelSelector) | indent 6 }}
-{{- if $spec.tolerations }}
+      {{- if $spec.tolerations }}
       tolerations:
 {{ toYaml $spec.tolerations | indent 6 }}
-{{- end }}
+      {{- else if $.Values.global.defaultTolerations }}
+      tolerations:
+{{ toYaml $.Values.global.defaultTolerations | indent 6 }}
+      {{- end }}
 ---
 {{- end }}
 {{- end }}

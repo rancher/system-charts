@@ -26,7 +26,7 @@ gateways:
 #
 sidecarInjectorWebhook:
   repository: rancher/istio-sidecar_injector
-  tag: "1.2.0"
+  tag: "1.2.4"
   enabled: true
 
 #
@@ -35,7 +35,7 @@ sidecarInjectorWebhook:
 #
 galley:
   repository: rancher/istio-galley
-  tag: 1.2.0
+  tag: 1.2.4
   enabled: true
 
 #
@@ -44,7 +44,7 @@ galley:
 # @see charts/mixer/values.yaml, it takes precedence
 mixer:
   repository: rancher/istio-mixer
-  tag: "1.2.0"
+  tag: "1.2.4"
   enabled: true
   policy:
     # if policy is enabled the global.disablePolicyChecks has affect.
@@ -58,7 +58,7 @@ mixer:
 # @see charts/pilot/values.yaml
 pilot:
   repository: rancher/istio-pilot
-  tag: "1.2.0"
+  tag: "1.2.4"
   enabled: true
 
 #
@@ -66,7 +66,7 @@ pilot:
 #
 security:
   repository: rancher/istio-citadel
-  tag: "1.2.0"
+  tag: "1.2.4"
   enabled: true
 
 #
@@ -160,7 +160,7 @@ global:
 
   # Default tag for Istio images.
   # tag: release-1.1-latest-daily
-  tag: 1.2.0
+  tag: 1.2.4
 
   # Comma-separated minimum per-scope logging level of messages to output, in the form of <scope>:<level>,<scope>:<level>
   # The control plane has different scopes depending on component, but can configure default log level across all components
@@ -170,7 +170,7 @@ global:
 
   kubectl:
     repository: rancher/istio-kubectl
-    tag: 1.2.0
+    tag: 1.2.4
 
   # monitoring port used by mixer, pilot, galley
   monitoringPort: 15014
@@ -194,7 +194,7 @@ global:
 
   proxy:
     repository: rancher/istio-proxyv2
-    tag: 1.2.0
+    tag: 1.2.4
 
     # cluster domain. Default value is "cluster.local".
     clusterDomain: "cluster.local"
@@ -308,7 +308,7 @@ global:
   proxy_init:
     # Base name for the proxy_init container, used to configure iptables.
     repository: rancher/istio-proxy_init
-    tag: "1.2.0"
+    tag: "1.2.4"
 
   # imagePullPolicy is applied to istio control plane components.
   # local tests require IfNotPresent, to avoid uploading to dockerhub.
@@ -388,6 +388,14 @@ global:
   # values by adding its node selector block in the relevant section below and setting
   # the desired values.
   defaultNodeSelector: {}
+
+  # Default node tolerations to be applied to all deployments so that all pods can be
+  # scheduled to a particular nodes with matching taints. Each component can overwrite
+  # these default values by adding its tolerations block in the relevant section below
+  # and setting the desired values.
+  # Configure this field in case that all pods of Istio control plane are expected to
+  # be scheduled to particular nodes with specified taints.
+  defaultTolerations: []
 
   # Whether to perform server-side validation of configuration.
   configValidation: true
@@ -483,7 +491,7 @@ global:
 
   nodeAgent:
     repository: rancher/istio-node-agent-k8s
-    tag: "1.2.0"
+    tag: "1.2.4"
   sds:
     # SDS enabled. IF set to true, mTLS certificates for the sidecars will be
     # distributed through the SecretDiscoveryService instead of using K8S secrets to mount the certificates.
