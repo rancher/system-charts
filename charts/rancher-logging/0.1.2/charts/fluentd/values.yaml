@@ -2,7 +2,7 @@ labels: {}
 
 image:
   repository: rancher/fluentd
-  tag: v0.1.13
+  tag: v0.1.14
   pullPolicy: IfNotPresent
 
 resources: {}
