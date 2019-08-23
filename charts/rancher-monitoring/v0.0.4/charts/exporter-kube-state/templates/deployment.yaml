@@ -50,8 +50,9 @@ spec:
       securityContext:
 {{ toYaml .Values.securityContext | indent 8 }}
       {{- end }}
-      {{- if .Values.tolerations }}
       tolerations:
+{{- include "linux-node-tolerations" . | nindent 8}}
+      {{- if .Values.tolerations }}
 {{ toYaml .Values.tolerations | indent 8 }}
       {{- end }}
       nodeSelector:
