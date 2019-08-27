@@ -109,7 +109,7 @@ spec:
 {{- end }}
 {{- end }}
   nodeSelector:
-    beta.kubernetes.io/os: linux
+{{- include "linux-node-selector" . | nindent 4 }}
     {{- range .Values.nodeSelectors }}
     {{- $pair := regexSplit "=" . 2 }}
     {{- if eq 2 (len $pair) }}

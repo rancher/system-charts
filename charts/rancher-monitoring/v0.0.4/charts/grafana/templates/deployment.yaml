@@ -111,7 +111,7 @@ spec:
 {{ toYaml .Values.resources.proxy | indent 10 }}
         {{- end }}
       nodeSelector:
-        beta.kubernetes.io/os: linux
+{{- include "linux-node-selector" . | nindent 8 }}
         {{- range .Values.nodeSelectors }}
         {{- $pair := regexSplit "=" . 2 }}
         {{- if eq 2 (len $pair) }}

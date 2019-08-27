@@ -137,3 +137,11 @@ add below linux tolerations to workloads could be scheduled to those linux nodes
   effect: "NoSchedule"
   operator: "Equal"
 {{- end -}}
+
+{{- define "linux-node-selector" -}}
+{{- if semverCompare "<1.14-0" .Capabilities.KubeVersion.GitVersion -}}
+beta.kubernetes.io/os: linux
+{{- else -}}
+kubernetes.io/os: linux
+{{- end -}}
+{{- end -}}
