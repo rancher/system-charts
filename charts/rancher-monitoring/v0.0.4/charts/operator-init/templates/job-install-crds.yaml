@@ -11,6 +11,10 @@ spec:
   backoffLimit: 3
   template:
     spec:
+      nodeSelector:
+{{- include "linux-node-selector" . | nindent 8 }}
+      tolerations:
+{{- include "linux-node-tolerations" . | nindent 8}}
       serviceAccountName: {{ template "app.fullname" . }}
       containers:
       - name: operator-init-crds

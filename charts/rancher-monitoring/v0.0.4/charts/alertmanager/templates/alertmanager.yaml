@@ -19,7 +19,7 @@ spec:
       release: {{ .Release.Name }}
   baseImage: {{ template "system_default_registry" . }}{{ .Values.image.repository }}
   nodeSelector:
-    beta.kubernetes.io/os: linux
+{{- include "linux-node-selector" . | nindent 4 }}
     {{- range .Values.nodeSelectors }}
     {{- $pair := regexSplit "=" . 2 }}
     {{- if eq 2 (len $pair) }}
