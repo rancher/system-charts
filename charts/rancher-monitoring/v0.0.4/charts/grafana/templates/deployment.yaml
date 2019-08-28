@@ -101,7 +101,7 @@ spec:
         - /nginx/nginx.conf
         ports:
         - name: http
-          containerPort: 80
+          containerPort: 8080
           protocol: TCP
         volumeMounts:
         - mountPath: /nginx/
@@ -109,6 +109,9 @@ spec:
         {{- if and .Values.resources .Values.resources.proxy }}
         resources:
 {{ toYaml .Values.resources.proxy | indent 10 }}
+        securityContext:
+          runAsUser: 100
+          runAsGroup: 101
         {{- end }}
       nodeSelector:
 {{- include "linux-node-selector" . | nindent 8 }}
@@ -129,6 +132,8 @@ spec:
 {{ toYaml .Values.tolerations | indent 8 }}
     {{- end }}
       securityContext:
+        runAsUser: 472
+        runAsGroup: 472
         fsGroup: 472
       volumes:
       - name: grafana-static-contents
