@@ -1,4 +1,5 @@
 enabledRBAC: true
+enabledPSP: true
 
 ##
 # Default collector settings

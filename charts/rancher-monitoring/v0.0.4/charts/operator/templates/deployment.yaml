@@ -57,7 +57,7 @@ spec:
           resources:
 {{ toYaml .Values.resources | indent 12 }}
       nodeSelector:
-        beta.kubernetes.io/os: linux
+{{- include "linux-node-selector" . | nindent 8 }}
         {{- range .Values.nodeSelectors }}
         {{- $pair := regexSplit "=" . 2 }}
         {{- if eq 2 (len $pair) }}
@@ -69,7 +69,8 @@ spec:
       {{- if .Values.enabledRBAC }}
       serviceAccountName: {{ default (include "app.fullname" .) .Values.serviceAccountName }}
       {{- end }}
-      {{- if .Values.tolerations }}
       tolerations:
+{{- include "linux-node-tolerations" . | nindent 8 }}
+      {{- if .Values.tolerations }}
 {{ toYaml .Values.tolerations | indent 8 }}
       {{- end }}

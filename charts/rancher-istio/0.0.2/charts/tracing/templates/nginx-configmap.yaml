@@ -54,7 +54,7 @@ data:
           proxy_pass     http://localhost:16686/;
 {{ else }}
           proxy_pass     http://localhost:9411/;
-{{ end}}      
+{{ end }}
           if ($request_filename ~ .*\.(?:js|css|jpg|jpeg|gif|png|ico|cur|gz|svg|svgz|mp4|ogg|ogv|webm)$) {
             expires             90d;
           }

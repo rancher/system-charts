@@ -1,14 +1,13 @@
-apiVersion: {{ template "deployment_api_version" . }}
-kind: Deployment
+apiVersion: {{ template "daemonset_api_version" . }}
+kind: DaemonSet
 metadata:
-  name: {{ template "app.fullname" . }}
   labels:
     app: {{ template "app.name" . }}
     chart: {{ template "app.version" . }}
     heritage: {{ .Release.Service }}
     release: {{ .Release.Name }}
+  name: {{ template "app.fullname" . }}
 spec:
-  replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
       app: {{ template "app.name" . }}
@@ -22,41 +21,40 @@ spec:
         release: {{ .Release.Name }}
     spec:
       containers:
-      - name: kube-state
+      - name: exporter-node
         image: {{ template "system_default_registry" . }}{{ .Values.image.repository }}:{{ .Values.image.tag }}
+{{- if .Values.args }}
+        args: {{ .Values.args }}
+{{ end }}
         ports:
         - name: http
-          containerPort: 8080
-        - name: http-metrics
-          containerPort: 8081
-        livenessProbe:
-          httpGet:
-            path: /
-            port: 8080
-          initialDelaySeconds: 30
-          timeoutSeconds: 30
-        readinessProbe:
-          httpGet:
-            path: /
-            port: 8080
-          initialDelaySeconds: 30
-          timeoutSeconds: 5
+          containerPort: {{ .Values.ports.metrics.port }}
+        env:
+        - name: LISTEN_PORT
+          value: "{{ .Values.ports.metrics.port }}"
+{{- if .Values.enabledCollectors }}
+        - name: ENABLED_COLLECTORS
+          value: {{ .Values.enabledCollectors }}
+{{- end }}
+{{- if .Values.extraEnv }}
+{{ toYaml .Values.extraEnv | indent 10 }}
+        {{- end }}
         resources:
 {{ toYaml .Values.resources | indent 10 }}
+        volumeMounts:
+        - name: wins-pipe
+          mountPath: \\.\pipe\rancher_wins
       {{- if .Values.enabledRBAC }}
       serviceAccountName: {{ default (include "app.fullname" .) .Values.serviceAccountName }}
       {{- end }}
-      {{- if .Values.securityContext }}
-      securityContext:
-{{ toYaml .Values.securityContext | indent 8 }}
-      {{- end }}
       tolerations:
-{{- include "linux-node-tolerations" . | nindent 8}}
-      {{- if .Values.tolerations }}
-{{ toYaml .Values.tolerations | indent 8 }}
-      {{- end }}
+      - operator: Exists
       nodeSelector:
-{{- include "linux-node-selector" . | nindent 8 }}
+{{- if semverCompare "<1.14-0" .Capabilities.KubeVersion.GitVersion }}
+        beta.kubernetes.io/os: windows
+{{- else}}
+        kubernetes.io/os: windows
+{{- end}}
         {{- range .Values.nodeSelectors }}
         {{- $pair := regexSplit "=" . 2 }}
         {{- if eq 2 (len $pair) }}
@@ -65,3 +63,7 @@ spec:
         {{ (index $pair 0) }}: ""
         {{- end }}
         {{- end }}
+      volumes:
+      - name: wins-pipe
+        hostPath:
+          path: \\.\pipe\rancher_wins

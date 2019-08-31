@@ -55,6 +55,9 @@ spec:
       {{- if .Values.insecureSkipVerify }}
       insecureSkipVerify: true
       {{- end }}
+    metricRelabelings:
+    - action: labeldrop
+      regex: (^id$|^image$|^name$|^cpu$)
     relabelings:
     - sourceLabels:
       - __meta_kubernetes_pod_host_ip
@@ -68,8 +71,34 @@ spec:
       action: replace
       regex: (.+)
       replacement: $1
+  - port: https-metrics
+    scheme: https
+    path: /metrics/resource/v1alpha1
+    honorLabels: true
+    bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+    tlsConfig:
+      caFile: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+      {{- if .Values.insecureSkipVerify }}
+      insecureSkipVerify: true
+      {{- end }}
+    metricRelabelings:
+    - action: replace
+      regex: (.+)
+      replacement: $1
+      sourceLabels:
+      - container
+      targetLabel: container_name
+    - action: replace
+      regex: (.+)
+      replacement: $1
+      sourceLabels:
+      - pod
+      targetLabel: pod_name
   {{- else }}
   - port: http-metrics
+    metricRelabelings:
+    - action: labeldrop
+      regex: (^id$|^image$|^name$|^cpu$)
     relabelings:
     - sourceLabels:
       - __meta_kubernetes_pod_host_ip
@@ -99,4 +128,20 @@ spec:
       action: replace
       regex: (.+)
       replacement: $1
+  - port: http-metrics
+    path: /metrics/resource/v1alpha1
+    honorLabels: true
+    metricRelabelings:
+    - action: replace
+      regex: (.+)
+      replacement: $1
+      sourceLabels:
+      - container
+      targetLabel: container_name
+    - action: replace
+      regex: (.+)
+      replacement: $1
+      sourceLabels:
+      - pod
+      targetLabel: pod_name
   {{- end }}
