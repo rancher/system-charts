@@ -42,3 +42,19 @@
 {{- "" -}}
 {{- end -}}
 {{- end -}}
+
+{{- define "linux-node-selector" -}}
+{{- if semverCompare "<1.14-0" .Capabilities.KubeVersion.GitVersion -}}
+beta.kubernetes.io/os: linux
+{{- else -}}
+kubernetes.io/os: linux
+{{- end -}}
+{{- end -}}
+
+{{- define "windows-node-selector" -}}
+{{- if semverCompare "<1.14-0" .Capabilities.KubeVersion.GitVersion -}}
+beta.kubernetes.io/os: windows
+{{- else -}}
+kubernetes.io/os: windows
+{{- end -}}
+{{- end -}}

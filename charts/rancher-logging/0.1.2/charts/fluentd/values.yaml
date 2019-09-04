@@ -1,20 +1,10 @@
-labels: {}
+fluentd-linux:
+  enabled: true
 
-image:
-  repository: rancher/fluentd
-  tag: v0.1.14
-  pullPolicy: IfNotPresent
+fluentd-windows:
+  enabled: false
 
-resources: {}
-  # limits:
-  #   cpu: 100m
-  #   memory: 500Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 200Mi
-# env:
-
-command: '["fluentd", "-c", "/fluentd/etc/config/entry/fluent.conf"]'
+nameOverride: fluentd
 
 rbac:
   create: true
@@ -22,46 +12,12 @@ rbac:
 serviceAccount:
   create: true
 
-livenessProbe:
-  enabled: true
-
-annotations: {}
-
-# updateStrategy:
-#   type: RollingUpdate
-
-tolerations:
-  - effect: NoSchedule
-    operator: Exists
-
-
-nodeSelector: {}
-
 service:
   type: ClusterIP
   ports:
     - name: metric
       port: 24231
       targetPort: metric
-
-cluster:
-  dockerRoot: /var/lib/docker
-  ssl: /fluentd/etc/config/ssl
-  custom: /var/lib/rancher/fluentd/etc/config/custom
-  varlogcontainers: /var/log/containers
-  varlogpods: /var/log/pods
-  rkelog: /var/lib/rancher/rke/log
-  customlog: /var/lib/rancher/log-volumes
-  fluentdlog: /var/lib/rancher/fluentd/log
-  libsystemddir: /usr/lib64
-
-configmapReload:
-  name: reloader
-  image:
-    repository: rancher/jimmidyson-configmap-reload
-    tag: v0.2.2
-    pullPolicy: IfNotPresent
-  resources: {}
 
 secrets:
   entry:
