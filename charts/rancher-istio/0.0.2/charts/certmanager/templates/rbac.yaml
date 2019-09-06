@@ -14,7 +14,7 @@ rules:
   - apiGroups: [""]
     resources: ["configmaps", "secrets", "events", "services", "pods"]
     verbs: ["*"]
-  - apiGroups: ["extensions"]
+  - apiGroups: ["extensions", "networking.k8s.io"]
     resources: ["ingresses"]
     verbs: ["*"]
 ---

@@ -62,6 +62,7 @@ metadata:
 rules:
 - apiGroups:
   - extensions
+  - policy
   resourceNames:
   - {{ template "app.fullname" . }}
   resources:
