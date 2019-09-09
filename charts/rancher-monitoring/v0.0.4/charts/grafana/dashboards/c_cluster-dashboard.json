@@ -100,7 +100,7 @@
         "tableColumn": "",
         "targets": [
           {
-            "expr": "sum (rate (container_cpu_usage_seconds_total{id=\"/\",node=~\"^$Node$\"}[5m])) / sum (machine_cpu_cores{node=~\"^$Node$\"}) * 100",
+            "expr": "(1 - avg(irate(node_cpu_seconds_total{mode=\"idle\",node=~\"^$Node$\"}[5m]))) * 100",
             "format": "time_series",
             "interval": "10s",
             "intervalFactor": 1,
@@ -187,7 +187,7 @@
         "tableColumn": "",
         "targets": [
           {
-            "expr": "sum (container_memory_working_set_bytes{id=\"/\",node=~\"^$Node$\"}) / sum (machine_memory_bytes{node=~\"^$Node$\"}) * 100",
+            "expr": "(1 - sum(node_memory_MemAvailable_bytes{node=~\"^$Node$\"})/ sum(node_memory_MemTotal_bytes{node=~\"^$Node$\"})) * 100",
             "format": "time_series",
             "interval": "10s",
             "intervalFactor": 1,
@@ -275,7 +275,7 @@
         "tableColumn": "",
         "targets": [
           {
-            "expr": "sum (container_fs_usage_bytes{device=~\"^/dev/.*$\",id=\"/\",node=~\"^$Node$\"}) / sum (container_fs_limit_bytes{device=~\"^/dev/.*$\",id=\"/\",node=~\"^$Node$\"}) * 100",
+            "expr": "(sum(node_filesystem_size_bytes{device!~\"rootfs|HarddiskVolume.+\",node=~\"^$Node$\"})\n     - sum(node_filesystem_free_bytes{device!~\"rootfs|HarddiskVolume.+\",node=~\"^$Node$\"})) / sum(node_filesystem_size_bytes{device!~\"rootfs|HarddiskVolume.+\",node=~\"^$Node$\"}) * 100",
             "format": "time_series",
             "interval": "10s",
             "intervalFactor": 1,
@@ -365,7 +365,7 @@
         "tableColumn": "",
         "targets": [
           {
-            "expr": "sum (rate (container_cpu_usage_seconds_total{id=\"/\",node=~\"^$Node$\"}[5m]))",
+            "expr": "(1 - (avg(irate(node_cpu_seconds_total{mode=\"idle\",node=~\"^$Node$\"}[5m])))) * sum(machine_cpu_cores{node=~\"^$Node$\"})",
             "format": "time_series",
             "interval": "10s",
             "intervalFactor": 1,
@@ -540,7 +540,7 @@
         "tableColumn": "",
         "targets": [
           {
-            "expr": "sum (container_memory_working_set_bytes{id=\"/\",node=~\"^$Node$\"})",
+            "expr": "sum(node_memory_MemTotal_bytes{device!~\"rootfs|HarddiskVolume.+\",node =~\"^$Node$\"}) - sum(node_memory_MemAvailable_bytes{device!~\"rootfs|HarddiskVolume.+\",node =~\"^$Node$\"})",
             "interval": "10s",
             "intervalFactor": 1,
             "refId": "A",
@@ -714,7 +714,7 @@
         "tableColumn": "",
         "targets": [
           {
-            "expr": "sum (container_fs_usage_bytes{device=~\"^/dev/.*$\",id=\"/\",node=~\"^$Node$\"})",
+            "expr": "sum(node_filesystem_size_bytes{device!~\"rootfs|HarddiskVolume.+\",node=~\"^$Node$\"})\n     - sum(node_filesystem_free_bytes{device!~\"rootfs|HarddiskVolume.+\",node=~\"^$Node$\"})",
             "interval": "10s",
             "intervalFactor": 1,
             "refId": "A",
@@ -801,7 +801,7 @@
         "tableColumn": "",
         "targets": [
           {
-            "expr": "sum (container_fs_limit_bytes{device=~\"^/dev/.*$\",id=\"/\",node=~\"^$Node$\"})",
+            "expr": "sum(node_filesystem_size_bytes{device!~\"rootfs|HarddiskVolume.+\",node=~\"^$Node$\"})",
             "interval": "10s",
             "intervalFactor": 1,
             "refId": "A",
@@ -862,7 +862,7 @@
         "steppedLine": false,
         "targets": [
           {
-            "expr": "sum (rate (container_cpu_usage_seconds_total{id=\"/\",node=~\"^$Node$\"}[5m])) / sum (machine_cpu_cores{node=~\"^$Node$\"})",
+            "expr": "1- (avg(irate(node_cpu_seconds_total{mode=\"idle\"}[5m])))",
             "format": "time_series",
             "hide": false,
             "instant": false,
@@ -871,7 +871,7 @@
             "refId": "A"
           },
           {
-            "expr": "sum (rate (container_cpu_usage_seconds_total{id=\"/\"}[5m])) by (node) / sum (machine_cpu_cores) by (node)",
+            "expr": "1- (avg(irate(node_cpu_seconds_total{mode=\"idle\"}[5m])) by (node))",
             "format": "time_series",
             "hide": false,
             "intervalFactor": 1,
@@ -961,7 +961,7 @@
         "steppedLine": false,
         "targets": [
           {
-            "expr": "sum (container_memory_working_set_bytes{id=\"/\",node=~\"^$Node$\"}) / sum (machine_memory_bytes{node=~\"^$Node$\"}) * 100",
+            "expr": "100 * (1 - sum(node_memory_MemAvailable_bytes) / sum(node_memory_MemTotal_bytes))",
             "format": "time_series",
             "hide": false,
             "instant": false,
@@ -970,7 +970,7 @@
             "refId": "A"
           },
           {
-            "expr": "sum (container_memory_working_set_bytes{id=\"/\"}) by (node) / sum (machine_memory_bytes) by (node) * 100",
+            "expr": "100 * (1- sum(node_memory_MemAvailable_bytes) by (node) / sum(node_memory_MemTotal_bytes) by (node))",
             "format": "time_series",
             "hide": false,
             "intervalFactor": 1,
@@ -1062,7 +1062,7 @@
         "steppedLine": false,
         "targets": [
           {
-            "expr": "sum (container_fs_usage_bytes{device=~\"^/dev/.*$\",id=\"/\",node=~\"^$Node$\"}) / sum (container_fs_limit_bytes{device=~\"^/dev/.*$\",id=\"/\",node=~\"^$Node$\"}) * 100",
+            "expr": "(sum(node_filesystem_size_bytes{device!~\"rootfs|HarddiskVolume.+\",node=~\"^$Node$\"})\n     - sum(node_filesystem_free_bytes{device!~\"rootfs|HarddiskVolume.+\",node=~\"^$Node$\"})\n    ) / sum(node_filesystem_size_bytes{device!~\"rootfs|HarddiskVolume.+\",node=~\"^$Node$\"}) * 100 ",
             "format": "time_series",
             "hide": false,
             "instant": false,
@@ -1071,7 +1071,7 @@
             "refId": "A"
           },
           {
-            "expr": "sum (container_fs_usage_bytes{device=~\"^/dev/.*$\",id=\"/\"}) by (node) / sum (container_fs_limit_bytes{device=~\"^/dev/.*$\",id=\"/\"}) by (node) * 100",
+            "expr": "((sum(node_filesystem_size_bytes{device!~\"rootfs|HarddiskVolume.+\"}) by (node) - sum(node_filesystem_free_bytes{device!~\"rootfs|HarddiskVolume.+\"}) by (node)) / sum(node_filesystem_size_bytes{device!~\"rootfs|HarddiskVolume.+\"}) by (node)) * 100\n",
             "format": "time_series",
             "hide": false,
             "intervalFactor": 1,
@@ -3240,6 +3240,7 @@
             "editable": true,
             "error": false,
             "fill": 1,
+            "fillGradient": 0,
             "grid": {},
             "gridPos": {
               "h": 5,
@@ -3278,24 +3279,35 @@
             "steppedLine": false,
             "targets": [
               {
-                "expr": "sum (rate (container_network_receive_bytes_total{node=~\"^$Node$\"}[5m]))",
+                "expr": "sum (rate (container_network_receive_bytes_total[5m]))by (node)",
                 "format": "time_series",
                 "interval": "10s",
                 "intervalFactor": 1,
-                "legendFormat": "Received",
+                "legendFormat": "{{node}} Received",
                 "metric": "network",
                 "refId": "A",
                 "step": 10
               },
               {
-                "expr": "- sum (rate (container_network_transmit_bytes_total{node=~\"^$Node$\"}[5m]))",
+                "expr": "- sum (rate (container_network_transmit_bytes_total[5m])) by (node)",
                 "format": "time_series",
                 "interval": "10s",
                 "intervalFactor": 1,
-                "legendFormat": "Sent",
+                "legendFormat": "{{node}} Sent",
                 "metric": "network",
                 "refId": "B",
                 "step": 10
+              },
+              {
+                "expr": "sum (rate (wmi_container_network_receive_bytes_total[5m]))by (node)",
+                "hide": false,
+                "legendFormat": "{{node}} Received",
+                "refId": "C"
+              },
+              {
+                "expr": "- sum (rate (wmi_container_network_transmit_bytes_total[5m]))by (node)",
+                "legendFormat": "{{node}} Sent",
+                "refId": "D"
               }
             ],
             "thresholds": [],
@@ -3402,7 +3414,7 @@
             "steppedLine": true,
             "targets": [
               {
-                "expr": "sum (rate (container_cpu_usage_seconds_total{image!=\"\",name=~\"^k8s_.*\",node=~\"^$Node$\"}[5m])) by (pod_name)",
+                "expr": "sum (rate (container_cpu_usage_seconds_total{pod_name!=\"\",container_name!=\"POD\",node=~\"^$Node$\"}[5m])) by (pod_name)",
                 "format": "time_series",
                 "interval": "10s",
                 "intervalFactor": 1,
@@ -3633,7 +3645,7 @@
             "steppedLine": true,
             "targets": [
               {
-                "expr": "sum (rate (container_cpu_usage_seconds_total{image!=\"\",name=~\"^k8s_.*\",container_name!=\"POD\",node=~\"^$Node$\"}[5m])) by (container_name, pod_name)",
+                "expr": "sum (rate (container_cpu_usage_seconds_total{container_name!=\"POD\",pod_name!=\"\",container_name!=\"\",node=~\"^$Node$\"}[5m])) by (container_name, pod_name)",
                 "format": "time_series",
                 "hide": false,
                 "interval": "10s",
@@ -3644,12 +3656,12 @@
                 "step": 10
               },
               {
-                "expr": "sum (rate (container_cpu_usage_seconds_total{image!=\"\",name!~\"^k8s_.*\",node=~\"^$Node$\"}[5m])) by (node, name, image)",
+                "expr": "sum (rate (container_cpu_usage_seconds_total{container_name!=\"POD\",container_name!=\"\",node=~\"^$Node$\"}[5m])) by (node, container_name)",
                 "format": "time_series",
                 "hide": false,
                 "interval": "10s",
                 "intervalFactor": 1,
-                "legendFormat": "docker: {{ node }} | {{ image }} ({{ name }})",
+                "legendFormat": "docker: {{ node }} | {{ container_name }}",
                 "metric": "container_cpu",
                 "refId": "B",
                 "step": 10
@@ -3767,12 +3779,12 @@
             "steppedLine": true,
             "targets": [
               {
-                "expr": "sum (rate (container_cpu_usage_seconds_total{id!=\"/\",node=~\"^$Node$\"}[5m])) by (id)",
+                "expr": "sum (rate (container_cpu_usage_seconds_total{namespace!=\"\",pod_name!=\"\",node=~\"^$Node$\"}[5m])) by (namespace, pod_name)",
                 "format": "time_series",
                 "hide": false,
                 "interval": "10s",
                 "intervalFactor": 1,
-                "legendFormat": "{{ id }}",
+                "legendFormat": "{{ namespace }}:{{ pod_name }}",
                 "metric": "container_cpu",
                 "refId": "A",
                 "step": 10
@@ -3882,7 +3894,7 @@
             "steppedLine": true,
             "targets": [
               {
-                "expr": "sum (container_memory_working_set_bytes{image!=\"\",name=~\"^k8s_.*\",node=~\"^$Node$\"}) by (pod_name)",
+                "expr": "sum (container_memory_working_set_bytes{pod_name!=\"\",node=~\"^$Node$\"}) by (pod_name)",
                 "format": "time_series",
                 "interval": "10s",
                 "intervalFactor": 1,
@@ -4107,7 +4119,7 @@
             "steppedLine": true,
             "targets": [
               {
-                "expr": "sum (container_memory_working_set_bytes{image!=\"\",name=~\"^k8s_.*\",container_name!=\"POD\",node=~\"^$Node$\"}) by (container_name, pod_name)",
+                "expr": "sum (container_memory_working_set_bytes{pod_name!=\"\",container_name!=\"\",container_name!=\"POD\",node=~\"^$Node$\"}) by (container_name, pod_name)",
                 "interval": "10s",
                 "intervalFactor": 1,
                 "legendFormat": "pod: {{ pod_name }} | {{ container_name }}",
@@ -4116,10 +4128,10 @@
                 "step": 10
               },
               {
-                "expr": "sum (container_memory_working_set_bytes{image!=\"\",name!~\"^k8s_.*\",node=~\"^$Node$\"}) by (node, name, image)",
+                "expr": "sum (container_memory_working_set_bytes{container_name!=\"\",container_name!=\"POD\",node=~\"^$Node$\"}) by (node, container_name)",
                 "interval": "10s",
                 "intervalFactor": 1,
-                "legendFormat": "docker: {{ node }} | {{ image }} ({{ name }})",
+                "legendFormat": "docker: {{ node }} | {{ container_name }}",
                 "metric": "container_memory_usage:sort_desc",
                 "refId": "B",
                 "step": 10
@@ -4237,10 +4249,10 @@
             "steppedLine": true,
             "targets": [
               {
-                "expr": "sum (container_memory_working_set_bytes{id!=\"/\",node=~\"^$Node$\"}) by (id)",
+                "expr": "sum (rate (container_memory_working_set_bytes{namespace!=\"\",pod_name!=\"\",node=~\"^$Node$\"}[5m])) by (namespace, pod_name)",
                 "interval": "10s",
                 "intervalFactor": 1,
-                "legendFormat": "{{ id }}",
+                "legendFormat": "{{ namespace }}:{{pod_name}}",
                 "metric": "container_memory_usage:sort_desc",
                 "refId": "A",
                 "step": 10
@@ -4349,7 +4361,7 @@
             "steppedLine": false,
             "targets": [
               {
-                "expr": "sum (rate (container_network_receive_bytes_total{image!=\"\",name=~\"^k8s_.*\",node=~\"^$Node$\"}[5m])) by (pod_name)",
+                "expr": "sum (rate (container_network_receive_bytes_total{pod_name!=\"\",node=~\"^$Node$\"}[5m])) by (pod_name)",
                 "interval": "10s",
                 "intervalFactor": 1,
                 "legendFormat": "-> {{ pod_name }}",
@@ -4358,7 +4370,7 @@
                 "step": 10
               },
               {
-                "expr": "- sum (rate (container_network_transmit_bytes_total{image!=\"\",name=~\"^k8s_.*\",node=~\"^$Node$\"}[5m])) by (pod_name)",
+                "expr": "- sum (rate (container_network_transmit_bytes_total{pod_name!=\"\",node=~\"^$Node$\"}[5m])) by (pod_name)",
                 "interval": "10s",
                 "intervalFactor": 1,
                 "legendFormat": "<- {{ pod_name }}",
@@ -4470,7 +4482,7 @@
             "steppedLine": false,
             "targets": [
               {
-                "expr": "sum (rate (container_network_receive_bytes_total{image!=\"\",name=~\"^k8s_.*\",node=~\"^$Node$\"}[5m])) by (container_name, pod_name)",
+                "expr": "sum (rate (container_network_receive_bytes_total{container!=\"\", pod_name!=\"\",node=~\"^$Node$\"}[5m])) by (container_name, pod_name)",
                 "hide": false,
                 "interval": "10s",
                 "intervalFactor": 1,
@@ -4480,7 +4492,7 @@
                 "step": 10
               },
               {
-                "expr": "- sum (rate (container_network_transmit_bytes_total{image!=\"\",name=~\"^k8s_.*\",node=~\"^$Node$\"}[5m])) by (container_name, pod_name)",
+                "expr": "- sum (rate (container_network_transmit_bytes_total{container!=\"\", pod_name!=\"\",node=~\"^$Node$\"}[5m])) by (container_name, pod_name)",
                 "hide": false,
                 "interval": "10s",
                 "intervalFactor": 1,
@@ -4490,7 +4502,7 @@
                 "step": 10
               },
               {
-                "expr": "sum (rate (container_network_receive_bytes_total{image!=\"\",name!~\"^k8s_.*\",node=~\"^$Node$\"}[5m])) by (node, name, image)",
+                "expr": "sum (rate (container_network_receive_bytes_total{container!=\"\", pod_name!=\"\",node=~\"^$Node$\"}[5m])) by (node, name, image)",
                 "hide": false,
                 "interval": "10s",
                 "intervalFactor": 1,
@@ -4500,7 +4512,7 @@
                 "step": 10
               },
               {
-                "expr": "- sum (rate (container_network_transmit_bytes_total{image!=\"\",name!~\"^k8s_.*\",node=~\"^$Node$\"}[5m])) by (node, name, image)",
+                "expr": "- sum (rate (container_network_transmit_bytes_total{container!=\"\", pod_name!=\"\",node=~\"^$Node$\"}[5m])) by (node, name, image)",
                 "hide": false,
                 "interval": "10s",
                 "intervalFactor": 1,
@@ -4628,19 +4640,19 @@
             "steppedLine": false,
             "targets": [
               {
-                "expr": "sum (rate (container_network_receive_bytes_total{id!=\"/\",node=~\"^$Node$\"}[5m])) by (id)",
+                "expr": "sum (rate (container_network_receive_bytes_total{node=~\"^$Node$\"}[5m])) by (namespace, pod_name)",
                 "interval": "10s",
                 "intervalFactor": 1,
-                "legendFormat": "-> {{ id }}",
+                "legendFormat": "-> {{ namespace }}:{{pod_name}}",
                 "metric": "network",
                 "refId": "A",
                 "step": 10
               },
               {
-                "expr": "- sum (rate (container_network_transmit_bytes_total{id!=\"/\",node=~\"^$Node$\"}[5m])) by (id)",
+                "expr": "- sum (rate (container_network_transmit_bytes_total{node=~\"^$Node$\"}[5m])) by (namespace, pod_name)",
                 "interval": "10s",
                 "intervalFactor": 1,
-                "legendFormat": "<- {{ id }}",
+                "legendFormat": "<- {{ namespace }}:{{pod_name}}",
                 "metric": "network",
                 "refId": "B",
                 "step": 10
@@ -4697,19 +4709,18 @@
         {
           "allValue": ".*",
           "current": {
-            "tags": [],
             "text": "All",
             "value": "$__all"
           },
           "datasource": "RANCHER_MONITORING",
-          "definition": "",
+          "definition": "label_values(node_load1, node)",
           "hide": 0,
           "includeAll": true,
           "label": null,
           "multi": false,
           "name": "Node",
           "options": [],
-          "query": "label_values(node_boot_time_seconds, node)",
+          "query": "label_values(node_load1, node)",
           "refresh": 1,
           "regex": "",
           "skipUrlSync": false,
