@@ -1,5 +1,15 @@
 {{/* vim: set filetype=mustache: */}}
 
+{{- define "logging.name" -}}
+{{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{- define "logging.version" -}}
+{{- $name := include "logging.name" . -}}
+{{- $version := .Chart.Version | replace "+" "_" -}}
+{{- printf "%s-%s" $name $version -}}
+{{- end -}}
+
 {{- define "deployment_api_version" -}}
 {{- if .Capabilities.APIVersions.Has "apps/v1" -}}
 {{- "apps/v1" -}}
