@@ -41,7 +41,7 @@ spec:
         command:
           - 'powershell'
           - '-command'
-          - 'mkdir -p /var/lib/rancher/fluentd/log'
+          - 'New-Item -ItemType Directory -Force -Path /var/lib/rancher/fluentd/log'
         volumeMounts:
         - mountPath: /var/lib/rancher
           name: rancher
