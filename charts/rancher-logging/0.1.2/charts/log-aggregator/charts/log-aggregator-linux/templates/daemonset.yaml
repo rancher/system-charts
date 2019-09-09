@@ -26,12 +26,11 @@ spec:
         chart: {{ template "log-aggregator.version" . }}
         release: {{ .Release.Name }}
     spec:
+      serviceAccountName: {{ template "log-aggregator.fullname" . }}
       containers:
       - name: log-aggregator
         image: {{ template "system_default_registry" . }}{{ .Values.image.repository }}:{{ .Values.image.tag }}
         imagePullPolicy: "{{ .Values.image.pullPolicy }}"
-        securityContext:
-          privileged: true
         volumeMounts:
         - name: flexvolume-driver
           mountPath: /flexmnt
