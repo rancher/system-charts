@@ -40,6 +40,13 @@ service:
 
 cluster:
   dockerRoot: /var/lib/docker
+  custom: /var/lib/rancher/fluentd/etc/config/custom
+  varlogcontainers: /var/log/containers
+  varlogpods: /var/log/pods
+  rkelog: /var/lib/rancher/rke/log
+  customlog: /var/lib/rancher/log-volumes
+  fluentdlog: /var/lib/rancher/fluentd/log
+  libsystemddir: /usr/lib64
 
 service:
   ports:
