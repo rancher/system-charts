@@ -20,6 +20,22 @@ spec:
         chart: {{ template "app.version" . }}
         release: {{ .Release.Name }}
     spec:
+      initContainers:
+      - name: exporter-node-binary-copy
+        image: {{ template "system_default_registry" . }}{{ .Values.image.repository }}:{{ .Values.image.tag }}
+        command:
+        - pwsh
+        - -f
+        - c:/scripts/copy-binary.ps1
+        {{- if and .Values.resources .Values.resources.inits }}
+        resources:
+{{ toYaml .Values.resources.inits | indent 10 }}
+        {{- end }}
+        volumeMounts:
+        - name: binary-host-path
+          mountPath: c:/host/etc/wmi-exporter
+        - name: exporter-scripts
+          mountPath: c:/scripts/
       containers:
       - name: exporter-node
         image: {{ template "system_default_registry" . }}{{ .Values.image.repository }}:{{ .Values.image.tag }}
@@ -39,8 +55,10 @@ spec:
 {{- if .Values.extraEnv }}
 {{ toYaml .Values.extraEnv | indent 10 }}
         {{- end }}
+        {{- if and .Values.resources .Values.resources.core }}
         resources:
-{{ toYaml .Values.resources | indent 10 }}
+{{ toYaml .Values.resources.core | indent 10 }}
+        {{- end }}
         volumeMounts:
         - name: wins-pipe
           mountPath: \\.\pipe\rancher_wins
@@ -67,3 +85,10 @@ spec:
       - name: wins-pipe
         hostPath:
           path: \\.\pipe\rancher_wins
+      - name: binary-host-path
+        hostPath:
+          path: c:/etc/wmi-exporter
+          type: DirectoryOrCreate
+      - name: exporter-scripts
+        configMap:
+          name: {{ template "app.fullname" . }}

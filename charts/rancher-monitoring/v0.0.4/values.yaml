@@ -172,7 +172,8 @@ exporter-node-windows:
   image:
     os: windows
     repository: rancher/wmi_exporter-package
-    tag: v0.0.2
+    tag: v0.0.3
+  resources: {}
   ports:
     metrics:
       name: windows-metrics
