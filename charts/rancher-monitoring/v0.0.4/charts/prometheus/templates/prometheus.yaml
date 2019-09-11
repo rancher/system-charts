@@ -108,6 +108,10 @@ spec:
     {{ $key }}: {{ $value | quote }}
 {{- end }}
 {{- end }}
+{{- if .Values.thanos }}
+  thanos: 
+{{ toYaml .Values.thanos | indent 4 }}
+{{- end }}
   nodeSelector:
 {{- include "linux-node-selector" . | nindent 4 }}
     {{- range .Values.nodeSelectors }}
