@@ -2,6 +2,7 @@ nameOverride: fluentd
 labels: {}
 
 image:
+  os: windows
   repository: rancher/fluentd
   tag: v0.1.16
   pullPolicy: IfNotPresent
@@ -44,6 +45,7 @@ service:
 configmapReload:
   name: reloader
   image:
+    os: windows
     repository: rancher/configmap-reload
     tag: v0.3.0-rancher2
     pullPolicy: IfNotPresent
