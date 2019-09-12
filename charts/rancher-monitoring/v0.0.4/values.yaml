@@ -170,6 +170,7 @@ exporter-node-windows:
   endpoints: []
   nodeSelectors: []
   image:
+    os: windows
     repository: rancher/wmi_exporter-package
     tag: v0.0.2
   ports:
