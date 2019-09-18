@@ -13,6 +13,10 @@ spec:
   selector:
     matchLabels:
       app: istiocoredns
+  strategy:
+    rollingUpdate:
+      maxSurge: {{ .Values.rollingMaxSurge }}
+      maxUnavailable: {{ .Values.rollingMaxUnavailable }}
   template:
     metadata:
       name: istiocoredns
@@ -65,7 +69,7 @@ spec:
         command:
         - /usr/local/bin/plugin
         image: "{{ template "system_default_registry" . }}{{ .Values.pluginImage.repository }}:{{ .Values.pluginImage.tag }}"
-	imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+        imagePullPolicy: {{ .Values.global.imagePullPolicy }}
         ports:
         - containerPort: 8053
           name: dns-grpc

@@ -26,6 +26,7 @@ spec:
         scheduler.alpha.kubernetes.io/critical-pod: ""
         prometheus.io/scrape: "true"
         prometheus.io/port: "9090"
+        kiali.io/runtimes: go,kiali
     spec:
       serviceAccountName: kiali-service-account
 {{- if .Values.global.priorityClassName }}
@@ -39,8 +40,28 @@ spec:
         - "-config"
         - "/kiali-configuration/config.yaml"
         - "-v"
-        - "4"
+        - "3"
+        readinessProbe:
+          httpGet:
+            path: {{ .Values.contextPath }}/healthz
+            port: 20001
+            scheme:  {{ if .Values.security.enabled }} 'HTTPS' {{ else }} 'HTTP' {{ end }}
+          initialDelaySeconds: 5
+          periodSeconds: 30
+        livenessProbe:
+          httpGet:
+            path: {{ .Values.contextPath }}/healthz
+            port: 20001
+            scheme:  {{ if .Values.security.enabled }} 'HTTPS' {{ else }} 'HTTP' {{ end }}
+          initialDelaySeconds: 5
+          periodSeconds: 30
         env:
+        - name: TRACING_INSECURE_SKIP_VERIFY
+          value: "true"
+        - name: GRAFANA_INSECURE_SKIP_VERIFY
+          value: "true"
+        - name: TRACING_ENABLED
+          value: "false"
         - name: ACTIVE_NAMESPACE
           valueFrom:
             fieldRef:
@@ -66,6 +87,8 @@ spec:
         volumeMounts:
         - name: kiali-configuration
           mountPath: "/kiali-configuration"
+        - name: kiali-cert
+          mountPath: "/kiali-cert"
         - name: kiali-secret
           mountPath: "/kiali-secret"
         resources:
@@ -97,6 +120,12 @@ spec:
       - name: kiali-configuration
         configMap:
           name: kiali
+      - name: kiali-cert
+        secret:
+          secretName: istio.kiali-service-account
+{{- if not .Values.security.enabled }}
+          optional: true
+{{- end }}
       - name: kiali-nginx
         configMap:
           name: kiali-nginx
