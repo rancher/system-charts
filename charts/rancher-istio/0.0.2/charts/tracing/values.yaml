@@ -13,7 +13,7 @@ tolerations: []
 # There are currently two types of anti-affinity:
 #    "requiredDuringSchedulingIgnoredDuringExecution"
 #    "preferredDuringSchedulingIgnoredDuringExecution"
-# which denote “hard” vs. “soft” requirements, you can define your values
+# which denote "hard" vs. "soft" requirements, you can define your values
 # in "podAntiAffinityLabelSelector" and "podAntiAffinityTermLabelSelector"
 # correspondingly.
 # For example:
@@ -24,7 +24,7 @@ tolerations: []
 #   topologyKey: "kubernetes.io/hostname"
 # This pod anti-affinity rule says that the pod requires not to be scheduled
 # onto a node if that node is already running a pod with label having key
-# “security” and value “S1”.
+# "security" and value "S1".
 podAntiAffinityLabelSelector: []
 podAntiAffinityTermLabelSelector: []
 
@@ -33,6 +33,11 @@ jaeger:
     max_traces: 50000
   proxy:
     resources: {}
+  # spanStorageType value can be "memory" and "badger" for all-in-one image
+  spanStorageType: badger
+  persist: false
+  storageClassName: ""
+  accessMode: ReadWriteMany
 
 zipkin:
   probeStartupDelay: 200
@@ -52,7 +57,7 @@ zipkin:
   maxSpans: 500000
   node:
     cpus: 2
-  proxy:
+    proxy:
     resources: {}
 
 service:

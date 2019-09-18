@@ -15,23 +15,21 @@ data:
       port: 20001
     external_services:
       tracing:
-        service: "tracing/jaeger"
-        {{- if and .Values.global.rancher (and .Values.global.rancher.domain .Values.global.rancher.clusterId) }}
-        {{- if not .Values.dashboard.jaegerURL }}
-        url: 'https://{{ .Values.global.rancher.domain }}/k8s/clusters/{{ .Values.global.rancher.clusterId }}/api/v1/namespaces/{{ .Release.Namespace }}/services/http:tracing:80/proxy/jaeger'
-        {{- end }}
+        {{- if .Values.dashboard.jaegerURL }}
+        url: {{ .Values.dashboard.jaegerURL }}
+        {{- else }}
+        url: http://tracing.istio-system:80
         {{- end }}
       grafana:
       {{- if eq .Values.global.monitoring.type "cluster-monitoring" }}
-        url: https://{{ .Values.global.rancher.domain }}/k8s/clusters/{{ .Values.global.rancher.clusterId }}/api/v1/namespaces/cattle-prometheus/services/http:access-grafana:80/proxy/
-        service_namespace: cattle-prometheus
-        service: access-grafana
+        url: https://{{ .Values.global.rancher.domain }}/k8s/clusters/{{ .Values.global.rancher.clusterId }}/api/v1/namespaces/cattle-prometheus/services/http:access-grafana:80/proxy//
+        in_cluster_url: http://access-grafana.cattle-prometheus:80
       {{- else if eq .Values.global.monitoring.type "built-in" }}
         {{- if and .Values.global.rancher (and .Values.global.rancher.domain .Values.global.rancher.clusterId) }}
-        url: https://{{ .Values.global.rancher.domain }}/k8s/clusters/{{ .Values.global.rancher.clusterId }}/api/v1/namespaces/{{ .Release.Namespace }}/services/http:grafana:80/proxy/
+        url: https://{{ .Values.global.rancher.domain }}/k8s/clusters/{{ .Values.global.rancher.clusterId }}/api/v1/namespaces/{{ .Release.Namespace }}/services/http:grafana:80/proxy//
+        in_cluster_url: http://access-grafana.cattle-prometheus:80
         {{- end }}
       {{- else }}
-        custom_metrics_url: "http://prometheus.{{ .Release.Namespace }}:9090"
         {{- if .Values.dashboard.grafanaURL }}
         url: {{ .Values.dashboard.grafanaURL }}
         {{- end }}
@@ -42,4 +40,8 @@ data:
       {{- else }}
         url: {{ .Values.prometheusAddr }}
       {{- end }}
-
+{{- if .Values.security.enabled }}
+    identity:
+      cert_file: {{ .Values.security.cert_file }}
+      private_key_file: {{ .Values.security.private_key_file }}
+{{- end}}
