@@ -1,0 +1,10 @@
+dependencies:
+  - name: fluentd-linux
+    version: 0.0.2
+    condition: fluentd.fluentd-linux.enabled
+    repository: "file://./charts/fluentd-linux"
+  
+  - name: fluentd-windows
+    version: 0.0.1
+    condition: fluentd.fluentd-windows.enabled
+    repository: "file://./charts/fluentd-windows"
