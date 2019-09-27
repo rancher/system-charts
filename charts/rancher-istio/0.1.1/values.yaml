@@ -80,7 +80,7 @@ nodeagent:
 #
 grafana:
   repository: rancher/grafana-grafana
-  tag: 6.3.2
+  tag: 6.3.6
   enabled: false
 
 #
@@ -177,7 +177,7 @@ global:
 
   nginxProxy:
     repository: rancher/nginx
-    tag: 1.15.8-alpine
+    tag: 1.17.4-alpine
 
   k8sIngress:
     enabled: false
