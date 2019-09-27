@@ -249,13 +249,13 @@ grafana:
   apiGroup: "monitoring.coreos.com"
   image:
     repository: rancher/grafana-grafana
-    tag: 6.3.2
+    tag: 6.3.6
     tool:
       repository: rancher/prometheus-auth
       tag: v0.2.0
     proxy:
       repository: rancher/nginx
-      tag: 1.15.8-alpine
+      tag: 1.17.4-alpine
   nodeSelectors: []
   resources:
     inits:
@@ -313,7 +313,7 @@ prometheus:
       tag: v0.2.0
     proxy:
       repository: rancher/nginx
-      tag: 1.15.8-alpine
+      tag: 1.17.4-alpine
   nodeSelectors: []
   resources:
     core:
