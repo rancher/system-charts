@@ -1,0 +1,31 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ template "app.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    "helm.sh/hook": post-install, post-upgrade
+    "helm.sh/hook-delete-policy": hook-succeeded
+spec:
+  ttlSecondsAfterFinished: 100
+  backoffLimit: 3
+  template:
+    spec:
+      nodeSelector:
+{{- include "linux-node-selector" . | nindent 8 }}
+      tolerations:
+{{- include "linux-node-tolerations" . | nindent 8}}
+      serviceAccountName: {{ template "app.fullname" . }}
+      containers:
+      - name: operator-init-crds
+        image: {{ template "system_default_registry" . }}{{ .Values.image.repository }}:{{ .Values.image.tag }}
+        volumeMounts:
+        - name: data-crds
+          mountPath: /etc/operator-init
+          readOnly: true
+        command: ["kubectl",  "apply", "-f", "/etc/operator-init/."]
+      volumes:
+      - name: data-crds
+        configMap:
+          name: {{ template "app.fullname" . }}
+      restartPolicy: Never
