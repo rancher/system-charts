@@ -1,0 +1,64 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  namespace: {{ .Release.Namespace }}
+  name: istio-init-crd-10
+  annotations:
+    "helm.sh/hook": post-install
+    "helm.sh/hook-delete-policy": hook-succeeded
+    "helm.sh/hook-weight": "-5"
+spec:
+  template:
+    metadata:
+      annotations:
+        sidecar.istio.io/inject: "false"
+    spec:
+      serviceAccountName: istio-init-service-account
+      containers:
+      - name: istio-init-crd-10
+        image: "{{ template "system_default_registry" . }}{{ .Values.global.kubectl.repository }}:{{ .Values.global.kubectl.tag }}"
+        imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+        volumeMounts:
+        - name: crd-10
+          mountPath: /etc/istio/crd-10
+          readOnly: true
+        command: ["kubectl",  "apply", "-f", "/etc/istio/crd-10/crd-10.yaml"]
+      volumes:
+      - name: crd-10
+        configMap:
+          name: istio-crd-10
+      restartPolicy: OnFailure
+
+{{- if .Values.deleteCRDs }}
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  namespace: {{ .Release.Namespace }}
+  name: istio-init-delete-crd-10
+  annotations:
+    "helm.sh/hook": "pre-delete"
+    "helm.sh/hook-delete-policy": "hook-succeeded, before-hook-creation, hook-failed"
+spec:
+  template:
+    metadata:
+      annotations:
+        sidecar.istio.io/inject: "false"
+    spec:
+      serviceAccountName: istio-init-service-account
+      containers:
+      - name: istio-init-crd-10
+        image: "{{ template "system_default_registry" . }}{{ .Values.global.kubectl.repository }}:{{ .Values.global.kubectl.tag }}"
+        imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+        volumeMounts:
+        - name: crd-10
+          mountPath: /etc/istio/crd-10
+          readOnly: true
+        command: ["kubectl",  "delete", "-f", "/etc/istio/crd-10/crd-10.yaml"]
+      volumes:
+      - name: crd-10
+        configMap:
+          name: istio-crd-10
+      restartPolicy: Never
+  backoffLimit: 1
+{{- end }}

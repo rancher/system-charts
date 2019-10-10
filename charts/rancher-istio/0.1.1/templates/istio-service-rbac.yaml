@@ -1,0 +1,29 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: {{ .Release.Namespace }}
+  name: istio-service-reader
+rules:
+  - apiGroups: [""]
+    resources: ["services/proxy"]
+    resourceNames: ["http:kiali-http:80", "http:tracing:80", "http:grafana:80", "http:prometheus-http:80"]
+    verbs: ["get", "watch", "list"]
+
+---
+{{- if .Values.global.members }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: read-istio-service
+  namespace: {{ .Release.Namespace }}
+subjects:
+  {{- range $member := .Values.global.members }}
+  - kind: {{ $member.kind }}
+    name: {{ $member.name }}
+    apiGroup: rbac.authorization.k8s.io
+  {{- end }}
+roleRef:
+  kind: Role
+  name: istio-service-reader
+  apiGroup: rbac.authorization.k8s.io
+{{- end }}
