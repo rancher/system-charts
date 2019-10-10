@@ -5,7 +5,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
   name: istio-init-crd-certmanager-10
   annotations:
-    "helm.sh/hook": post-install
+    "helm.sh/hook": post-install, post-upgrade
     "helm.sh/hook-delete-policy": hook-succeeded
     "helm.sh/hook-weight": "-5"
 spec:
