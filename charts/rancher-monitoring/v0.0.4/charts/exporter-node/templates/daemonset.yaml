@@ -1,0 +1,100 @@
+apiVersion: {{ template "daemonset_api_version" . }}
+kind: DaemonSet
+metadata:
+  labels:
+    app: {{ template "app.name" . }}
+    chart: {{ template "app.version" . }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+  name: {{ template "app.fullname" . }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ template "app.name" . }}
+      chart: {{ template "app.version" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "app.name" . }}
+        chart: {{ template "app.version" . }}
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+      - name: exporter-node
+        image: {{ template "system_default_registry" . }}{{ .Values.image.repository }}:{{ .Values.image.tag }}
+        args:
+        - --web.listen-address=0.0.0.0:{{ .Values.ports.metrics.port }}
+        - --path.procfs=/host/proc
+        - --path.sysfs=/host/sys
+        - --path.rootfs=/host
+        {{- $usingCollectors := merge .Values.collectors .Values.defaultCollectorSettings }}
+        {{- range $collectorName, $collectorVal := $usingCollectors }}
+        {{- if and $collectorVal $collectorVal.enabled }}
+        - --collector.{{ $collectorName }}
+        {{- $_ := unset $collectorVal "enabled" -}}
+        {{- if $collectorVal }}
+        {{- range $collectorValKey, $collectorValVal := $collectorVal }}
+        {{- if $collectorValVal }}
+        - --collector.{{ $collectorName }}.{{ $collectorValKey }}={{ $collectorValVal }}
+        {{- else }}
+        - --collector.{{ $collectorName }}.{{ $collectorValKey }}
+        {{- end }}
+        {{- end }}
+        {{- end }}
+        {{- else }}
+        - --no-collector.{{$collectorName}}
+        {{- end }}
+        {{- end }}
+        ports:
+        - name: http
+          containerPort: {{ .Values.ports.metrics.port }}
+          {{- if .Values.enabledHostNetwork }}
+          hostPort: {{ .Values.ports.metrics.port }}
+          {{- end }}
+        resources:
+{{ toYaml .Values.resources | indent 10 }}
+        volumeMounts:
+        - name: proc
+          mountPath: /host/proc
+          readOnly:  true
+        - name: sys
+          mountPath: /host/sys
+          readOnly: true
+        - name: host
+          mountPath: /host
+          readOnly: true
+      {{- if .Values.enabledRBAC }}
+      serviceAccountName: {{ default (include "app.fullname" .) .Values.serviceAccountName }}
+      {{- end }}
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534
+      tolerations:
+      - operator: Exists
+      nodeSelector:
+        beta.kubernetes.io/os: linux
+        {{- range .Values.nodeSelectors }}
+        {{- $pair := regexSplit "=" . 2 }}
+        {{- if eq 2 (len $pair) }}
+        {{ (index $pair 0) }}: {{ (index $pair 1) }}
+        {{- else }}
+        {{ (index $pair 0) }}: ""
+        {{- end }}
+        {{- end }}
+      {{- if .Values.enabledHostNetwork }}
+      hostNetwork: true
+      {{- end }}
+      {{- if .Values.enabledHostPID }}
+      hostPID: true
+      {{- end }}
+      volumes:
+      - name: proc
+        hostPath:
+          path: /proc
+      - name: sys
+        hostPath:
+          path: /sys
+      - name: host
+        hostPath:
+          path: /

@@ -1,0 +1,144 @@
+enabledRBAC: true
+
+##
+# Default collector settings
+##
+defaultCollectorSettings:
+##
+# Enabled by default on Linux
+##
+  # Exposes ARP statistics from /proc/net/arp
+  arp:
+    enabled: true
+  # Exposes bcache statistics from /sys/fs/bcache/
+  bcache:
+    enabled: true
+  # Exposes the number of configured and active slaves of Linux bonding interfaces
+  bonding:
+    enabled: true
+  # Shows conntrack statistics (does nothing if no /proc/sys/net/netfilter/ present)
+  conntrack:
+    enabled: true
+  # Exposes CPU statistics
+  cpu:
+    enabled: true
+  # Exposes disk I/O statistics.
+  diskstats:
+    enabled: true
+  # Exposes error detection and correction statistics
+  edac:
+    enabled: true
+  # Exposes available entropy
+  entropy:
+    enabled: true
+  # Exposes file descriptor statistics from /proc/sys/fs/file-nr
+  filefd:
+    enabled: true
+  # Exposes filesystem statistics, such as disk space used
+  filesystem:
+    enabled: true
+  # Expose hardware monitoring and sensor data from /sys/class/hwmon/
+  hwmon:
+    enabled: true
+  # Exposes network statistics specific to InfiniBand and Intel OmniPath configurations
+  infiniband:
+    enabled: true
+  # Exposes IPVS status from /proc/net/ip_vs and stats from /proc/net/ip_vs_stats
+  ipvs:
+    enabled: true
+  # Exposes load average. Darwin, Dragonfly, FreeBSD, Linux, NetBSD, OpenBSD, Solaris
+  loadavg:
+    enabled: true
+  # Exposes statistics about devices in /proc/mdstat (does nothing if no /proc/mdstat present)
+  mdadm:
+    enabled: true
+  # Exposes memory statistics.
+  meminfo:
+    enabled: true
+  # Exposes network interface statistics such as bytes transferred
+  netdev:
+    enabled: true
+  # Exposes network statistics from /proc/net/netstat
+  netstat:
+    enabled: true
+  # Exposes NFS client statistics from /proc/net/rpc/nfs
+  nfs:
+    enabled: true
+  # Exposes NFS kernel server statistics from /proc/net/rpc/nfsd
+  nfsd:
+    enabled: true
+  # Exposes various statistics from /proc/net/sockstat
+  sockstat:
+    enabled: true
+  # Exposes various statistics from /proc/stat
+  stat:
+    enabled: true
+  # Exposes statistics read from local disk
+  textfile:
+    enabled: true
+  # Exposes the current system time
+  time:
+    enabled: true
+  # Exposes selected adjtimex(2) system call stats
+  timex:
+    enabled: true
+  # Exposes system information as provided by the uname system call
+  uname:
+    enabled: true
+  # Exposes statistics from /proc/vmstat
+  vmstat:
+    enabled: true
+  # Exposes XFS runtime statistics
+  xfs:
+    enabled: true
+  # Exposes ZFS performance statistics
+  zfs:
+    enabled: true
+##
+# Enabled by default on Linux
+##
+  # Exposes statistics of memory fragments as reported by /proc/buddyinfo
+  buddyinfo:
+    enabled: false
+  # Exposes Distributed Replicated Block Device statistics (to version 8.4)
+  drbd:
+    enabled: false
+  # Exposes detailed interrupts statistics
+  interrupts:
+    enabled: false
+  # Exposes kernel and system statistics from /sys/kernel/mm/ksm
+  ksmd:
+    enabled: false
+  # Exposes session counts from logind
+  logind:
+    enabled: false
+  # Exposes memory statistics from /proc/meminfo_numa
+  meminfo_numa:
+    enabled: false
+  # Exposes filesystem statistics from /proc/self/mountstats, exposes detailed NFS client statistics
+  mountstats:
+    enabled: false
+  # Exposes local NTP daemon health to check time
+  ntp:
+    enabled: false
+  # Exposes aggregate process statistics from /proc
+  processes:
+    enabled: false
+  # Exposes queuing discipline statistics
+  qdisc:
+    enabled: false
+  # Exposes service status from runit
+  runit:
+    enabled: false
+  # Exposes service status from supervisord
+  supervisord:
+    enabled: false
+  # Exposes service and system status from systemd
+  systemd:
+    enabled: false
+  # Exposes TCP connection status information from /proc/net/tcp and /proc/net/tcp6
+  tcpstat:
+    enabled: false
+  # Exposes WiFi device and station statistics
+  wifi:
+    enabled: false
