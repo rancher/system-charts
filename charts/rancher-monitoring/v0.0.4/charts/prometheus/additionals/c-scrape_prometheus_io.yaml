@@ -58,3 +58,11 @@
     target_label: created_by_kind
     regex: (.+)
     replacement: $1
+  metric_relabel_configs:
+  - source_labels: [controller_namespace, exported_namespace]
+    action: replace
+    target_label: namespace
+    regex: ingress-nginx;(.+)
+    replacement: $1
+  - regex: exported_namespace
+    action: labeldrop
