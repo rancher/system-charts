@@ -55,6 +55,6 @@
     replacement: $1
   - source_labels: [__meta_kubernetes_pod_controller_name]
     action: replace
-    target_label: created_by_kind
+    target_label: created_by
     regex: (.+)
     replacement: $1
