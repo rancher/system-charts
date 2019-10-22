@@ -106,11 +106,13 @@ spec:
         volumeMounts:
         - mountPath: /nginx/
           name: grafana-nginx
+        - mountPath: /var/cache/nginx
+          name: nginx-home
         {{- if and .Values.resources .Values.resources.proxy }}
         resources:
 {{ toYaml .Values.resources.proxy | indent 10 }}
         securityContext:
-          runAsUser: 100
+          runAsUser: 101
           runAsGroup: 101
         {{- end }}
       nodeSelector:
@@ -167,3 +169,5 @@ spec:
       - name: grafana-provisionings
         configMap:
           name: {{ template "app.provisionings.fullname" . }}
+      - name: nginx-home
+        emptyDir: {}
