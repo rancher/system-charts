@@ -33,11 +33,13 @@ spec:
 {{ toYaml .Values.resources.proxy | indent 6 }}
     {{- end }}
     securityContext:
-      runAsUser: 100
+      runAsUser: 101
       runAsGroup: 101
     volumeMounts:
     - mountPath: /nginx
       name: configmap-{{ template "app.nginx.fullname" . }}
+    - mountPath: /var/cache/nginx
+      name: nginx-home
 {{- if eq .Values.level "cluster" }}
   - name: prometheus-agent
     command:
@@ -169,6 +171,9 @@ spec:
             storage: {{ .Values.persistence.size | quote }}
 {{- end }}
 {{- end }}
+  volumes:
+  - name: nginx-home
+    emptyDir: {}
   version: "{{ .Values.image.tag }}"
   affinity:
     podAntiAffinity:
