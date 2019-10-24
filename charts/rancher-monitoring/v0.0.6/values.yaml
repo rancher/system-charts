@@ -291,7 +291,8 @@ grafana:
   ## Already exist ServiceAccount
   ##
   serviceAccountName: ""
-  prometheusDatasourceURL: "http://prometheus-operated:9090"
+  projectPrometheusDatasourceURL: ""
+  projectServiceAccountName: ""
 
 prometheus:
   enabled: false

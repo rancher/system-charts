@@ -126,7 +126,13 @@ spec:
         {{- end }}
         {{- end }}
     {{- if .Values.enabledRBAC }}
-      serviceAccountName: {{ default (default (include "app.fullname" .) .Values.serviceAccountName) .Values.serviceAccountNameOverride }}
+      {{- if eq .Values.level "cluster" }}
+      # since [v0.0.3, v0.0.5], the Grafana of project-level monitoring is using the `app.fullname` (aka. grafana-project-monitoring) ServiceAccount
+      serviceAccountName: {{ default (include "app.fullname" .) .Values.serviceAccountName }}
+      {{- else }}
+      # since v0.0.5, the Grafana of project-level monitoring change to use the `.Values.projectServiceAccountName` (aka. project-monitoring) ServiceAccount
+      serviceAccountName: {{ default "project-monitoring" .Values.projectServiceAccountName }}
+      {{- end }}
     {{- end }}
       tolerations:
 {{- include "linux-node-tolerations" . | nindent 8 }}

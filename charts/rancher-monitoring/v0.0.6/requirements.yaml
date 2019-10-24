@@ -59,9 +59,10 @@ dependencies:
     condition: grafana.enabled
     repository: "file://./charts/grafana/"
 
+  # since > v0.0.5, introducing a high priority condition `projectAllowed` to control the usage of Promethues
   - name: prometheus
     version: 0.0.1
-    condition: prometheus.enabled
+    condition: prometheus.projectAllowed,prometheus.enabled
     repository: "file://./charts/prometheus/"
 
   - name: exporter-fluentd

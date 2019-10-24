@@ -63,11 +63,6 @@ matchLabels:
 {{ toYaml .selector.matchLabels | indent 2 }}
 {{- end }}
 matchExpressions:
-{{- if .projectName }}
-- key: "field.cattle.io/projectId"
-  operator: "In"
-  values: [ "{{ .projectName }}" ]
-{{- end }}
 {{- if and .selector .selector.matchExpressions }}
 {{ toYaml .selector.matchExpressions }}
 {{- end -}}
@@ -75,7 +70,6 @@ matchExpressions:
 
 {{- define "serviceMonitor.namespace.selector" -}}
 {{- $rootContext := dict -}}
-{{- $_ := set $rootContext "projectName" .Values.global.projectName -}}
 {{- $_ := set $rootContext "selector" .Values.serviceMonitorNamespaceSelector -}}
 serviceMonitorNamespaceSelector:
 {{ include "namespace.selector" $rootContext | indent 2 }}
@@ -83,7 +77,6 @@ serviceMonitorNamespaceSelector:
 
 {{- define "rule.namespace.selector" -}}
 {{- $rootContext := dict -}}
-{{- $_ := set $rootContext "projectName" .Values.global.projectName -}}
 {{- $_ := set $rootContext "selector" .Values.ruleNamespaceSelector -}}
 ruleNamespaceSelector:
 {{ include "namespace.selector" $rootContext | indent 2 }}
@@ -96,11 +89,6 @@ ruleSelector:
 {{ toYaml .Values.ruleSelector.matchLabels | indent 4}}
 {{- end }}
   matchExpressions:
-{{- if eq .Values.level "project" }}
-  - key: "source"
-    operator: "In"
-    values: [ "rancher-alert" ]
-{{- end }}
 {{- if and .Values.ruleSelector .Values.ruleSelector.matchExpressions }}
 {{ toYaml .Values.ruleSelector.matchExpressions | indent 2}}
 {{- end }}

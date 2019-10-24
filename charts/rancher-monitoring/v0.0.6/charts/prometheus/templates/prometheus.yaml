@@ -99,11 +99,8 @@ spec:
         port: http
 {{- end }}
   baseImage: {{ template "system_default_registry" . }}{{ .Values.image.repository }}
-{{- if or (.Values.externalLabels) (eq .Values.level "project") }}
+{{- if .Values.externalLabels }}
   externalLabels:
-{{- if and (eq .Values.level "project") }}
-    prometheus_from: {{ .Values.global.clusterName }}
-{{- end }}
 {{- range $key, $value := .Values.externalLabels}}
     {{ $key }}: {{ $value | quote }}
 {{- end }}
@@ -139,14 +136,9 @@ spec:
   serviceAccountName: {{ default (default (include "app.fullname" .) .Values.serviceAccountName) .Values.serviceAccountNameOverride }}
 {{- end }}
 {{ include "serviceMonitor.namespace.selector" . | indent 2 }}
-{{- if or (.Values.serviceMonitorSelector) (eq .Values.level "project") }}
+{{- if .Values.serviceMonitorSelector }}
   serviceMonitorSelector:
 {{ toYaml .Values.serviceMonitorSelector | indent 4 }}
-{{- end }}
-{{- if and (eq .Values.level "project") (eq .Values.sync.mode "remote") }}
-  remoteRead:
-  - bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
-    url: {{ printf "%s%s" .Values.sync.target .Values.sync.path }}
 {{- end }}
 {{ include "rule.namespace.selector" . | indent 2}}
 {{ include "rule.selector" . | indent 2 }}

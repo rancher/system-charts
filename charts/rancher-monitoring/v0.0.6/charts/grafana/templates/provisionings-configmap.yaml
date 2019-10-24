@@ -37,4 +37,4 @@ data:
       basicAuth: false
       editable: false
       isDefault: true
-      url: {{ .Values.prometheusDatasourceURL }}
+      url: {{ default "http://prometheus-operated:9090" .Values.projectPrometheusDatasourceURL }}

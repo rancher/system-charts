@@ -1,4 +1,6 @@
-{{- if and .Values.enabledRBAC (not .Values.serviceAccountName) }}
+{{- if eq .Values.level "cluster" }}
+# since [v0.0.3, v0.0.5], the Grafana of project-level monitoring is using the `app.fullname` (aka. grafana-project-monitoring) ServiceAccount
+  {{- if and .Values.enabledRBAC (not .Values.serviceAccountName) }}
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -10,4 +12,20 @@ metadata:
   name: {{ template "app.fullname" . }}
 imagePullSecrets: 
 {{ toYaml .Values.image.pullSecrets | indent 2 }}
+  {{- end }}
+{{- else }}
+# since v0.0.5, the Grafana of project-level monitoring change to use the `.Values.projectServiceAccountName` (aka. project-monitoring) ServiceAccount
+  {{- if .Values.enabledRBAC }}
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    app: {{ template "app.name" . }}
+    chart: {{ template "app.version" . }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+  name: {{ default (include "app.fullname" .) .Values.projectServiceAccountName }}
+imagePullSecrets: 
+{{ toYaml .Values.image.pullSecrets | indent 2 }}
+  {{- end }}
 {{- end }}
