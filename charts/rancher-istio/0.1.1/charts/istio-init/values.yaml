@@ -1,0 +1,3 @@
+certmanager:
+  enabled: false
+deleteCRDs: true
