@@ -59,6 +59,11 @@ dependencies:
     condition: grafana.enabled
     repository: "file://./charts/grafana/"
 
+  - name: prometheus-adapter
+    version: 0.0.1
+    condition: prometheus-adapter.enabled
+    repository: "file://./charts/prometheus-adapter/"
+
   - name: prometheus
     version: 0.0.1
     condition: prometheus.enabled

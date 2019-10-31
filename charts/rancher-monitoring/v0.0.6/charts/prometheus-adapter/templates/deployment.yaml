@@ -1,0 +1,97 @@
+apiVersion: {{ template "deployment_api_version" . }}
+kind: Deployment
+metadata:
+  labels:
+    app: {{ template "app.name" . }}
+    chart: {{ template "app.version" . }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+  name: {{ template "app.fullname" . }}
+spec:
+  replicas: {{ .Values.replicas }}
+  selector:
+    matchLabels:
+      app: {{ template "app.name" . }}
+      chart: {{ template "app.version" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "app.name" . }}
+        chart: {{ template "app.version" . }}
+        release: {{ .Release.Name }}
+    spec:
+      {{- if .Values.enabledRBAC }}
+      serviceAccountName:  {{ default (include "app.fullname" .) .Values.serviceAccountName }}
+      {{- end }}
+      containers:
+      - name: adapter
+        image: {{ template "system_default_registry" . }}{{ .Values.image.repository }}:{{ .Values.image.tag }}
+        args:
+        - /adapter
+        - --secure-port=6443
+        {{- if .Values.tls.enable }}
+        - --tls-cert-file=/var/run/serving-cert/tls.crt
+        - --tls-private-key-file=/var/run/serving-cert/tls.key
+        {{- end }}
+        - --cert-dir=/tmp/cert
+        - --logtostderr=true
+        - --v={{ .Values.logLevel }}
+        - --config=/etc/adapter/config.yaml
+        - --prometheus-url={{ default "http://prometheus-operated:9090" .Values.prometheusURL }}
+        - --prometheus-auth-incluster
+        - --prometheus-token-file=/var/run/secrets/kubernetes.io/serviceaccount/token
+        - --metrics-relist-interval={{ .Values.prometheusMetricsRelistInterval }}
+        - --metrics-max-age={{ .Values.prometheusMetricsMaxAge }}
+        ports:
+        - containerPort: 6443
+          name: https
+        livenessProbe:
+{{ merge .Values.livenessProbe .Values.defaultLivenessProbe | toYaml | indent 10 }}
+        readinessProbe:
+{{ merge .Values.readinessProbe .Values.defaultReadinessProbe | toYaml | indent 10 }}
+        {{- if .Values.resources }}
+        resources:
+{{ toYaml .Values.resources | indent 10 }}
+        {{- end }}
+        {{- if .Values.securityContext }}
+        securityContext:
+{{ toYaml .Values.securityContext | indent 10 }}
+        {{- end }}
+        volumeMounts:
+        - name: adapter-config
+          mountPath: /etc/adapter/
+          readOnly: true
+        {{- if .Values.tls.enabled }}
+        - name: adapter-cert
+          mountPath: /var/run/serving-cert
+          readOnly: true
+        {{- end }}
+        - name: adapter-tmp
+          mountPath: /tmp
+      nodeSelector:
+{{- include "linux-node-selector" . | nindent 8 }}
+        {{- range .Values.nodeSelectors }}
+        {{- $pair := regexSplit "=" . 2 }}
+        {{- if eq 2 (len $pair) }}
+        {{ (index $pair 0) }}: {{ (index $pair 1) }}
+        {{- else }}
+        {{ (index $pair 0) }}: ""
+        {{- end }}
+        {{- end }}
+      tolerations:
+{{- include "linux-node-tolerations" . | nindent 8 }}
+      {{- if .Values.tolerations }}
+{{ toYaml .Values.tolerations | indent 8 }}
+      {{- end }}
+      volumes:
+      - name: adapter-config
+        configMap:
+          name: {{ default (include "app.fullname" .) .Values.rules.previousConfigMapName }}
+      {{- if .Values.tls.enabled }}
+      - name: adapter-cert
+        secret:
+          secretName: {{ template "app.fullname" . }}
+      {{- end }}
+      - name: adapter-tmp
+        emptyDir: {}

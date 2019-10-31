@@ -1,0 +1,8 @@
+apiVersion: v1
+description: Creates Prometheus-adapter instance for Kubernetes which maintaining by Rancher 2.
+engine: gotpl
+maintainers:
+- name: thxCode
+  email: frank@rancher.com
+name: prometheus-adapter
+version: 0.0.1
