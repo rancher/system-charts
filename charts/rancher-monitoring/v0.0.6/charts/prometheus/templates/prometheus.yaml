@@ -58,23 +58,9 @@ spec:
       name: web
       protocol: TCP
     livenessProbe:
-      failureThreshold: 6
-      httpGet:
-        path: /-/healthy
-        port: web
-        scheme: HTTP
-      periodSeconds: 10
-      successThreshold: 1
-      timeoutSeconds: 10
+{{ merge .Values.livenessProbe .Values.defaultLivenessProbe | toYaml | indent 6 }}
     readinessProbe:
-      failureThreshold: 10
-      httpGet:
-        path: /-/ready
-        port: web
-        scheme: HTTP
-      periodSeconds: 10
-      successThreshold: 1
-      timeoutSeconds: 10
+{{ merge .Values.readinessProbe .Values.defaultReadinessProbe | toYaml | indent 6 }}
     {{- if and .Values.resources .Values.resources.auth }}
     resources:
 {{ toYaml .Values.resources.auth | indent 6 }}
