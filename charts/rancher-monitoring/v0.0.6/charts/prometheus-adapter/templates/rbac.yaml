@@ -1,0 +1,151 @@
+{{- if and .Values.enabledRBAC (not .Values.serviceAccountName) }}
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    app: {{ template "app.name" . }}
+    chart: {{ template "app.version" . }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+  name: {{ template "app.fullname" . }}
+imagePullSecrets: 
+{{ toYaml .Values.image.pullSecrets | indent 2 }}
+{{- end }}
+
+# custom metrics
+---
+apiVersion: {{ template "rbac_api_version" . }}
+kind: ClusterRole
+metadata:
+  labels:
+    app: {{ template "app.name" . }}
+    chart: {{ template "app.version" . }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+  name: {{ include "app.fullname" . }}-{{ .Release.Namespace }}-custom-metrics
+rules:
+# read Kubernetes resources
+- apiGroups:
+  - ""
+  resources:
+  - namespaces
+  - pods
+  - services
+  - configmaps
+  verbs:
+  - get
+  - list
+# full-control custom metrics
+- apiGroups:
+  - custom.metrics.k8s.io
+  resources:
+  - "*"
+  verbs:
+  - "*"
+---
+apiVersion: {{ template "rbac_api_version" . }}
+kind: ClusterRoleBinding
+metadata:
+  labels:
+    app: {{ template "app.name" . }}
+    chart: {{ template "app.version" . }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+  name: {{ include "app.fullname" . }}-{{ .Release.Namespace }}-hpa-controller-custom-metrics
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ include "app.fullname" . }}-{{ .Release.Namespace }}-custom-metrics
+subjects:
+- kind: ServiceAccount
+  name: {{ default (include "app.fullname" .) .Values.serviceAccountName }}
+  namespace: {{ .Release.Namespace }}
+
+
+# external metrics
+{{- if not (.Capabilities.APIVersions.Has "external.metrics.k8s.io/v1beta1") }}
+---
+apiVersion: {{ template "rbac_api_version" . }}
+kind: ClusterRole
+metadata:
+  labels:
+    app: {{ template "app.name" . }}
+    chart: {{ template "app.version" . }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+  name: {{ include "app.fullname" . }}-{{ .Release.Namespace }}-external-metrics
+rules:
+# read-only external metrics (hpa)
+- apiGroups:
+  - "external.metrics.k8s.io"
+  resources:
+  - "*"
+  verbs:
+  - list
+  - get
+  - watch
+---
+apiVersion: {{ template "rbac_api_version" . }}
+kind: ClusterRoleBinding
+metadata:
+  labels:
+    app: {{ template "app.name" . }}
+    chart: {{ template "app.version" . }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+  name: {{ include "app.fullname" . }}-{{ .Release.Namespace }}-hpa-controller-external-metrics
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ include "app.fullname" . }}-{{ .Release.Namespace }}-external-metrics
+subjects:
+- kind: ServiceAccount
+  name: horizontal-pod-autoscaler
+  namespace: kube-system
+{{- end }}
+
+
+# resource metrics
+{{- if not (.Capabilities.APIVersions.Has "metrics.k8s.io/v1beta1") }}
+---
+apiVersion: {{ template "rbac_api_version" . }}
+kind: ClusterRole
+metadata:
+  labels:
+    app: {{ template "app.name" . }}
+    chart: {{ template "app.version" . }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+  name: {{ include "app.fullname" . }}-{{ .Release.Namespace }}-metrics
+rules:
+# read-only pods & nodes
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  - nodes
+  - nodes/stats
+  verbs:
+  - get
+  - list
+  - watch
+---
+apiVersion: {{ template "rbac_api_version" . }}
+kind: ClusterRoleBinding
+metadata:
+  labels:
+    app: {{ template "app.name" . }}
+    chart: {{ template "app.version" . }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+  name: {{ include "app.fullname" . }}-{{ .Release.Namespace }}-hpa-controller-metrics
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ include "app.fullname" . }}-{{ .Release.Namespace }}-metrics
+subjects:
+- kind: ServiceAccount
+  name: {{ default (include "app.fullname" .) .Values.serviceAccountName }}
+  namespace: {{ .Release.Namespace }}
+{{- end }}
+

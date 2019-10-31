@@ -1,0 +1,90 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    app: {{ template "app.name" . }}
+    chart: {{ template "app.version" . }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+  name: {{ template "app.fullname" . }}-aggregator-rbac
+data:
+  rbac.yaml: |-
+{{- $root := . -}}
+{{ range $path, $bytes := .Files.Glob "files/aggregator-rbac.yaml" }}
+{{ tpl ($bytes | toString) $root | printf "%s" | indent 4 }}
+{{ end }}
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  labels:
+    app: {{ template "app.name" . }}
+    chart: {{ template "app.version" . }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+  name: {{ template "app.fullname" . }}-aggregator-rbac-install
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    "helm.sh/hook": post-install, post-upgrade
+    "helm.sh/hook-delete-policy": hook-succeeded
+    "helm.sh/hook-weight": "-5"
+spec:
+  ttlSecondsAfterFinished: 30
+  backoffLimit: 3
+  template:
+    spec:
+      serviceAccountName: {{ template "app.fullname" . }}-aggregator-rbac-mgmt
+      containers:
+      - name: aggregator-rbac-install
+        image: {{ template "system_default_registry" . }}{{ .Values.image.kubectl.repository }}:{{ .Values.image.kubectl.tag }}
+        volumeMounts:
+        - name: aggregator-rbac
+          mountPath: /etc/prometheus-adapter/aggregator-rbac/
+          readOnly: true
+        command: 
+        - kubectl
+        - apply
+        - -f
+        - /etc/prometheus-adapter/aggregator-rbac/rbac.yaml
+      volumes:
+      - name: aggregator-rbac
+        configMap:
+          name: {{ template "app.fullname" . }}-aggregator-rbac
+      restartPolicy: OnFailure
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  labels:
+    app: {{ template "app.name" . }}
+    chart: {{ template "app.version" . }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+  name: {{ template "app.fullname" . }}-aggregator-rbac-uninstall
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    "helm.sh/hook": "pre-delete"
+    "helm.sh/hook-delete-policy": "hook-succeeded, before-hook-creation, hook-failed"
+spec:
+  template:
+    spec:
+      serviceAccountName: {{ template "app.fullname" . }}-aggregator-rbac-mgmt
+      containers:
+      - name: aggregator-rbac-uninstall
+        image: {{ template "system_default_registry" . }}{{ .Values.image.kubectl.repository }}:{{ .Values.image.kubectl.tag }}
+        volumeMounts:
+        - name: aggregator-rbac
+          mountPath: /etc/prometheus-adapter/aggregator-rbac/
+          readOnly: true
+        command: 
+        - kubectl
+        - delete
+        - -f
+        - /etc/prometheus-adapter/aggregator-rbac/rbac.yaml
+      volumes:
+      - name: aggregator-rbac
+        configMap:
+          name: {{ template "app.fullname" . }}-aggregator-rbac
+      restartPolicy: OnFailure
+
+

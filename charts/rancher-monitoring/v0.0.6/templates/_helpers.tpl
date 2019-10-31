@@ -119,6 +119,15 @@
 {{- end -}}
 
 
+{{- define "apiregistration_api_version" -}}
+{{- if .Capabilities.APIVersions.Has "apiregistration.k8s.io/v1" -}}
+{{- "apiregistration.k8s.io/v1" -}}
+{{- else -}}
+{{- "apiregistration.k8s.io/v1beta1" -}}
+{{- end -}}
+{{- end -}}
+
+
 {{- define "system_default_registry" -}}
 {{- if .Values.global.systemDefaultRegistry -}}
 {{- printf "%s/" .Values.global.systemDefaultRegistry -}}

@@ -126,7 +126,7 @@ spec:
         {{- end }}
         {{- end }}
     {{- if .Values.enabledRBAC }}
-      serviceAccountName: {{ default (default (include "app.fullname" .) .Values.serviceAccountName) .Values.serviceAccountNameOverride }}
+      serviceAccountName: {{ default (include "app.fullname" .) .Values.serviceAccountName }}
     {{- end }}
       tolerations:
 {{- include "linux-node-tolerations" . | nindent 8 }}

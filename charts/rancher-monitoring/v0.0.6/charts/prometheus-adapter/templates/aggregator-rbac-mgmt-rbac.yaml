@@ -1,0 +1,66 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    app: {{ template "app.name" . }}
+    chart: {{ template "app.version" . }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+  name: {{ template "app.fullname" . }}-aggregator-rbac-mgmt
+imagePullSecrets: 
+{{ toYaml .Values.image.pullSecrets | indent 2 }}
+---
+apiVersion: {{ template "rbac_api_version" . }}
+kind: ClusterRole
+metadata:
+  labels:
+    app: {{ template "app.name" . }}
+    chart: {{ template "app.version" . }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+  name: {{ include "app.fullname" . }}-{{ .Release.Namespace }}-aggregator-rbac-mgmt
+rules:
+- apiGroups:
+  - rbac.authorization.k8s.io
+  resources:
+  - clusterrolebindings
+  - rolebindings
+  verbs:
+  - "*"
+- apiGroups:
+  - ""
+  resources:
+  - "configmaps"
+  verbs:
+  - "get"
+- apiGroups:
+  - "authentication.k8s.io"
+  resources:
+  - "tokenreviews"
+  verbs:
+  - "create"
+- apiGroups:
+  - "authorization.k8s.io"
+  resources:
+  - "subjectaccessreviews"
+  verbs:
+  - "create"
+---
+apiVersion: {{ template "rbac_api_version" . }}
+kind: ClusterRoleBinding
+metadata:
+  labels:
+    app: {{ template "app.name" . }}
+    chart: {{ template "app.version" . }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+  name: {{ include "app.fullname" . }}-{{ .Release.Namespace }}-aggregator-rbac-mgmt
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ include "app.fullname" . }}-{{ .Release.Namespace }}-aggregator-rbac-mgmt
+subjects:
+  - kind: ServiceAccount
+    name: {{ template "app.fullname" . }}-aggregator-rbac-mgmt
+    namespace: {{ .Release.Namespace }}
+

@@ -1,0 +1,25 @@
+{{- $rules := merge .Values.rules .Values.defaultRules -}}
+
+{{- if not $rules.previousConfigMapName -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    app: {{ template "app.name" . }}
+    chart: {{ template "app.version" . }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+  name: {{ template "app.fullname" . }}
+data:
+  config.yaml: |
+    rules:
+{{ toYaml $rules.customs | indent 4 }}
+{{- if $rules.externals }}
+    externalRules:
+{{ toYaml $rules.externals | indent 4 }}
+{{- end -}}
+{{- if $rules.resources }}
+    resourceRules:
+{{ toYaml $rules.resources | indent 6 }}
+{{- end -}}
+{{- end }}

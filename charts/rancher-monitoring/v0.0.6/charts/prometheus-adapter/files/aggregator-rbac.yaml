@@ -1,0 +1,36 @@
+apiVersion: {{ template "rbac_api_version" . }}
+kind: ClusterRoleBinding
+metadata:
+  labels:
+    app: {{ template "app.name" . }}
+    chart: {{ template "app.version" . }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+  name: {{ include "app.fullname" . }}-{{ .Release.Namespace }}:system:auth-delegator
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: system:auth-delegator
+subjects:
+- kind: ServiceAccount
+  name: {{ default (include "app.fullname" .) .Values.serviceAccountName }}
+  namespace: {{ .Release.Namespace }}
+---
+apiVersion: {{ template "rbac_api_version" . }}
+kind: RoleBinding
+metadata:
+  labels:
+    app: {{ template "app.name" . }}
+    chart: {{ template "app.version" . }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+  name: {{ include "app.fullname" . }}-{{ .Release.Namespace }}-auth-reader
+  namespace: kube-system
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: extension-apiserver-authentication-reader
+subjects:
+- kind: ServiceAccount
+  name: {{ default (include "app.fullname" .) .Values.serviceAccountName }}
+  namespace: {{ .Release.Namespace }}
