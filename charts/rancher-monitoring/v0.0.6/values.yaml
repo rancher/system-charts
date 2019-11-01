@@ -292,6 +292,8 @@ grafana:
   ##
   serviceAccountName: ""
   prometheusDatasourceURL: "http://prometheus-operated:9090"
+  livenessProbe: {}
+  readinessProbe: {}
 
 prometheus:
   enabled: false
