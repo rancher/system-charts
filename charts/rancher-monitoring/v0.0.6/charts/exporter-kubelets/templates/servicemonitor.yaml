@@ -71,6 +71,21 @@ spec:
       action: replace
       regex: (.+)
       replacement: $1
+    {{- if semverCompare ">=1.16-0" .Capabilities.KubeVersion.GitVersion }}
+    metricRelabelings:
+    - action: replace
+      regex: (.+)
+      replacement: $1
+      sourceLabels:
+      - container
+      targetLabel: container_name
+    - action: replace
+      regex: (.+)
+      replacement: $1
+      sourceLabels:
+      - pod
+      targetLabel: pod_name
+    {{- end }}
   - port: https-metrics
     scheme: https
     path: /metrics/resource/v1alpha1
@@ -128,6 +143,21 @@ spec:
       action: replace
       regex: (.+)
       replacement: $1
+    {{- if semverCompare ">=1.16-0" .Capabilities.KubeVersion.GitVersion }}
+    metricRelabelings:
+    - action: replace
+      regex: (.+)
+      replacement: $1
+      sourceLabels:
+      - container
+      targetLabel: container_name
+    - action: replace
+      regex: (.+)
+      replacement: $1
+      sourceLabels:
+      - pod
+      targetLabel: pod_name
+    {{- end }}
   - port: http-metrics
     path: /metrics/resource/v1alpha1
     honorLabels: true
