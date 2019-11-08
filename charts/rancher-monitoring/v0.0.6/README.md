@@ -5,4 +5,4 @@ Installs [prometheus-operator](https://github.com/coreos/prometheus-operator) to
 > **Tip**: Only use for Rancher Monitoring!!!
 
 ## Prerequisites
-  - Rancher 2.2+
+  - >= Rancher 2.3.3
