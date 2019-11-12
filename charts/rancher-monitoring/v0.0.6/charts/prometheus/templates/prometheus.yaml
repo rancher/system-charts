@@ -148,6 +148,16 @@ spec:
   - bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
     url: {{ printf "%s%s" .Values.sync.target .Values.sync.path }}
 {{- end }}
+{{- if eq .Values.level "cluster" }}
+  {{- if .Values.remoteRead }}
+  remoteRead:
+{{ toYaml .Values.remoteRead | indent 4 }}
+  {{- end }}
+  {{- if .Values.remoteWrite }}
+  remoteWrite:
+{{ toYaml .Values.remoteWrite | indent 4 }}
+  {{- end }}
+{{- end }}
 {{ include "rule.namespace.selector" . | indent 2}}
 {{ include "rule.selector" . | indent 2 }}
 {{- if or .Values.storageSpec .Values.persistence.enabled }}
