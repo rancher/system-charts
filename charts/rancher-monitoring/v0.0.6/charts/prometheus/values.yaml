@@ -72,6 +72,15 @@ additionalAlertManagerConfigs: []
 #   - targets:
 #     - "localhost:9093"
 
+## Prometheus AdditionalAlertRelabelConfigs
+## Ref: https://github.com/coreos/prometheus-operator/blob/master/Documentation/api.md#prometheusspec
+##
+additionalAlertRelabelConfigs: []
+# - source_labels:
+#   - "__meta_kubernetes_namespace"
+#   regex: "test"
+#   action: drop
+
 istioMonitoring:
   enabled: true
   namespace: istio-system

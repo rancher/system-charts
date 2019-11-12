@@ -200,3 +200,8 @@ spec:
     name: {{ template "app.fullname" . }}-additional-alertmanager-configs
     key: additional-alertmanager-configs.yaml
 {{- end }}
+{{- if (include "additional-alertrelabel-configs.yaml" .) }}
+  additionalAlertRelabelConfigs:
+    name: {{ template "app.fullname" . }}-additional-alertrelabel-configs
+    key: additional-alertrelabel-configs.yaml
+{{- end }}

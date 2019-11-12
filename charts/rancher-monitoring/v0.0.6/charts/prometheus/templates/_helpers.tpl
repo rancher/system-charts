@@ -51,6 +51,15 @@
 {{- end -}}
 {{- end -}}
 
+{{- define "additional-alertrelabel-configs.yaml" -}}
+{{- if .Values.additionalAlertRelabelConfigs -}}
+  {{- $_ := set $yamls (.Values.additionalAlertRelabelConfigs | toYaml) "" -}}
+{{- end -}}
+{{- if $yamls -}}
+  {{- keys $yamls | join "\n" | quote -}}
+{{- end -}}
+{{- end -}}
+
 
 {{- define "app.auth.fullname" -}}
 {{- $name := include "app.name" . -}}
