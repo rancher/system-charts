@@ -186,7 +186,7 @@ exporter-kube-state:
   apiGroup: "monitoring.coreos.com"
   image:
     repository: rancher/coreos-kube-state-metrics
-    tag: v1.5.0
+    tag: v1.8.0
   nodeSelectors: []
   resources:
     limits:
