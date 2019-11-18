@@ -156,6 +156,7 @@ spec:
       {{- if .Values.persistence.name }}
       metadata:
         name: {{ .Values.persistence.name }}
+        creationTimestamp: {{ now | date "2006-01-02T15:04:05Z" | quote }}
       {{- end }}
       spec:
 {{- if .Values.storageSpec }}
