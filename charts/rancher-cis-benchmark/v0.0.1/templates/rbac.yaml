@@ -6,8 +6,6 @@ metadata:
     helm.sh/chart: {{ include "rancher-cis-benchmark.chart" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/managed-by: {{ .Release.Service }}
-  # TODO: make the sa name configurable
-  # name: {{ include "rancher-cis-benchmark.fullname" . }}-serviceaccount
   name: s-sa-{{ .Release.Name }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1beta1
@@ -18,8 +16,6 @@ metadata:
     helm.sh/chart: {{ include "rancher-cis-benchmark.chart" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/managed-by: {{ .Release.Service }}
-  # TODO: make the sa name configurable
-  # name: {{ include "rancher-cis-benchmark.fullname" . }}-serviceaccount
   name: s-sa-{{ .Release.Name }}
 rules:
 - apiGroups:
@@ -37,18 +33,12 @@ metadata:
     helm.sh/chart: {{ include "rancher-cis-benchmark.chart" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/managed-by: {{ .Release.Service }}
-  # TODO: make the sa name configurable
-  # name: {{ include "rancher-cis-benchmark.fullname" . }}-serviceaccount
   name: s-sa-{{ .Release.Name }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  # TODO: make the sa name configurable
-  # name: {{ include "rancher-cis-benchmark.fullname" . }}-serviceaccount
   name: s-sa-{{ .Release.Name }}
 subjects:
 - kind: ServiceAccount
-  # TODO: make the sa name configurable
-  # name: {{ include "rancher-cis-benchmark.fullname" . }}-serviceaccount
   name: s-sa-{{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
