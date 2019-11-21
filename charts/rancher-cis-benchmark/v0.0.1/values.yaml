@@ -4,7 +4,17 @@
 
 replicaCount: 1
 
+# if owner is specified, it's used for the name of the configmap for results
 owner: ""
+# skip is used specify which tests to skip
+skip: ""
+# skipConfigMapName is used to specify the name of cm where the skip info is stored
+# skip has higher precedence than what's specified in the configmap
+skipConfigMapName: ""
+
+# when debug=true, the plugin pods sleep for the time specified
+debug: false
+debugTime: "infinity"
 
 image:
   repository: rancher/security-scan
