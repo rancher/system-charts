@@ -61,6 +61,12 @@ data:
       - hostPath:
           path: /
         name: root
+      - hostPath:
+          path: /etc/passwd
+        name: etc-passwd
+      - hostPath:
+          path: /etc/group
+        name: etc-group
     sonobuoy-config:
       driver: DaemonSet
       plugin-name: rancher-kube-bench
@@ -96,4 +102,10 @@ data:
         readOnly: false
       - mountPath: /node
         name: root
-        readOnly: false
+        readOnly: true
+      - mountPath: /etc/passwd
+        name: etc-passwd
+        readOnly: true
+      - mountPath: /etc/group
+        name: etc-group
+        readOnly: true
