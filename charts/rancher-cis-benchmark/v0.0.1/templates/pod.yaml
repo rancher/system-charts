@@ -46,6 +46,12 @@ spec:
         - name: OUTPUT_CONFIGMAPNAME
           value: {{ .Release.Name }}
         {{- end }}
+        {{- if .Values.debugMaster }}
+        - name: DEBUG
+          value: "true"
+        - name: DEBUG_TIME_IN_SEC
+          value: {{ .Values.debugTime }}
+        {{- end }}
       image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
       imagePullPolicy: {{ .Values.image.pullPolicy }}
       ports:
