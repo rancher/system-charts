@@ -87,7 +87,7 @@ data:
         value: /tmp/results
       - name: CHROOT_DIR
         value: /node
-      {{- if .Values.debug }}
+      {{- if .Values.debugWorker }}
       - name: DEBUG
         value: "true"
       - name: DEBUG_TIME_IN_SEC
