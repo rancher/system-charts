@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kiali
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ template "kiali.name" . }}
+    chart: {{ template "kiali.chart" . }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+data:
+  config.yaml: |
+    istio_namespace: {{ .Release.Namespace }}
+    server:
+      port: 20001
+    external_services:
+      tracing:
+        {{- if .Values.dashboard.jaegerURL }}
+        url: {{ .Values.dashboard.jaegerURL }}
+        {{- else }}
+        url: http://tracing.istio-system:80
+        {{- end }}
+      grafana:
+      {{- if eq .Values.global.monitoring.type "cluster-monitoring" }}
+        url: https://{{ .Values.global.rancher.domain }}/k8s/clusters/{{ .Values.global.rancher.clusterId }}/api/v1/namespaces/cattle-prometheus/services/http:access-grafana:80/proxy//
+        in_cluster_url: http://access-grafana.cattle-prometheus:80
+      {{- else if eq .Values.global.monitoring.type "built-in" }}
+        {{- if and .Values.global.rancher (and .Values.global.rancher.domain .Values.global.rancher.clusterId) }}
+        url: https://{{ .Values.global.rancher.domain }}/k8s/clusters/{{ .Values.global.rancher.clusterId }}/api/v1/namespaces/{{ .Release.Namespace }}/services/http:grafana:80/proxy//
+        in_cluster_url: http://access-grafana.cattle-prometheus:80
+        {{- end }}
+      {{- else }}
+        {{- if .Values.dashboard.grafanaURL }}
+        url: {{ .Values.dashboard.grafanaURL }}
+        {{- end }}
+      {{- end }}
+      prometheus:
+      {{- if eq .Values.global.monitoring.type "cluster-monitoring" }}
+        url: "http://access-prometheus.cattle-prometheus:80"
+      {{- else }}
+        url: {{ .Values.prometheusAddr }}
+      {{- end }}
+{{- if .Values.security.enabled }}
+    identity:
+      cert_file: {{ .Values.security.cert_file }}
+      private_key_file: {{ .Values.security.private_key_file }}
+{{- end}}
