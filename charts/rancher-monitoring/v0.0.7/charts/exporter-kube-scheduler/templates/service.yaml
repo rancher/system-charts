@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: {{ template "app.name" . }}
+    chart: {{ template "app.version" . }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+    {{- range .Values.serviceSelectorLabels }}
+    {{- $pair := regexSplit "=" . 2 }}
+    {{- if eq 2 (len $pair) }}
+    {{ (index $pair 0) }}: {{ (index $pair 1) }}
+    {{- else }}
+    {{ (index $pair 0) }}: ""
+    {{- end }}
+    {{- end }}
+  name: expose-kube-scheduler-metrics
+  namespace: {{ .Release.Namespace }}
+spec:
+  type: ClusterIP
+  clusterIP: None
+  ports:
+  - name: {{ .Values.ports.metrics.name }}
+    port: {{ .Values.ports.metrics.port }}
+    protocol: {{ .Values.ports.metrics.protocol }}
+    targetPort: {{ .Values.ports.metrics.port }}
+{{- if not .Values.endpoints }}
+  selector:
+    {{- range .Values.serviceSelectorLabels }}
+    {{- $pair := regexSplit "=" . 2 }}
+    {{- if eq 2 (len $pair) }}
+    {{ (index $pair 0) }}: {{ (index $pair 1) }}
+    {{- else }}
+    {{ (index $pair 0) }}: ""
+    {{- end }}
+    {{- end }}
+{{- end }}

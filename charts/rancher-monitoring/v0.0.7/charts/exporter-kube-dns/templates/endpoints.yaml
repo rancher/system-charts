@@ -1,0 +1,23 @@
+{{- if .Values.endpoints }}
+apiVersion: v1
+kind: Endpoints
+metadata:
+  labels:
+    app: {{ template "app.name" . }}
+    chart: {{ template "app.version" . }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+  name: expose-kube-dns-metrics
+subsets:
+- addresses:
+    {{- range .Values.endpoints }}
+    - ip: {{ . }}
+    {{- end }}
+  ports:
+  - name: {{ .Values.ports.metrics.dnsmasq.name }}
+    port: {{ .Values.ports.metrics.dnsmasq.port }}
+    protocol: {{ .Values.ports.metrics.dnsmasq.protocol }}
+  - name: {{ .Values.ports.metrics.skydns.name }}
+    port: {{ .Values.ports.metrics.skydns.port }}
+    protocol: {{ .Values.ports.metrics.skydns.protocol }}
+{{- end }}
