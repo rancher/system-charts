@@ -153,8 +153,9 @@ spec:
 {{- if or .Values.storageSpec .Values.persistence.enabled }}
   storage:
     volumeClaimTemplate:
-      {{- if .Values.persistence.name }}
       metadata:
+        creationTimestamp: {{ now | date "2006-01-02T15:04:05Z" | quote }}
+      {{- if .Values.persistence.name }}
         name: {{ .Values.persistence.name }}
       {{- end }}
       spec:
@@ -164,6 +165,10 @@ spec:
         {{ if and .Values.persistence.storageClass (ne "default" .Values.persistence.storageClass) }}
         storageClassName: {{ .Values.persistence.storageClass }}
         {{ end }}
+        dataSource:
+          kind: ""
+          name: ""
+          apiGroup: ""
         accessModes: 
           - {{ default "ReadWriteOnce" .Values.persistence.accessMode }}
         resources:
