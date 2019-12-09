@@ -77,7 +77,7 @@
 {{- if .Capabilities.APIVersions.Has "apps/v1" -}}
 {{- "apps/v1" -}}
 {{- else if .Capabilities.APIVersions.Has "apps/v1beta2" -}}
-{{- "apps/v1beta1" -}}
+{{- "apps/v1beta2" -}}
 {{- else if .Capabilities.APIVersions.Has "apps/v1beta1" -}}
 {{- "apps/v1beta1" -}}
 {{- else -}}
