@@ -1,0 +1,70 @@
+{{- if .Values.certmanager.enabled }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  namespace: {{ .Release.Namespace }}
+  name: istio-init-crd-certmanager-11
+  annotations:
+    "helm.sh/hook": post-install, post-upgrade
+    "helm.sh/hook-delete-policy": hook-succeeded
+    "helm.sh/hook-weight": "-5"
+spec:
+  ttlSecondsAfterFinished: 100
+  template:
+    metadata:
+      annotations:
+        sidecar.istio.io/inject: "false"
+    spec:
+      serviceAccountName: istio-init-service-account
+      containers:
+      - name: istio-init-crd-certmanager-11
+        image: "{{ template "system_default_registry" . }}{{ .Values.global.kubectl.repository }}:{{ .Values.global.kubectl.tag }}"
+        imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+        volumeMounts:
+        - name: crd-certmanager-11
+          mountPath: /etc/istio/crd-certmanager-11
+          readOnly: true
+        command: ["kubectl",  "apply", "-f", "/etc/istio/crd-certmanager-11/crd-certmanager-11.yaml"]
+      volumes:
+      - name: crd-certmanager-11
+        configMap:
+          name: istio-crd-certmanager-11
+      restartPolicy: OnFailure
+
+{{- if .Values.deleteCRDs }}
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  namespace: {{ .Release.Namespace }}
+  name: istio-init-delete-crd-certmanager-11
+  annotations:
+    "helm.sh/hook": "pre-delete"
+    "helm.sh/hook-delete-policy": "hook-succeeded, before-hook-creation, hook-failed"
+spec:
+  template:
+    metadata:
+      annotations:
+        sidecar.istio.io/inject: "false"
+        "helm.sh/hook": "post-delete"
+        "helm.sh/hook-weight": "-5"
+        "helm.sh/hook-delete-policy": hook-succeeded
+    spec:
+      serviceAccountName: istio-init-service-account
+      containers:
+      - name: istio-init-crd-certmanager-11
+        image: "{{ template "system_default_registry" . }}{{ .Values.global.kubectl.repository }}:{{ .Values.global.kubectl.tag }}"
+        imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+        volumeMounts:
+        - name: crd-certmanager-11
+          mountPath: /etc/istio/crd-certmanager-11
+          readOnly: true
+        command: ["kubectl",  "delete", "-f", "/etc/istio/crd-certmanager-11/crd-certmanager-11.yaml"]
+      volumes:
+      - name: crd-certmanager-11
+        configMap:
+          name: istio-crd-certmanager-11
+      restartPolicy: Never
+  backoffLimit: 1
+{{- end }}
+{{- end }}
