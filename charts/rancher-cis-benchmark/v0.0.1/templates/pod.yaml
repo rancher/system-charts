@@ -32,8 +32,10 @@ spec:
     - name: {{ .Chart.Name }}
       restartPolicy: Never
       env:
-        - name: SKIP
-          value: {{ .Values.skip }}
+        {{- if .Values.overrideBenchmarkVersion }}
+        - name: OVERRIDE_BENCHMARK_VERSION
+          value: {{ .Values.overrideBenchmarkVersion }}
+        {{- end }}
         - name: SONOBUOY_NS
           value: {{ .Release.Namespace }}
         - name: SONOBUOY_POD_NAME
