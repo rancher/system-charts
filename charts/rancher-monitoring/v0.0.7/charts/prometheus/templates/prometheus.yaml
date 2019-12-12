@@ -26,7 +26,7 @@ spec:
     image: {{ template "system_default_registry" . }}{{ .Values.image.proxy.repository }}:{{ .Values.image.proxy.tag }}
     ports:
     - containerPort: 8080
-      name: http
+      name: nginx-http
       protocol: TCP
     {{- if and .Values.resources .Values.resources.proxy }}
     resources:
@@ -107,6 +107,14 @@ spec:
 {{- range $key, $value := .Values.externalLabels}}
     {{ $key }}: {{ $value | quote }}
 {{- end }}
+{{- end }}
+{{- if .Values.thanos.enabled }}
+  thanos: 
+    baseImage: {{ template "system_default_registry" . }}{{ .Values.image.thanos.repository }}
+    version: {{ .Values.image.thanos.tag }}
+    objectStorageConfig:
+      key: thanos.yaml
+      name: {{ template "app.thanos.fullname" . }}
 {{- end }}
   nodeSelector:
 {{- include "linux-node-selector" . | nindent 4 }}

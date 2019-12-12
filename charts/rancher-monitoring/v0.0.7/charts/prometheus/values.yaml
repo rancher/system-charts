@@ -75,3 +75,9 @@ additionalAlertManagerConfigs: []
 istioMonitoring:
   enabled: true
   namespace: istio-system
+
+thanos:
+  enabled: false
+  ## ObjectStoreConfig
+  ## Ref: https://github.com/thanos-io/thanos/blob/master/docs/storage.md
+  objectConfig: {}
