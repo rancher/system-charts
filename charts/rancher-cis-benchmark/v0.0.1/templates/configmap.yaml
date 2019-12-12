@@ -87,6 +87,10 @@ data:
         value: /tmp/results
       - name: CHROOT_DIR
         value: /node
+      {{- if .Values.overrideBenchmarkVersion }}
+      - name: OVERRIDE_BENCHMARK_VERSION
+        value: {{ .Values.overrideBenchmarkVersion }}
+      {{- end }}
       {{- if .Values.debugWorker }}
       - name: DEBUG
         value: "true"
