@@ -318,7 +318,7 @@ prometheus:
       repository: rancher/nginx
       tag: 1.17.4-alpine
     thanos:
-      repository: thanosio/thanos
+      repository: rancher/thanos
       tag: v0.9.0
   nodeSelectors: []
   resources:
