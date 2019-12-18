@@ -4,6 +4,11 @@ kind: CustomResourceDefinition
 metadata:
   creationTimestamp: null
   name: prometheusrules.monitoring.coreos.com
+  labels:
+    app: operator-init
+    chart: operator-init-0.1.0
+    heritage: Tiller
+    release: prometheus-operator
 spec:
   group: monitoring.coreos.com
   names:
