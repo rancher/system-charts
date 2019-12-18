@@ -56,6 +56,10 @@
 {{- printf "%s-%s-cleanup" $name .Release.Name -}}
 {{- end -}}
 
+{{- define "app.thanos.fullname" -}}
+{{- $name := include "app.name" . -}}
+{{- printf "%s-%s-thanos" $name .Release.Name -}}
+{{- end -}}
 
 {{- define "kube_version" -}}
 {{- printf "%s.%s" .Capabilities.KubeVersion.Major .Capabilities.KubeVersion.Minor -}}
