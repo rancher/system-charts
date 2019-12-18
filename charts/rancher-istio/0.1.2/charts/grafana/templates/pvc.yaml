@@ -1,5 +1,4 @@
-{{- if and .Values.enabled (eq .Values.global.monitoring.type "built-in") -}}
-{{- if .Values.persistence.enabled }}
+{{- if .Values.persist }}
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
@@ -11,11 +10,10 @@ metadata:
     heritage: {{ .Release.Service }}
     release: {{ .Release.Name }}
 spec:
-  storageClassName: {{ .Values.persistence.storageClass }}
+  storageClassName: {{ .Values.storageClassName }}
   accessModes:
-    - {{ .Values.persistence.accessMode }}
+    - {{ .Values.accessMode }}
   resources:
     requests:
-      storage: {{ .Values.persistence.size }}
+      storage: 5Gi
 {{- end }}
-{{- end -}}

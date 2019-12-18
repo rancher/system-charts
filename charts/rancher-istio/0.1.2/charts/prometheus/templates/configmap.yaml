@@ -1,4 +1,3 @@
-{{- if and .Values.enabled (eq .Values.global.monitoring.type "built-in") -}}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -280,4 +279,3 @@ data:
       - source_labels: [__meta_kubernetes_pod_name]
         action: replace
         target_label: pod_name
-{{- end -}}

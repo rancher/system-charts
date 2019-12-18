@@ -27,13 +27,17 @@ spec:
         prometheus.io/scrape: "true"
         prometheus.io/port: "9090"
         kiali.io/runtimes: go,kiali
+        {{- if .Values.podAnnotations }}
+{{ toYaml .Values.podAnnotations | indent 8 }}
+        {{- end }}
     spec:
       serviceAccountName: kiali-service-account
 {{- if .Values.global.priorityClassName }}
       priorityClassName: "{{ .Values.global.priorityClassName }}"
 {{- end }}
       containers:
-      - image: "{{ template "system_default_registry" . }}{{ .Values.repository }}:{{ .Values.tag }}"
+      - image: "{{ .Values.hub }}/{{ .Values.image }}:{{ .Values.tag }}"
+        imagePullPolicy: {{ .Values.global.imagePullPolicy }}
         name: kiali
         command:
         - "/opt/kiali/kiali"
@@ -56,34 +60,10 @@ spec:
           initialDelaySeconds: 5
           periodSeconds: 30
         env:
-        - name: TRACING_INSECURE_SKIP_VERIFY
-          value: "true"
-        - name: GRAFANA_INSECURE_SKIP_VERIFY
-          value: "true"
-        - name: TRACING_ENABLED
-          value: "false"
         - name: ACTIVE_NAMESPACE
           valueFrom:
             fieldRef:
               fieldPath: metadata.namespace
-        - name: AUTH_STRATEGY
-          value: {{ .Values.dashboard.authStrategy }}
-        - name: SERVER_CREDENTIALS_USERNAME
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Values.dashboard.secretName }}
-              key: username
-              optional: true
-        - name: SERVER_CREDENTIALS_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Values.dashboard.secretName }}
-              key: passphrase
-              optional: true
-{{- if .Values.contextPath }}
-        - name: SERVER_WEB_ROOT
-          value: {{ .Values.contextPath }}
-{{- end }}
         volumeMounts:
         - name: kiali-configuration
           mountPath: "/kiali-configuration"
@@ -97,25 +77,6 @@ spec:
 {{- else }}
 {{ toYaml .Values.global.defaultResources | indent 10 }}
 {{- end }}
-      - name: kiali-proxy
-        image: "{{ template "system_default_registry" . }}{{ .Values.global.nginxProxy.repository }}:{{ .Values.global.nginxProxy.tag }}"
-        args:
-        - nginx
-        - -g
-        - daemon off;
-        - -c
-        - /nginx/nginx.conf
-        ports:
-        - name: http
-          containerPort: 80
-          protocol: TCP
-        volumeMounts:
-        - mountPath: /nginx/
-          name: kiali-nginx
-        {{- if and .Values.resources .Values.resources.proxy }}
-        resources:
-{{ toYaml .Values.resources.proxy | indent 10 }}
-        {{- end }}
       volumes:
       - name: kiali-configuration
         configMap:
@@ -126,13 +87,6 @@ spec:
 {{- if not .Values.security.enabled }}
           optional: true
 {{- end }}
-      - name: kiali-nginx
-        configMap:
-          name: kiali-nginx
-          items:
-          - key: nginx.conf
-            mode: 438
-            path: nginx.conf
       - name: kiali-secret
         secret:
           secretName: {{ .Values.dashboard.secretName }}

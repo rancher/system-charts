@@ -1,4 +1,3 @@
-{{- if and .Values.enabled (eq .Values.global.monitoring.type "built-in") -}}
 apiVersion: v1
 kind: ServiceAccount
 {{- if .Values.global.imagePullSecrets }}
@@ -80,7 +79,7 @@ spec:
       serviceAccountName: istio-grafana-post-install-account
       containers:
         - name: kubectl
-          image: "{{ template "system_default_registry" . }}{{ .Values.global.kubectl.repository }}:{{ .Values.global.kubectl.tag }}"
+          image: "{{ .Values.global.hub }}/kubectl:{{ .Values.global.tag }}"
           command: [ "/bin/bash", "/tmp/grafana/run.sh", "/tmp/grafana/custom-resources.yaml" ]
           volumeMounts:
             - mountPath: "/tmp/grafana"
@@ -100,4 +99,3 @@ spec:
       tolerations:
 {{ toYaml .Values.global.defaultTolerations | indent 6 }}
       {{- end }}
-{{- end -}}

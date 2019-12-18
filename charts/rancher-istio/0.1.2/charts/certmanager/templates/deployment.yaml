@@ -19,7 +19,7 @@ spec:
         app: certmanager
         chart: {{ template "certmanager.chart" . }}
         heritage: {{ .Release.Service }}
-        release: {{ .Release.Name }}        
+        release: {{ .Release.Name }}
         {{- if .Values.podLabels }}
 {{ toYaml .Values.podLabels | indent 8 }}
         {{- end }}
@@ -35,11 +35,7 @@ spec:
 {{- end }}
       containers:
       - name: certmanager
-      {{- if .Values.global.systemDefaultRegistry }}
-        image: "{{ template "system_default_registry" . }}{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-      {{- else }}
-        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
-      {{- end }}
+        image: "{{ .Values.hub }}/{{ .Values.image }}:{{ .Values.tag }}"
         imagePullPolicy: {{ .Values.global.imagePullPolicy }}
         args:
         - --cluster-resource-namespace=$(POD_NAMESPACE)
@@ -59,7 +55,7 @@ spec:
       {{- end }}
       {{- if .Values.podDnsConfig }}
       dnsConfig:
-      {{ toYaml .Values.podDnsConfig | indent 8 }}
+{{ toYaml .Values.podDnsConfig | indent 8 }}
       {{- end }}
       affinity:
       {{- include "nodeaffinity" . | indent 6 }}

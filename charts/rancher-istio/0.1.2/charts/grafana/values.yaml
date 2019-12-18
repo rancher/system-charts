@@ -3,25 +3,25 @@
 #
 enabled: false
 replicaCount: 1
+image:
+  repository: grafana/grafana
+  tag: 6.4.3
 ingress:
   enabled: false
   ## Used to create an Ingress record.
   hosts:
     - grafana.local
-  annotations:
+  annotations: {}
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
-  tls:
+  tls: []
     # Secrets must be manually created in the namespace.
     # - secretName: grafana-tls
     #   hosts:
     #     - grafana.local
-persistence:
-  enabled: false
-  storageClass: ""
-  accessMode: ReadWriteOnce
-  existingClaim: ""
-  size: 5Gi
+persist: false
+storageClassName: ""
+accessMode: ReadWriteMany
 security:
   enabled: false
   secretName: grafana
@@ -84,7 +84,11 @@ podAntiAffinityTermLabelSelector: []
 contextPath: /grafana
 service:
   annotations: {}
+  name: http
   type: ClusterIP
+  externalPort: 3000
+  loadBalancerIP:
+  loadBalancerSourceRanges: []
 
 datasources:
   datasources.yaml:
@@ -111,5 +115,3 @@ dashboardProviders:
         disableDeletion: false
         options:
           path: /var/lib/grafana/dashboards/istio
-
-resources: {}

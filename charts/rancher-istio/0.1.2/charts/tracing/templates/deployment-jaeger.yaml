@@ -24,11 +24,9 @@ spec:
       annotations:
         sidecar.istio.io/inject: "false"
         prometheus.io/scrape: "true"
-        prometheus.io/port: "16686"
-{{- if .Values.contextPath }}
-        prometheus.io/path: "{{ .Values.contextPath }}/metrics"
-{{- else }}
-        prometheus.io/path: "/{{ .Values.provider }}/metrics"
+        prometheus.io/port: "14269"
+{{- if .Values.jaeger.podAnnotations }}
+{{ toYaml .Values.jaeger.podAnnotations | indent 8 }}
 {{- end }}
     spec:
 {{- if .Values.global.priorityClassName }}
@@ -42,11 +40,15 @@ spec:
 {{- end }}
       containers:
         - name: jaeger
-          image: "{{ template "system_default_registry" . }}{{ .Values.jaeger.repository }}:{{ .Values.jaeger.tag }}"
+          image: "{{ .Values.jaeger.hub }}/{{ .Values.jaeger.image }}:{{ .Values.jaeger.tag }}"
           imagePullPolicy: {{ .Values.global.imagePullPolicy }}
           ports:
             - containerPort: 9411
             - containerPort: 16686
+            - containerPort: 14250
+            - containerPort: 14267
+            - containerPort: 14268
+            - containerPort: 14269
             - containerPort: 5775
               protocol: UDP
             - containerPort: 6831
@@ -78,11 +80,11 @@ spec:
           livenessProbe:
             httpGet:
               path: /
-              port: 16686
+              port: 14269
           readinessProbe:
             httpGet:
               path: /
-              port: 16686
+              port: 14269
 {{- if eq .Values.jaeger.spanStorageType "badger" }}
           volumeMounts:
           - name: data
@@ -94,25 +96,6 @@ spec:
 {{- else }}
 {{ toYaml .Values.global.defaultResources | indent 12 }}
 {{- end }}
-        - name: jaeger-proxy
-          image: "{{ template "system_default_registry" . }}{{ .Values.global.nginxProxy.repository }}:{{ .Values.global.nginxProxy.tag }}"
-          args:
-          - nginx
-          - -g
-          - daemon off;
-          - -c
-          - /nginx/nginx.conf
-          ports:
-          - name: http
-            containerPort: 80
-            protocol: TCP
-          volumeMounts:
-          - mountPath: /nginx/
-            name: tracing-nginx
-          {{- if and .Values.jaeger.proxy .Values.jaeger.proxy.resources }}
-          resources:
-  {{ toYaml .Values.jaeger.proxy.resources | indent 12 }}
-          {{- end }}
       affinity:
       {{- include "nodeaffinity" . | indent 6 }}
       {{- include "podAntiAffinity" . | indent 6 }}
@@ -123,15 +106,8 @@ spec:
       tolerations:
 {{ toYaml .Values.global.defaultTolerations | indent 6 }}
       {{- end }}
-      volumes:
-      - name: tracing-nginx
-        configMap:
-          name: tracing-nginx
-          items:
-          - key: nginx.conf
-            mode: 438
-            path: nginx.conf
 {{- if eq .Values.jaeger.spanStorageType "badger" }}
+      volumes:
       - name: data
 {{- if .Values.jaeger.persist }}
         persistentVolumeClaim:
