@@ -38,3 +38,5 @@ dependencies:
   - name: certmanager
     version: 1.4.2
     condition: certmanager.enabled
+  - name: istio-init
+    version: 1.4.2
