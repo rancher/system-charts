@@ -1,0 +1,16 @@
+name: fluentd-tester
+version: 0.0.2
+appVersion: 1.6.3
+home: https://www.fluentd.org/
+description: A Fluentd Test Helm chart for validate fluentd config
+icon: https://raw.githubusercontent.com/fluent/fluentd-docs/master/public/logo/Fluentd_square.png
+keywords:
+- fluentd
+- rancher
+- logging
+sources:
+- https://github.com/helm/charts/stable/fluentd-elasticsearch
+maintainers:
+- name: michelia
+  email: support@rancher.com
+engine: gotpl
