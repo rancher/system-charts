@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+set -e
+
+# Script to update istio release. This script will download istio and istio-init and combine them into a single rancher chart
+# To use this script, run
+#
+# ./scripts/update-istio ${istio_version}
+#
+# For example, to update istio 1.4.2, run
+#
+# ./scripts/update-istio 1.4.2
+#
+# To just copy vanilla istio helm charts, run
+# VANILLA=true ./scripts/update-istio-release 1.4.2
+# ./
+# Requirement: yq(https://github.com/mikefarah/yq)
+
+# Download istio release
+mkdir -p charts/rancher-istio/${1}
+curl -sL https://storage.googleapis.com/istio-release/releases/${1}/charts/istio-${1}.tgz | tar xvzf - -C charts/rancher-istio/${1} --strip 1
+
+if [[ -n "$VANILLA" ]]; then
+  exit 0
+fi
+
+# Configure istio-init CRD
+# The following script downloads istio-init CRD helm charts, extract these into CRD templates and adds crd-install hooks.
+mkdir -p charts/rancher-istio/${1}/charts/istio-init
+curl -sL https://storage.googleapis.com/istio-release/releases/${1}/charts/istio-init-${1}.tgz | tar xvzf - -C charts/rancher-istio/${1}/charts/istio-init --strip 1
+
+for file in charts/rancher-istio/${1}/charts/istio-init/files/*
+do
+sed -i '$d' ${file}
+yq w -d'*' ${file} metadata.annotations\[helm.sh/hook\] crd-install > charts/rancher-istio/${1}/templates/${file##*/}
+done
+
+for file in charts/rancher-istio/${1}/templates/crd-certmanager-*.yaml
+do
+content=$(cat $file)
+cat > ${file} << EOF
+{{- if .Values.certmanager.enabled }}
+$content
+{{- end }}
+EOF
+done
+rm -r charts/rancher-istio/${1}/charts/istio-init
+
+# Add question.yaml
+cat > charts/rancher-istio/${1}/questions.yaml << EOF
+labels:
+  rancher.istio.v${1}: ${1}
+rancher_min_version: 2.3.0-rc1
+EOF
+
+# Replace the name of the chart
+sed -i 's/name: istio/name: rancher-istio/g' charts/rancher-istio/${1}/Chart.yaml
+
+# Replace istio kubectl images
+sed -i 's/"{{ .Values.global.hub }}\/kubectl:{{ .Values.global.tag }}"/"{{ .Values.global.hub }}\/istio-kubectl:{{ .Values.global.tag }}"/g' charts/rancher-istio/${1}/charts/security/templates/*.yaml
+
+# Istio-values.yaml is rancher specific customization yaml
+cat ./scripts/istio/istio-values.yaml > charts/rancher-istio/${1}/values.yaml
+cat ./scripts/istio/istio-service-rbac.yaml > charts/rancher-istio/${1}/templates/istio-service-rbac.yaml
