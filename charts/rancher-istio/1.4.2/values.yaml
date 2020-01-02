@@ -13,12 +13,16 @@
 #
 gateways:
   enabled: true
+  istio-ingressgateway:
+    labels:
+      release: cluster-istio
 
 #
 # sidecar-injector webhook configuration, refer to the
 # charts/sidecarInjectorWebhook/values.yaml for detailed configuration
 #
 sidecarInjectorWebhook:
+  image: istio-sidecar_injector
   enabled: true
 
 #
@@ -26,6 +30,7 @@ sidecarInjectorWebhook:
 # for detailed configuration
 #
 galley:
+  image: istio-galley
   enabled: true
 
 #
@@ -33,6 +38,7 @@ galley:
 #
 # @see charts/mixer/values.yaml for all values
 mixer:
+  image: istio-mixer
   policy:
     # if policy is enabled the global.disablePolicyChecks has affect.
     enabled: true
@@ -44,43 +50,63 @@ mixer:
 #
 # @see charts/pilot/values.yaml
 pilot:
+  image: istio-pilot
   enabled: true
 
 #
 # security configuration
 #
 security:
+  image: istio-citadel
   enabled: true
 
 #
 # nodeagent configuration
 #
 nodeagent:
+  image: istio-node-agent-k8s
   enabled: false
 
 #
 # addon grafana configuration
 #
 grafana:
+  image: grafana-grafana
   enabled: false
 
 #
 # addon prometheus configuration
 #
 prometheus:
-  enabled: true
+  image: prom-prometheus
+  enabled: false
 
 #
 # addon jaeger tracing configuration
 #
 tracing:
+  jaeger:
+    hub: docker.io/rancher
+    image: jaegertracing-all-in-one
+  zipkin:
+    hub: docker.io/rancher
+    image: openzipkin-zipkin
   enabled: false
 
 #
 # addon kiali tracing configuration
 #
 kiali:
+  hub: docker.io/rancher
+  image: kiali-kiali
+  contextPath: /
+  dashboard:
+    jaegerURL: http://tracing.istio-system:80
+    grafanaURL: http://access-grafana.cattle-prometheus:80
+    auth:
+      strategy: anonymous
   enabled: false
+  prometheusAddr: http://access-prometheus.cattle-prometheus:80
 
 #
 # addon certmanager configuration
@@ -100,6 +126,8 @@ istio_cni:
 # addon Istio CoreDNS configuration
 #
 istiocoredns:
+  coreDNSImage: coredns-coredns
+  coreDNSPluginImage: istio-coredns-plugin
   enabled: false
 
 # Common settings used among istio subcharts.
@@ -107,7 +135,7 @@ global:
   # Default hub for Istio images.
   # Releases are published to docker hub under 'istio' project.
   # Dev builds from prow are on gcr.io
-  hub: docker.io/istio
+  hub: docker.io/rancher
 
   # Default tag for Istio images.
   tag: 1.4.2
@@ -145,7 +173,7 @@ global:
           cpu: 10m
           memory: 10Mi
     # use fully qualified image names for alternate path to proxy.
-    image: proxyv2
+    image: istio-proxyv2
 
     # cluster domain. Default value is "cluster.local".
     clusterDomain: "cluster.local"
@@ -303,7 +331,7 @@ global:
 
   proxy_init:
     # Base name for the istio-init container, used to configure iptables.
-    image: proxyv2
+    image: istio-proxyv2
 
   # imagePullPolicy is applied to istio control plane components.
   # local tests require IfNotPresent, to avoid uploading to dockerhub.
@@ -451,7 +479,7 @@ global:
   # enable pod distruption budget for the control plane, which is used to
   # ensure Istio control plane components are gradually upgraded or recovered.
   defaultPodDisruptionBudget:
-    enabled: true
+    enabled: false
     # The values aren't mutable due to a current PodDisruptionBudget limitation
     # minAvailable: 1
 
