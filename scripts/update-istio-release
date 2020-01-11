@@ -65,3 +65,6 @@ sed -i 's/"{{ .Values.global.hub }}\/kubectl:{{ .Values.global.tag }}"/"{{ .Valu
 # Istio-values.yaml is rancher specific customization yaml
 cat ./scripts/istio/istio-values.yaml > charts/rancher-istio/${1}/values.yaml
 cat ./scripts/istio/istio-service-rbac.yaml > charts/rancher-istio/${1}/templates/istio-service-rbac.yaml
+
+# Replace tag
+sed -i 's/tag: 1.4.2/tag: '"${1}"'/g' charts/rancher-istio/${1}/values.yaml
