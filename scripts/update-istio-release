@@ -55,6 +55,10 @@ EOF
 # Replace the name of the chart
 sed -i 's/name: istio/name: rancher-istio/g' charts/rancher-istio/${1}/Chart.yaml
 
+# Update kiali
+cp ./scripts/istio/deployment.yaml charts/rancher-istio/${1}/charts/kiali/templates/
+cp ./scripts/istio/kiali-console-configmap.yaml charts/rancher-istio/${1}/charts/kiali/templates/
+
 # Replace istio kubectl images
 sed -i 's/"{{ .Values.global.hub }}\/kubectl:{{ .Values.global.tag }}"/"{{ .Values.global.hub }}\/istio-kubectl:{{ .Values.global.tag }}"/g' charts/rancher-istio/${1}/charts/security/templates/*.yaml
 
