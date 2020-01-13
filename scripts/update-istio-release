@@ -45,11 +45,14 @@ EOF
 done
 rm -r charts/rancher-istio/${1}/charts/istio-init
 
-# Add question.yaml
+# Add question.yaml, make need to update minimum rancher version
+RANCHER_MIN_VERSION="2.3.4-rc1"
+echo "Current rancher min version is set to $RANCHER_MIN_VERSION"
+
 cat > charts/rancher-istio/${1}/questions.yaml << EOF
 labels:
   rancher.istio.v${1}: ${1}
-rancher_min_version: 2.3.0-rc1
+rancher_min_version: $RANCHER_MIN_VERSION
 EOF
 
 # Replace the name of the chart
