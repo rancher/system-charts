@@ -49,7 +49,7 @@ rm -r charts/rancher-istio/${1}/charts/istio-init
 cat > charts/rancher-istio/${1}/questions.yaml << EOF
 labels:
   rancher.istio.v${1}: ${1}
-rancher_min_version: 2.3.0-rc1
+rancher_min_version: 2.3.4-rc1
 EOF
 
 # Replace the name of the chart
