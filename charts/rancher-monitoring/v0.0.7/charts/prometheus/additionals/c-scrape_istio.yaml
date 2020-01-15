@@ -1,0 +1,94 @@
+{{- if .Values.istioMonitoring.enabled -}}
+- job_name: 'istio/envoy-stats'
+  scrape_interval: 15s
+  metrics_path: /stats/prometheus
+  kubernetes_sd_configs:
+    - role: pod
+  relabel_configs:
+    - source_labels: [__meta_kubernetes_pod_container_port_name]
+      action: keep
+      regex: '.*-envoy-prom'
+    - source_labels: [__address__, __meta_kubernetes_pod_annotation_prometheus_io_port]
+      action: replace
+      regex: ([^:]+)(?::\d+)?;(\d+)
+      replacement: $1:15090
+      target_label: __address__
+    - action: labelmap
+      regex: __meta_kubernetes_pod_label_(.+)
+    - source_labels: [__meta_kubernetes_namespace]
+      action: replace
+      target_label: namespace
+    - source_labels: [__meta_kubernetes_pod_name]
+      action: replace
+      target_label: pod_name
+- job_name: 'istio/istio-mesh'
+  scrape_interval: 15s
+  kubernetes_sd_configs:
+    - role: endpoints
+      namespaces:
+        names:
+          - {{ .Values.istioMonitoring.namespace }}
+  relabel_configs:
+    - source_labels: [__meta_kubernetes_service_name, __meta_kubernetes_endpoint_port_name]
+      action: keep
+      regex: istio-telemetry;prometheus
+  metric_relabel_configs:
+    - source_labels: [source_workload_namespace]
+      action: replace
+      target_label: namespace
+- job_name: 'istio/istio-policy'
+  scrape_interval: 15s
+  kubernetes_sd_configs:
+    - role: endpoints
+      namespaces:
+        names:
+          - {{ .Values.istioMonitoring.namespace }}
+  relabel_configs:
+    - source_labels: [__meta_kubernetes_service_name, __meta_kubernetes_endpoint_port_name]
+      action: keep
+      regex: istio-policy;http-monitoring
+- job_name: 'istio/istio-telemetry'
+  scrape_interval: 15s
+  kubernetes_sd_configs:
+    - role: endpoints
+      namespaces:
+        names:
+          - {{ .Values.istioMonitoring.namespace }}
+  relabel_configs:
+    - source_labels: [__meta_kubernetes_service_name, __meta_kubernetes_endpoint_port_name]
+      action: keep
+      regex: istio-telemetry;http-monitoring
+- job_name: 'istio/pilot'
+  scrape_interval: 15s
+  kubernetes_sd_configs:
+    - role: endpoints
+      namespaces:
+        names:
+          - {{ .Values.istioMonitoring.namespace }}
+  relabel_configs:
+    - source_labels: [__meta_kubernetes_service_name, __meta_kubernetes_endpoint_port_name]
+      action: keep
+      regex: istio-pilot;http-monitoring
+- job_name: 'istio/galley'
+  scrape_interval: 15s
+  kubernetes_sd_configs:
+    - role: endpoints
+      namespaces:
+        names:
+          - {{ .Values.istioMonitoring.namespace }}
+  relabel_configs:
+    - source_labels: [__meta_kubernetes_service_name, __meta_kubernetes_endpoint_port_name]
+      action: keep
+      regex: istio-galley;http-monitoring
+- job_name: 'istio/citadel'
+  scrape_interval: 15s
+  kubernetes_sd_configs:
+    - role: endpoints
+      namespaces:
+        names:
+          - {{ .Values.istioMonitoring.namespace }}
+  relabel_configs:
+    - source_labels: [__meta_kubernetes_service_name, __meta_kubernetes_endpoint_port_name]
+      action: keep
+      regex: istio-citadel;http-monitoring
+{{- end -}}
