@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rio-controller
+  namespace: {{ .Release.Namespace }}
+spec:
+  selector:
+    matchLabels:
+      rio-controller: "true"
+  template:
+    metadata:
+      labels:
+        rio-controller: "true"
+    spec:
+      containers:
+      - args:
+        - rio-controller
+{{- if .Values.debug }}
+        - --debug
+{{- end }}
+        - --features
+        - ""
+        env:
+        - name: RUN_API_VALIDATOR
+          value: "TRUE"
+        - name: RIO_NAMESPACE
+          value: {{ .Release.Namespace }}
+        image: rancher/rio-controller:{{ .Values.tag }}
+        imagePullPolicy: Always
+        name: rio-controller
+        volumeMounts:
+        - mountPath: /var/run/rio/ssl
+          name: secret-api-validator
+          readOnly: true
+      serviceAccountName: rio-controller-serviceaccount
+      volumes:
+      - name: secret-api-validator
+        secret:
+          defaultMode: 420
+          optional: true
+          secretName: rio-api-validator

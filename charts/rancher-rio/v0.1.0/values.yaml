@@ -1,0 +1,14 @@
+tag: v0.7.0             # Rio version to install
+letsEncryptEmail: ""    # Provide an email for Let's Encrypt account registration
+ipAddress: ""           # Manually specify IP addresses to generate rdns domain, supports comma separated values
+debug: false            # Enable debug logging in controller
+
+# Manually specify features to disable, supports comma separated values
+features:
+  autoscaling: true
+  build: true
+  dashboard: true
+  gloo: true
+  linkerd: true
+  letsencrypt: true
+  rdns: true
