@@ -79,14 +79,12 @@ spec:
         - name: web
           containerPort: 3000
           protocol: TCP
+        {{- if .Values.livenessProbe }}
+        livenessProbe:
+{{ toYaml .Values.livenessProbe | indent 10 }}
+        {{- end }}
         readinessProbe:
-          httpGet:
-            path: /api/health
-            port: 3000
-          periodSeconds: 1
-          timeoutSeconds: 1
-          successThreshold: 1
-          failureThreshold: 10
+{{ merge .Values.readinessProbe .Values.defaultReadinessProbe | toYaml | indent 10 }}
         {{- if and .Values.resources .Values.resources.core }}
         resources:
 {{ toYaml .Values.resources.core | indent 10 }}

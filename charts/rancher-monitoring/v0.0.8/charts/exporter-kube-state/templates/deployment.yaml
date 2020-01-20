@@ -30,17 +30,9 @@ spec:
         - name: http-metrics
           containerPort: 8081
         livenessProbe:
-          httpGet:
-            path: /
-            port: 8080
-          initialDelaySeconds: 30
-          timeoutSeconds: 30
+{{ merge .Values.livenessProbe .Values.defaultLivenessProbe | toYaml | indent 10 }}
         readinessProbe:
-          httpGet:
-            path: /
-            port: 8080
-          initialDelaySeconds: 30
-          timeoutSeconds: 5
+{{ merge .Values.readinessProbe .Values.defaultReadinessProbe | toYaml | indent 10 }}
         resources:
 {{ toYaml .Values.resources | indent 10 }}
       {{- if .Values.enabledRBAC }}
