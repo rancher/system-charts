@@ -8,3 +8,27 @@ tolerations: []
   #    operator: "Equal"
   #    value: "value"
   #    effect: "NoSchedule"
+
+## Default liveness probe
+##
+defaultLivenessProbe:
+  initialDelaySeconds: 100
+  failureThreshold: 6
+  httpGet:
+    path: /
+    port: 8080
+  periodSeconds: 30
+  successThreshold: 1
+  timeoutSeconds: 30
+
+## Default readiness probe
+##
+defaultReadinessProbe:
+  initialDelaySeconds: 10
+  failureThreshold: 6
+  httpGet:
+    path: /
+    port: 8080
+  periodSeconds: 5
+  successThreshold: 1
+  timeoutSeconds: 5

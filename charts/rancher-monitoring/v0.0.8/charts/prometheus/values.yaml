@@ -81,3 +81,29 @@ thanos:
   ## ObjectStoreConfig
   ## Ref: https://github.com/thanos-io/thanos/blob/master/docs/storage.md
   objectConfig: {}
+
+## Default liveness probe
+##
+defaultLivenessProbe:
+  initialDelaySeconds: 300
+  failureThreshold: 6
+  httpGet:
+    path: /-/healthy
+    port: web
+    scheme: HTTP
+  periodSeconds: 10
+  successThreshold: 1
+  timeoutSeconds: 10
+
+## Default readiness probe
+##
+defaultReadinessProbe:
+  initialDelaySeconds: 60
+  failureThreshold: 10
+  httpGet:
+    path: /-/ready
+    port: web
+    scheme: HTTP
+  periodSeconds: 10
+  successThreshold: 1
+  timeoutSeconds: 10

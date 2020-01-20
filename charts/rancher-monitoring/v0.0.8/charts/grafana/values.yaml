@@ -27,6 +27,18 @@ storageSpec: {}
 #       storage: 2Gi
 #   selector: {}
 
+## Default readiness probe
+##
+defaultReadinessProbe:
+  initialDelaySeconds: 30
+  failureThreshold: 10
+  httpGet:
+    path: /api/health
+    port: 3000
+  periodSeconds: 1
+  successThreshold: 1
+  timeoutSeconds: 1
+
 ## Resource limits & requests
 ## Ref: https://kubernetes.io/docs/user-guide/compute-resources/
 resources:
