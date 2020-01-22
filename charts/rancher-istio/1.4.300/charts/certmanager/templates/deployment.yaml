@@ -35,7 +35,11 @@ spec:
 {{- end }}
       containers:
       - name: certmanager
-        image: "{{ .Values.hub }}/{{ .Values.image }}:{{ .Values.tag }}"
+        {{- if .Values.global.systemDefaultRegistry }}
+        image: "{{ template "system_default_registry" . }}{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        {{- else }}
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        {{- end }}
         imagePullPolicy: {{ .Values.global.imagePullPolicy }}
         args:
         - --cluster-resource-namespace=$(POD_NAMESPACE)

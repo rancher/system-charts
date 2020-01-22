@@ -12,7 +12,8 @@ global:
 
 nodeagent:
   enabled: true
-  image: node-agent-k8s
+  repository: rancher/istio-node-agent-k8s
+  tag: 1.4.3
   env:
     # The IP address and the port number of a publicly accessible example Vault server.
     CA_ADDR: "https://34.83.129.211:8200"

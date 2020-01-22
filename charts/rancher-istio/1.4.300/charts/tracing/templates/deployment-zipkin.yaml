@@ -39,7 +39,7 @@ spec:
 {{- end }}
       containers:
         - name: zipkin
-          image: "{{ .Values.zipkin.hub }}/{{ .Values.zipkin.image }}:{{ .Values.zipkin.tag }}"
+          image: "{{ template "system_default_registry" . }}{{ .Values.zipkin.repository }}:{{ .Values.zipkin.tag }}"
           imagePullPolicy: {{ .Values.global.imagePullPolicy }}
           ports:
             - containerPort: {{ .Values.zipkin.queryPort }}

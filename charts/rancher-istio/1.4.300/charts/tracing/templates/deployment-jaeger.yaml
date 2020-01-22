@@ -40,7 +40,7 @@ spec:
 {{- end }}
       containers:
         - name: jaeger
-          image: "{{ .Values.jaeger.hub }}/{{ .Values.jaeger.image }}:{{ .Values.jaeger.tag }}"
+          image: "{{ template "system_default_registry" . }}{{ .Values.jaeger.repository }}:{{ .Values.jaeger.tag }}"
           imagePullPolicy: {{ .Values.global.imagePullPolicy }}
           ports:
             - containerPort: 9411

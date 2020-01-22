@@ -45,11 +45,7 @@ spec:
 {{- end }}
       containers:
         - name: discovery
-{{- if contains "/" .Values.image }}
-          image: "{{ .Values.image }}"
-{{- else }}
-          image: "{{ .Values.global.hub }}/{{ .Values.image }}:{{ .Values.global.tag }}"
-{{- end }}
+          image: "{{ template "system_default_registry" . }}{{ .Values.repository }}:{{ .Values.tag }}"
           imagePullPolicy: {{ .Values.global.imagePullPolicy }}
           args:
           - "discovery"
@@ -131,11 +127,7 @@ spec:
 {{- end }}
 {{- if .Values.sidecar }}
         - name: istio-proxy
-{{- if contains "/" .Values.global.proxy.image }}
-          image: "{{ .Values.global.proxy.image }}"
-{{- else }}
-          image: "{{ .Values.global.hub }}/{{ .Values.global.proxy.image }}:{{ .Values.global.tag }}"
-{{- end }}
+          image: "{{ template "system_default_registry" . }}{{ .Values.global.proxy.repository }}:{{ .Values.global.proxy.tag }}"
           imagePullPolicy: {{ .Values.global.imagePullPolicy }}
           ports:
           - containerPort: 15003
