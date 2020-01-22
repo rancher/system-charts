@@ -36,7 +36,7 @@ spec:
       priorityClassName: "{{ .Values.global.priorityClassName }}"
 {{- end }}
       containers:
-      - image: "{{ .Values.hub }}/{{ .Values.image }}:{{ .Values.tag }}"
+      - image: "{{ template "system_default_registry" . }}{{ .Values.repository }}:{{ .Values.tag }}"
         imagePullPolicy: {{ .Values.global.imagePullPolicy }}
         name: kiali
         command:

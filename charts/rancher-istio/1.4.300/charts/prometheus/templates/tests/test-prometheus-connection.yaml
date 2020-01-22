@@ -19,7 +19,7 @@ spec:
 {{- end }}
   containers:
     - name: "{{ template "prometheus.fullname" . }}-test"
-      image: pstauffer/curl:v1.0.3
+      image: {{ template "system_default_registry" . }}{{ .Values.global.curl.repository }}:{{ .Values.global.curl.tag }}
       imagePullPolicy: "{{ .Values.global.imagePullPolicy }}"
       command: ['sh', '-c', 'for i in 1 2 3; do curl http://prometheus:9090/-/ready && exit 0 || sleep 15; done; exit 1']
   restartPolicy: Never

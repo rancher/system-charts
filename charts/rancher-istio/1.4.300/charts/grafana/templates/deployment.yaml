@@ -38,7 +38,7 @@ spec:
 {{- end }}
       containers:
         - name: {{ .Chart.Name }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          image: "{{ template "system_default_registry" . }}{{ .Values.repository }}:{{ .Values.tag }}"
           imagePullPolicy: {{ .Values.global.imagePullPolicy }}
           ports:
           - containerPort: 3000

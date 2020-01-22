@@ -37,7 +37,7 @@ spec:
 {{- end }}
       containers:
       - name: coredns
-        image: {{ .Values.coreDNSImage }}:{{ .Values.coreDNSTag }}
+        image: "{{ template "system_default_registry" . }}{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.global.imagePullPolicy }}
         args: [ "-conf", "/etc/coredns/Corefile" ]
         volumeMounts:
@@ -71,7 +71,7 @@ spec:
       - name: istio-coredns-plugin
         command:
         - /usr/local/bin/plugin
-        image: {{ .Values.coreDNSPluginImage }}
+        image: "{{ template "system_default_registry" . }}{{ .Values.pluginImage.repository }}:{{ .Values.pluginImage.tag }}"
         imagePullPolicy: {{ .Values.global.imagePullPolicy }}
         ports:
         - containerPort: 8053
