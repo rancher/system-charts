@@ -8,7 +8,7 @@ metadata:
     release: istio
   name: authorizationpolicies.security.istio.io
   annotations:
-    helm.sh/hook: crd-install
+    helm.sh/hook: crd-install,pre-upgrade
 spec:
   group: security.istio.io
   names:
