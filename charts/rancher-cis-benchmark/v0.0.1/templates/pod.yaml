@@ -14,6 +14,7 @@ metadata:
     run: sonobuoy-master
 spec:
   serviceAccountName: s-sa-{{ .Release.Name }}
+  terminationGracePeriodSeconds: 0
   volumes:
     - configMap:
         name: s-config-cm-{{ .Release.Name }}
