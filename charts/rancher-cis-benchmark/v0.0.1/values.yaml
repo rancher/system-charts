@@ -6,9 +6,12 @@ replicaCount: 1
 
 # if owner is specified, it's used for the name of the configmap for results
 owner: ""
-# skipConfigMapName is used to specify the name of cm where the skip info is stored
-# skip has higher precedence than what's specified in the configmap
-skipConfigMapName: ""
+# userSkipConfigMapName is used to specify the name of cm where user skip info is stored
+userSkipConfigMapName: ""
+# defaultSkipConfigMapName is used to specify the name of cm where default skip info is stored
+defaultSkipConfigMapName: ""
+# notApplicableConfigMapName
+notApplicableConfigMapName: ""
 # overrideBenchmarkVersion is used to override the default benchmark version used for
 # a particular k8s version
 overrideBenchmarkVersion: ""
