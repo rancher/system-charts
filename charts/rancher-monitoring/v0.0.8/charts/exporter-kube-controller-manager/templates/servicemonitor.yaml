@@ -1,0 +1,52 @@
+apiVersion: {{ template "operator_api_version" . }}
+kind: ServiceMonitor
+metadata:
+  labels:
+    app: {{ template "app.name" . }}
+    chart: {{ template "app.version" . }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+    source: rancher-monitoring
+  name: {{ template "app.fullname" . }}
+spec:
+  selector:
+    matchLabels:
+      {{- range .Values.serviceSelectorLabels }}
+      {{- $pair := regexSplit "=" . 2 }}
+      {{- if eq 2 (len $pair) }}
+      {{ (index $pair 0) }}: {{ (index $pair 1) }}
+      {{- else }}
+      {{ (index $pair 0) }}: ""
+      {{- end }}
+      {{- end }}
+  namespaceSelector:
+    matchNames:
+    {{- if not .Values.endpoints }}
+    - "kube-system"
+    {{- else }}
+    - {{ .Release.Namespace | quote }}
+    {{- end }}
+  endpoints:
+  - port: {{ .Values.ports.metrics.name }}
+    bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+    scheme: {{ .Values.ports.metrics.scheme }}
+    {{- if eq .Values.ports.metrics.scheme "https" }}
+    tlsConfig:
+      caFile: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+      {{- if .Values.insecureSkipVerify }}
+      insecureSkipVerify: true
+      {{- end }}
+    {{- end }}
+    relabelings:
+    - sourceLabels:
+      - __meta_kubernetes_pod_host_ip
+      targetLabel: host_ip
+      action: replace
+      regex: (.+)
+      replacement: $1
+    - sourceLabels:
+      - __meta_kubernetes_pod_node_name
+      targetLabel: node
+      action: replace
+      regex: (.+)
+      replacement: $1
