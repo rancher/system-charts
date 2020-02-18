@@ -6,7 +6,7 @@ This chart will do the following:
 
 * Create a deployment of [external-dns] within your Kubernetes Cluster.
 
-Currently this uses the [Zalando] hosted container, if this is a concern follow the steps in the [external-dns] documentation to compile the binary and make a container. Where the chart pulls the image from is fully configurable.
+Currently this uses official images from release notes at https://github.com/kubernetes-sigs/external-dns, if this is a concern follow the steps in the [external-dns] documentation to compile the binary and make a container. Where the chart pulls the image from is fully configurable.
 
 > **Note**: If you want to use Chart version >1.1.0 with external-dns image <0.5.9 and use aws credentials, make sure to set `aws.credentialsPath: "/root/.aws"`
 
