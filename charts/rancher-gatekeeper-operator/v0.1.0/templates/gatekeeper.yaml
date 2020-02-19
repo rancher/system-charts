@@ -485,7 +485,7 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.name
-        image: '{{ .Values.image.repository }}:{{ .Values.image.release }}'
+        image: '{{ template "system_default_registry" . }}{{ .Values.image.repository }}:{{ .Values.image.tag }}'
         imagePullPolicy: '{{ .Values.image.pullPolicy }}'
         livenessProbe:
           httpGet:
@@ -517,7 +517,7 @@ spec:
         - mountPath: /certs
           name: cert
           readOnly: true
-      nodeSelector: 
+      nodeSelector:
 {{ toYaml .Values.nodeSelector | indent 8 }}
       affinity:
 {{ toYaml .Values.affinity | indent 8 }}
