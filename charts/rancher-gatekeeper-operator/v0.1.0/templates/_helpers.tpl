@@ -42,3 +42,11 @@ app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end -}}
+
+{{- define "system_default_registry" -}}
+{{- if .Values.global.systemDefaultRegistry -}}
+{{- printf "%s/" .Values.global.systemDefaultRegistry -}}
+{{- else -}}
+{{- "" -}}
+{{- end -}}
+{{- end -}}
