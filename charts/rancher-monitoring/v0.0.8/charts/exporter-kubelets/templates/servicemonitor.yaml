@@ -55,9 +55,6 @@ spec:
       {{- if .Values.insecureSkipVerify }}
       insecureSkipVerify: true
       {{- end }}
-    metricRelabelings:
-    - action: labeldrop
-      regex: (^id$|^image$|^name$|^cpu$)
     relabelings:
     - sourceLabels:
       - __meta_kubernetes_pod_host_ip
@@ -71,8 +68,10 @@ spec:
       action: replace
       regex: (.+)
       replacement: $1
-    {{- if semverCompare ">=1.16-0" .Capabilities.KubeVersion.GitVersion }}
     metricRelabelings:
+    - action: labeldrop
+      regex: (^id$|^image$|^name$|^cpu$)
+    {{- if semverCompare ">=1.16-0" .Capabilities.KubeVersion.GitVersion }}
     - action: replace
       regex: (.+)
       replacement: $1
@@ -111,9 +110,6 @@ spec:
       targetLabel: pod_name
   {{- else }}
   - port: http-metrics
-    metricRelabelings:
-    - action: labeldrop
-      regex: (^id$|^image$|^name$|^cpu$)
     relabelings:
     - sourceLabels:
       - __meta_kubernetes_pod_host_ip
@@ -143,8 +139,10 @@ spec:
       action: replace
       regex: (.+)
       replacement: $1
-    {{- if semverCompare ">=1.16-0" .Capabilities.KubeVersion.GitVersion }}
     metricRelabelings:
+    - action: labeldrop
+      regex: (^id$|^image$|^name$|^cpu$)
+    {{- if semverCompare ">=1.16-0" .Capabilities.KubeVersion.GitVersion }}
     - action: replace
       regex: (.+)
       replacement: $1
