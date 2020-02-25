@@ -1,0 +1,24 @@
+{{- if .Values.thanos.store.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: thanos-store-{{ .Release.Name }}
+  labels:
+    app: {{ template "app.fullname" . }}
+    chart: {{ .Chart.Name }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+    component: store
+spec:
+  type: ClusterIP
+  ports:
+    - port: 10901
+      targetPort: 10901
+      protocol: TCP
+      name: grpc
+  selector:
+    app: {{ template "app.fullname" . }}
+    chart: {{ .Chart.Name }}
+    release: {{ .Release.Name }}
+    component: store
+{{- end }}

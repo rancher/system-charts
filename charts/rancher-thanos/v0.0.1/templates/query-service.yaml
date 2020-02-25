@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: access-thanos
+  labels:
+    app: {{ template "app.fullname" . }}
+    chart: {{ .Chart.Name }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+    component: query
+    kubernetes.io/cluster-service: "true"
+spec:
+  type: {{ .Values.thanos.query.service.type }}
+  ports:
+    - port: {{ .Values.thanos.query.service.port }}
+      targetPort: 8081
+      protocol: TCP
+      name: http
+  selector:
+    app: {{ template "app.fullname" . }}
+    chart: {{ .Chart.Name }}
+    release: {{ .Release.Name }}
+    component: query

@@ -1,0 +1,142 @@
+# Default values for rancher-thanos chart.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+nameOverride: ""
+fullnameOverride: ""
+
+# The following fields are read-only and managed by controllers
+clusterIds: ""
+rancherHostname: ""
+token: ""
+apiToken: ""
+
+privateCa: false
+
+
+grafana:
+  enabled: false
+  apiGroup: "monitoring.coreos.com"
+  image:
+    repository: rancher/grafana-grafana
+    tag: 6.3.6
+    pullPolicy: IfNotPresent
+    proxy:
+      repository: rancher/nginx
+      tag: 1.17.4-alpine
+  nodeSelector: {}
+  resources:
+    core:
+      limits:
+        memory: 200Mi
+        cpu: 200m
+      requests:
+        memory: 100Mi
+        cpu: 100m
+    proxy:
+      limits:
+        memory: 100Mi
+        cpu: 100m
+      requests:
+        memory: 50Mi
+        cpu: 50m
+  persistence:
+    name: ""
+    enabled: false
+    storageClass: ""
+    accessMode: "ReadWriteOnce"
+    size: 50Gi
+  service:
+    type: ClusterIP
+    port: 80
+  # Already exist ServiceAccount
+  serviceAccountName: ""
+  prometheusDatasourceURL: "http://access-thanos"
+
+thanos:
+  image:
+    repository: thanosio/thanos
+    tag: v0.9.0
+    pullPolicy: IfNotPresent
+    proxy:
+      repository: rancher/nginx
+      tag: 1.17.4-alpine
+  # See https://thanos.io/storage.md/
+  objectConfig: {}
+
+  # Thanos query
+  query:
+    replicaCount: 1
+    resources:
+      limits:
+        memory: 1Gi
+        cpu: "1"
+      requests:
+        memory: 256Mi
+        cpu: 100m 
+    proxy:
+      resources:
+        limits:
+          memory: 100Mi
+          cpu: 100m
+        requests:
+          memory: 50Mi
+          cpu: 50m
+    affinity: {}
+    nodeSelector: {}
+    tolerations: []
+    service:
+      type: ClusterIP
+      port: 80
+
+  
+  # Thanos store gateway
+  store:
+    enabled: false
+    resources:
+      limits:
+        memory: 1Gi
+        cpu: "1"
+      requests:
+        memory: 256Mi
+        cpu: 100m
+    affinity: {}
+    nodeSelector: {}
+    tolerations: []
+  # Thanos compactor
+  compact:
+    enabled: false
+    resources:
+      limits:
+        memory: 1Gi
+        cpu: "1"
+      requests:
+        memory: 256Mi
+        cpu: 100m
+    affinity: {}
+    nodeSelector: {}
+    tolerations: []
+
+
+ui:
+  enabled: true
+  replicaCount: 1
+  image:
+    repository: cnrancher/global-monitoring-ui
+    tag: 0.0.1
+    pullPolicy: IfNotPresent
+  resources:
+    limits:
+      memory: 300Mi
+      cpu: 300m
+    requests:
+      memory: 50Mi
+      cpu: 50m
+  affinity: {}
+  nodeSelector: {}
+  tolerations: []
+  service:
+    type: ClusterIP
+    port: 80
+    
+global:
+  systemDefaultRegistry: ""

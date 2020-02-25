@@ -1,0 +1,3 @@
+labels:
+  rancher.thanos.v0.0.1: 0.9.0
+rancher_min_version: 2.3.0-rc1

@@ -1,0 +1,23 @@
+{{- if .Values.sidecar.dashboards.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    app: {{ template "app.fullname" . }}
+    chart: {{ .Chart.Name }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+  name: {{ template "app.fullname" . }}-config-dashboards
+  namespace: {{ .Release.Namespace }}
+data:
+  provider.yaml: |-
+    apiVersion: 1
+    providers:
+    - name: '{{ .Values.sidecar.dashboards.provider.name }}'
+      orgId: {{ .Values.sidecar.dashboards.provider.orgid }}
+      folder: '{{ .Values.sidecar.dashboards.provider.folder }}'
+      type: {{ .Values.sidecar.dashboards.provider.type }}
+      disableDeletion: {{ .Values.sidecar.dashboards.provider.disableDelete }}
+      options:
+        path: {{ .Values.sidecar.dashboards.folder }}{{- with .Values.sidecar.dashboards.defaultFolderName }}/{{ . }}{{- end }}
+{{- end}}
