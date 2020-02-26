@@ -42,7 +42,6 @@ aws_secret_access_key = {{ .Values.aws.secretKey }}
 role_arn = {{ .Values.aws.roleArn }}
 {{- end }}
 region = {{ .Values.aws.region }}
-source_profile = default
 {{ end }}
 
 {{- define "external-dns.alibabacloud-config" }}
