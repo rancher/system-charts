@@ -34,6 +34,16 @@ spec:
       action: replace
       regex: (.+)
       replacement: $1
+    metricRelabelings:
+    - sourceLabels:
+      - namespace
+      - pod
+      - container
+      targetLabel: id
+      action: replace
+      separator: ":"
+      regex: (.+)
+      replacement: {{ .Values.global.clusterName }}:$1
   - port: http-metrics
     relabelings:
     - sourceLabels:
@@ -48,3 +58,13 @@ spec:
       action: replace
       regex: (.+)
       replacement: $1
+    metricRelabelings:
+    - sourceLabels:
+      - namespace
+      - pod
+      - container
+      targetLabel: id
+      action: replace
+      separator: ":"
+      regex: (.+)
+      replacement: {{ .Values.global.clusterName }}:$1

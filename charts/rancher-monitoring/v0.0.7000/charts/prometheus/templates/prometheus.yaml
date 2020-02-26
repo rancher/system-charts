@@ -112,9 +112,11 @@ spec:
   thanos: 
     baseImage: {{ template "system_default_registry" . }}{{ .Values.image.thanos.repository }}
     version: {{ .Values.image.thanos.tag }}
+    {{- if .Values.thanos.objectConfig }}
     objectStorageConfig:
       key: thanos.yaml
       name: {{ template "app.thanos.fullname" . }}
+    {{- end }}
 {{- end }}
   nodeSelector:
 {{- include "linux-node-selector" . | nindent 4 }}

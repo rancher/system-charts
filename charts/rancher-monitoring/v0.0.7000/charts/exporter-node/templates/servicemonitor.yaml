@@ -33,3 +33,10 @@ spec:
       action: replace
       regex: (.+)
       replacement: $1
+    metricRelabelings:
+    - sourceLabels:
+      - node
+      targetLabel: node_id
+      action: replace
+      regex: (.+)
+      replacement: {{ .Values.global.clusterName }}:$1
