@@ -1,0 +1,6 @@
+global:
+  systemDefaultRegistry: ""
+
+image:
+  repository: rancher/system-upgrade-controller
+  tag: v0.3.0-rc1
