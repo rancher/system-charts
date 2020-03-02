@@ -21,7 +21,7 @@ global:
 nodeagent:
   enabled: true
   repository: rancher/istio-node-agent-k8s
-  tag: 1.4.4
+  tag: 1.4.6
   env:
     CA_PROVIDER: "GoogleCA"
     CA_ADDR: "meshca.googleapis.com:443"
