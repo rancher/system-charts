@@ -1885,7 +1885,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "container_memory_working_set_bytes{container=\"\", pod_id=~\"$top10filter$top_memory_pod_id\"} / 1024 / 1024",
+          "expr": "container_memory_working_set_bytes{container=\"\", pod_id=~\"$top10filter$top_memory_pod_id\", pod!=\"\"} / 1024 / 1024",
           "format": "time_series",
           "intervalFactor": 2,
           "legendFormat": "{{prometheus_from}}/{{namespace}}/{{pod}}",
@@ -2132,23 +2132,23 @@
       {
         "allValue": null,
         "current": {
-          "text": "top 10",
+          "text": "Top 10",
           "value": ""
         },
         "hide": 0,
         "includeAll": false,
-        "label": "metrics selector",
+        "label": "View",
         "multi": false,
         "name": "top10filter",
         "options": [
           {
             "selected": true,
-            "text": "top 10",
+            "text": "Top 10",
             "value": ""
           },
           {
             "selected": false,
-            "text": "all",
+            "text": "All",
             "value": ".*|"
           }
         ],
@@ -2597,14 +2597,14 @@
           ]
         },
         "datasource": "RANCHER_MONITORING",
-        "definition": "query_result(topk(10, max_over_time(container_memory_working_set_bytes{container=\"\"}[${__range_s}s])))",
+        "definition": "query_result(topk(10, max_over_time(container_memory_working_set_bytes{container=\"\", pod!=\"\"}[${__range_s}s])))",
         "hide": 2,
         "includeAll": true,
         "label": null,
         "multi": true,
         "name": "top_memory_pod_id",
         "options": [],
-        "query": "query_result(topk(10, max_over_time(container_memory_working_set_bytes{container=\"\"}[${__range_s}s])))",
+        "query": "query_result(topk(10, max_over_time(container_memory_working_set_bytes{container=\"\", pod!=\"\"}[${__range_s}s])))",
         "refresh": 2,
         "regex": ".*pod_id=\"(.*?)\".*",
         "skipUrlSync": false,
