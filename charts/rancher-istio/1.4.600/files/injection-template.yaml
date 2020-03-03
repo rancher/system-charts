@@ -1,16 +1,26 @@
+{{- $cniDisabled := (not .Values.istio_cni.enabled) }}
+{{- $cniRepairEnabled := (and .Values.istio_cni.enabled .Values.istio_cni.repair.enabled) }}
+{{- $enableInitContainer := (or $cniDisabled $cniRepairEnabled .Values.global.proxy.enableCoreDump) }}
 rewriteAppHTTPProbe: {{ valueOrDefault .Values.sidecarInjectorWebhook.rewriteAppHTTPProbe false }}
-{{- if or (not .Values.istio_cni.enabled) .Values.global.proxy.enableCoreDump }}
+{{- if $enableInitContainer }}
 initContainers:
-{{ if ne (annotation .ObjectMeta `sidecar.istio.io/interceptionMode` .ProxyConfig.InterceptionMode) `NONE` }}
-{{- if not .Values.istio_cni.enabled }}
+{{- if ne (annotation .ObjectMeta `sidecar.istio.io/interceptionMode` .ProxyConfig.InterceptionMode) `NONE` }}
+{{ if $cniRepairEnabled -}}
+- name: istio-validation
+{{ else -}}
 - name: istio-init
-  {{- if .Values.global.systemDefaultRegistry }}
+{{ end -}}
+{{- if .Values.global.systemDefaultRegistry }}
   image: "{{ .Values.global.systemDefaultRegistry }}/{{ .Values.global.proxy_init.repository }}:{{ .Values.global.proxy_init.tag }}"
-  {{- else }}
+{{- else }}
   image: "{{ .Values.global.proxy_init.repository }}:{{ .Values.global.proxy_init.tag }}"
-  {{- end }}
+{{- end }}
   command:
+{{- if $cniRepairEnabled }}
+  - istio-iptables-go
+{{- else }}
   - istio-iptables
+{{- end }}
   - "-p"
   - "15001"
   - "-z"
@@ -27,7 +37,7 @@ initContainers:
   - "{{ annotation .ObjectMeta `traffic.sidecar.istio.io/includeInboundPorts` `*` }}"
   - "-d"
   - "{{ excludeInboundPort (annotation .ObjectMeta `status.sidecar.istio.io/port` .Values.global.proxy.statusPort) (annotation .ObjectMeta `traffic.sidecar.istio.io/excludeInboundPorts` .Values.global.proxy.excludeInboundPorts) }}"
-  {{ if or (isset .ObjectMeta.Annotations `traffic.sidecar.istio.io/excludeOutboundPorts`) (ne .Values.global.proxy.excludeOutboundPorts "") -}}
+  {{ if or (isset .ObjectMeta.Annotations `traffic.sidecar.istio.io/excludeOutboundPorts`) (ne (valueOrDefault .Values.global.proxy.excludeOutboundPorts "") "") -}}
   - "-o"
   - "{{ annotation .ObjectMeta `traffic.sidecar.istio.io/excludeOutboundPorts` .Values.global.proxy.excludeOutboundPorts }}"
   {{ end -}}
@@ -35,7 +45,11 @@ initContainers:
   - "-k"
   - "{{ index .ObjectMeta.Annotations `traffic.sidecar.istio.io/kubevirtInterfaces` }}"
   {{ end -}}
-  imagePullPolicy: "{{ .Values.global.imagePullPolicy }}"
+{{ if $cniRepairEnabled -}}
+  - "--run-validation"
+  - "--skip-rule-apply"
+{{- end }}
+  imagePullPolicy: "{{ valueOrDefault .Values.global.imagePullPolicy `Always` }}"
 {{- if .Values.global.proxy.init.resources }}
   resources:
     {{ toYaml .Values.global.proxy.init.resources | indent 4 }}
@@ -44,20 +58,27 @@ initContainers:
 {{- end }}
   securityContext:
     allowPrivilegeEscalation: {{ .Values.global.proxy.privileged }}
+    privileged: {{ .Values.global.proxy.privileged }}
     capabilities:
+{{- if not $cniRepairEnabled }}
       add:
       - NET_ADMIN
       - NET_RAW
+{{- end }}
       drop:
       - ALL
-    privileged: {{ .Values.global.proxy.privileged }}
     readOnlyRootFilesystem: false
+  {{- if not $cniRepairEnabled }}
     runAsGroup: 0
     runAsNonRoot: false
     runAsUser: 0
+  {{- else }}
+    runAsGroup: 1337
+    runAsUser: 1337
+    runAsNonRoot: true
+  {{- end }}
   restartPolicy: Always
-{{- end }}
-{{  end -}}
+  {{ end -}}
 {{- if eq .Values.global.proxy.enableCoreDump true }}
 - name: enable-core-dump
   args:
@@ -85,13 +106,17 @@ initContainers:
     runAsNonRoot: false
     runAsUser: 0
 {{ end }}
-{{- end }}
+  {{ end }}
 containers:
 - name: istio-proxy
-{{- if .Values.global.systemDefaultRegistry }}
-  image: "{{ .Values.global.systemDefaultRegistry }}/{{ .Values.global.proxy.repository }}:{{ .Values.global.proxy.tag }}"
+{{- if contains "/" (annotation .ObjectMeta `sidecar.istio.io/proxyImage` "") }} # if custom pod then use that
+  image: "{{ annotation .ObjectMeta `sidecar.istio.io/proxyImage` .Values.global.proxy.image }}"
 {{- else }}
-  image: "{{ annotation .ObjectMeta `sidecar.istio.io/proxyImage` .Values.global.proxy.repository}}:{{ .Values.global.proxy.tag }}"
+  {{- if .Values.global.systemDefaultRegistry }}
+  image: "{{ .Values.global.systemDefaultRegistry }}/{{ .Values.global.proxy.repository }}:{{ .Values.global.proxy.tag }}"
+  {{- else }}
+  image: "{{ .Values.global.proxy.repository }}:{{ .Values.global.proxy.tag }}"
+  {{- end }}
 {{- end }}
   ports:
   - containerPort: 15090
@@ -282,15 +307,15 @@ containers:
     value: "{{ .ProxyConfig.GetTracing.GetStackdriver.GetDebug }}"
   {{- if .ProxyConfig.GetTracing.GetStackdriver.GetMaxNumberOfAnnotations }}
   - name: STACKDRIVER_TRACING_MAX_NUMBER_OF_ANNOTATIONS
-    value: "{{ .ProxyConfig.GetTracing.GetStackdriver.GetMaxNumberOfAnnotations }}"
+    value: "{{ .ProxyConfig.GetTracing.GetStackdriver.GetMaxNumberOfAnnotations.Value }}"
   {{- end }}
   {{- if .ProxyConfig.GetTracing.GetStackdriver.GetMaxNumberOfAttributes }}
   - name: STACKDRIVER_TRACING_MAX_NUMBER_OF_ATTRIBUTES
-    value: "{{ .ProxyConfig.GetTracing.GetStackdriver.GetMaxNumberOfAttributes }}"
+    value: "{{ .ProxyConfig.GetTracing.GetStackdriver.GetMaxNumberOfAttributes.Value }}"
   {{- end }}
   {{- if .ProxyConfig.GetTracing.GetStackdriver.GetMaxNumberOfMessageEvents }}
   - name: STACKDRIVER_TRACING_MAX_NUMBER_OF_MESSAGE_EVENTS
-    value: "{{ .ProxyConfig.GetTracing.GetStackdriver.GetMaxNumberOfMessageEvents }}"
+    value: "{{ .ProxyConfig.GetTracing.GetStackdriver.GetMaxNumberOfMessageEvents.Value }}"
   {{- end }}
   {{- end }}
   imagePullPolicy: {{ .Values.global.imagePullPolicy }}
@@ -318,7 +343,7 @@ containers:
     {{ if eq (annotation .ObjectMeta `sidecar.istio.io/interceptionMode` .ProxyConfig.InterceptionMode) `TPROXY` -}}
     runAsNonRoot: false
     runAsUser: 0
-    {{- else -}}
+    {{- else }}
     runAsNonRoot: true
     runAsUser: 1337
     {{- end }}
@@ -425,12 +450,12 @@ dnsConfig:
     {{- end }}
 {{- end }}
 podRedirectAnnot:
-   sidecar.istio.io/interceptionMode: "{{ annotation .ObjectMeta `sidecar.istio.io/interceptionMode` .ProxyConfig.InterceptionMode }}"
-   traffic.sidecar.istio.io/includeOutboundIPRanges: "{{ annotation .ObjectMeta `traffic.sidecar.istio.io/includeOutboundIPRanges` .Values.global.proxy.includeIPRanges }}"
-   traffic.sidecar.istio.io/excludeOutboundIPRanges: "{{ annotation .ObjectMeta `traffic.sidecar.istio.io/excludeOutboundIPRanges` .Values.global.proxy.excludeIPRanges }}"
-   traffic.sidecar.istio.io/includeInboundPorts: "{{ annotation .ObjectMeta `traffic.sidecar.istio.io/includeInboundPorts` (includeInboundPorts .Spec.Containers) }}"
-   traffic.sidecar.istio.io/excludeInboundPorts: "{{ excludeInboundPort (annotation .ObjectMeta `status.sidecar.istio.io/port` .Values.global.proxy.statusPort) (annotation .ObjectMeta `traffic.sidecar.istio.io/excludeInboundPorts` .Values.global.proxy.excludeInboundPorts) }}"
+  sidecar.istio.io/interceptionMode: "{{ annotation .ObjectMeta `sidecar.istio.io/interceptionMode` .ProxyConfig.InterceptionMode }}"
+  traffic.sidecar.istio.io/includeOutboundIPRanges: "{{ annotation .ObjectMeta `traffic.sidecar.istio.io/includeOutboundIPRanges` .Values.global.proxy.includeIPRanges }}"
+  traffic.sidecar.istio.io/excludeOutboundIPRanges: "{{ annotation .ObjectMeta `traffic.sidecar.istio.io/excludeOutboundIPRanges` .Values.global.proxy.excludeIPRanges }}"
+  traffic.sidecar.istio.io/includeInboundPorts: "{{ annotation .ObjectMeta `traffic.sidecar.istio.io/includeInboundPorts` (includeInboundPorts .Spec.Containers) }}"
+  traffic.sidecar.istio.io/excludeInboundPorts: "{{ excludeInboundPort (annotation .ObjectMeta `status.sidecar.istio.io/port` .Values.global.proxy.statusPort) (annotation .ObjectMeta `traffic.sidecar.istio.io/excludeInboundPorts` .Values.global.proxy.excludeInboundPorts) }}"
 {{ if or (isset .ObjectMeta.Annotations `traffic.sidecar.istio.io/excludeOutboundPorts`) (ne .Values.global.proxy.excludeOutboundPorts "") }}
-   traffic.sidecar.istio.io/excludeOutboundPorts: "{{ annotation .ObjectMeta `traffic.sidecar.istio.io/excludeOutboundPorts` .Values.global.proxy.excludeOutboundPorts }}"
+  traffic.sidecar.istio.io/excludeOutboundPorts: "{{ annotation .ObjectMeta `traffic.sidecar.istio.io/excludeOutboundPorts` .Values.global.proxy.excludeOutboundPorts }}"
 {{- end }}
-   traffic.sidecar.istio.io/kubevirtInterfaces: "{{ index .ObjectMeta.Annotations `traffic.sidecar.istio.io/kubevirtInterfaces` }}"
+  traffic.sidecar.istio.io/kubevirtInterfaces: "{{ index .ObjectMeta.Annotations `traffic.sidecar.istio.io/kubevirtInterfaces` }}"
