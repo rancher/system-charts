@@ -17,5 +17,5 @@ spec:
     - record: apiserver_request_count
       expr: apiserver_request_total
     - record: apiserver_request_latencies
-      expr: apiserver_request_latency_seconds
+      expr: apiserver_request_duration_seconds
 {{- end }}
