@@ -133,7 +133,7 @@ spec:
           - --webhook-method=GET
           - --webhook-url=http://127.0.0.1:24444/api/config.reload
         resources:
-        {{ toYaml .Values.configmapReload.resources | indent 12 }}
+{{ toYaml .Values.configmapReload.resources | indent 10 }}
         volumeMounts:
           - mountPath: /fluentd/etc/config/custom
             name: custom
