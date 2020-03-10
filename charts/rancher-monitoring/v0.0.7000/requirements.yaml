@@ -78,3 +78,8 @@ dependencies:
     version: 0.1.0
     condition: operator-init.enabled
     repository: "file://./charts/operator-init/"
+
+  - name: webhook-receiver
+    version: 0.0.1
+    condition: webhook-receiver.enabled
+    repository: "file://./charts/webhook-receiver/"

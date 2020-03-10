@@ -396,3 +396,9 @@ operator-init:
     requests:
       cpu: 20m
       memory: 20Mi
+
+webhook-receiver:
+  enabled: false
+  image:
+    repository: "cnrancher/webhook-receiver"
+    tag: v0.2.0
