@@ -24,7 +24,7 @@ data:
         server_name  localhost;
 
         location / {
-            grpc_pass grpcs://{{ $.Values.rancherHostname }}:443;
+            grpc_pass grpcs://{{ $.Values.rancherHost }}{{- if not (contains ":" $.Values.rancherHost) -}}:443{{- end -}};
             grpc_set_header "cluster-id" $best_http_host;
             grpc_set_header "Authorization" "Bearer {{ $.Values.token }}";
             {{- if .Values.privateCa }}

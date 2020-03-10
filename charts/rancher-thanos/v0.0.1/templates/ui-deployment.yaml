@@ -34,7 +34,7 @@ spec:
           - name: API_TOKEN
             value: "{{ .Values.apiToken }}"
           - name: SERVER_URL
-            value: "https://{{ .Values.rancherHostname }}"
+            value: "https://{{ .Values.rancherHost }}"
           - name: THANOS_URL
             value: "http://access-thanos"
           ports:

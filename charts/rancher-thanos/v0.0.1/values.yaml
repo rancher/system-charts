@@ -6,7 +6,7 @@ fullnameOverride: ""
 
 # The following fields are read-only and managed by controllers
 clusterIds: ""
-rancherHostname: ""
+rancherHost: ""
 token: ""
 apiToken: ""
 
