@@ -38,6 +38,10 @@ spec:
       - name: {{ template "fluentd.fullname" . }}
         image:  {{ template "system_default_registry" . }}{{ .Values.image.repository }}:{{ .Values.image.tag }}
         imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
+{{- if .Values.global.privileged }}
+        securityContext:
+          privileged: true
+{{- end }}
         {{- if .Values.command }}
         command: {{ .Values.command }}
         {{ end }}
