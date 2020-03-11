@@ -23,7 +23,7 @@ debugTime: "infinity"
 
 image:
   repository: rancher/security-scan
-  tag: v0.1.8
+  tag: v0.1.9
   pullPolicy: Always
 
 nameOverride: ""
