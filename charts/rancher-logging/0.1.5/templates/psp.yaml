@@ -9,7 +9,11 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
+{{- if .Values.global.privileged }}
+  privileged: true
+{{- else }}
   allowPrivilegeEscalation: false
+{{- end }}
   fsGroup:
     ranges:
     - max: 65535

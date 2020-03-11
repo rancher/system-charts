@@ -8,3 +8,4 @@ global:
   systemDefaultRegistry: ""
   podSecurityPolicy:
     enabled: true
+  privileged: false
