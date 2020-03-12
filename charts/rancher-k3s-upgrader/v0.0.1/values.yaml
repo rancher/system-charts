@@ -3,4 +3,4 @@ global:
 
 image:
   repository: rancher/system-upgrade-controller
-  tag: v0.4.0-rc1
+  tag: v0.4.0-rc2
