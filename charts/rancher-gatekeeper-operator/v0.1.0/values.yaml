@@ -17,3 +17,6 @@ resources:
     memory: 256Mi
 global:
   systemDefaultRegistry: ""
+  kubectl:
+    repository: rancher/istio-kubectl
+    tag: 1.4.6
