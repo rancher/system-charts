@@ -1,0 +1,19 @@
+{{- if semverCompare ">=1.17-0" .Capabilities.KubeVersion.GitVersion -}}
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  labels:
+    app: {{ template "app.name" . }}
+    chart: {{ template "app.version" . }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+    source: rancher-monitoring
+  name: compatible-v117-deprecated-apiserver-metrics
+  namespace: {{ .Release.Namespace }}
+spec:
+  groups:
+  - name: apiserver_metrics.rules
+    rules:
+    - record: apiserver_request_count
+      expr: apiserver_request_total
+{{- end }}
