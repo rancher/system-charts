@@ -1,6 +1,12 @@
 global:
   systemDefaultRegistry: ""
 
-image:
-  repository: rancher/system-upgrade-controller
-  tag: v0.4.0-rc2
+systemUpgradeController:
+  image:
+    repository: rancher/system-upgrade-controller
+    tag: v0.4.0-rc2
+
+kubectl:
+  image:
+    repository: rancher/kubectl
+    tag: v1.17.0
