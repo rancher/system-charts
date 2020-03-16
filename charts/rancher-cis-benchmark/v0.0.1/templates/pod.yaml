@@ -65,7 +65,7 @@ spec:
         - name: DEBUG_TIME_IN_SEC
           value: {{ .Values.debugTime }}
         {{- end }}
-      image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+      image: '{{ template "system_default_registry" . }}{{ .Values.image.repository }}:{{ .Values.image.tag }}'
       imagePullPolicy: {{ .Values.image.pullPolicy }}
       ports:
         - containerPort: 8080
