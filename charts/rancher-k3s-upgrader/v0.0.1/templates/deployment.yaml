@@ -21,7 +21,7 @@ spec:
       serviceAccountName: system-upgrade
       containers:
         - name: system-upgrade-controller
-          image: {{ template "system_default_registry" . }}{{ .Values.image.repository }}:{{ .Values.image.tag }}
+          image: {{ template "system_default_registry" . }}{{ .Values.systemUpgradeController.image.repository }}:{{ .Values.systemUpgradeController.image.tag }}
           imagePullPolicy: IfNotPresent
           envFrom:
             - configMapRef:
