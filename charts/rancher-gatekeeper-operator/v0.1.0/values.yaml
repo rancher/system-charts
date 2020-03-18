@@ -1,5 +1,5 @@
 replicas: 1
-auditInterval: 60
+auditInterval: 300
 constraintViolationsLimit: 20
 auditFromCache: false
 image:
