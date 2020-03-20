@@ -22,9 +22,14 @@ debugWorker: false
 debugTime: "infinity"
 
 image:
-  repository: rancher/security-scan
-  tag: v0.1.9
-  pullPolicy: Always
+  securityScan:
+    repository: rancher/security-scan
+    tag: v0.1.9
+    pullPolicy: Always
+  sonobuoy:
+    repository: rancher/sonobuoy-sonobuoy
+    tag: v0.16.3 
+    
 
 nameOverride: ""
 fullnameOverride: ""

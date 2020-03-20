@@ -65,8 +65,8 @@ spec:
         - name: DEBUG_TIME_IN_SEC
           value: {{ .Values.debugTime }}
         {{- end }}
-      image: '{{ template "system_default_registry" . }}{{ .Values.image.repository }}:{{ .Values.image.tag }}'
-      imagePullPolicy: {{ .Values.image.pullPolicy }}
+      image: '{{ template "system_default_registry" . }}{{ .Values.image.securityScan.repository }}:{{ .Values.image.securityScan.tag }}'
+      imagePullPolicy: {{ .Values.image.securityScan.pullPolicy }}
       ports:
         - containerPort: 8080
           protocol: TCP
