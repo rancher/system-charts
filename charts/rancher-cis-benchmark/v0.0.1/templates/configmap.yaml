@@ -33,7 +33,7 @@ data:
             "timeoutseconds": 5400
         },
         "Namespace": "{{ .Release.Namespace }}",
-        "WorkerImage": '{{ template "system_default_registry" . }}{{ .Values.image.sonobuoy.repository }}:{{ .Values.image.sonobuoy.tag }}',
+        "WorkerImage": "{{ template "system_default_registry" . }}{{ .Values.image.sonobuoy.repository }}:{{ .Values.image.sonobuoy.tag }}",
         "Version": "{{ .Values.image.sonobuoy.tag }}"
     }
 ---
