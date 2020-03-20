@@ -55,8 +55,10 @@ data:
       hostNetwork: true
       hostPID: true
       serviceAccountName: s-sa-{{ .Release.Name }}
+      {{- if .Values.sonobuoy.tolerations }}
       tolerations:
-      - operator: Exists
+{{ toYaml .Values.sonobuoy.tolerations | trim | indent 6 }}
+      {{- end }}
       volumes:
       - hostPath:
           path: /
