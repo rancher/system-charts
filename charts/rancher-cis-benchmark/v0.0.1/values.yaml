@@ -21,6 +21,9 @@ debugMaster: false
 debugWorker: false
 debugTime: "infinity"
 
+sonobuoy:
+  tolerations: []
+
 image:
   securityScan:
     repository: rancher/security-scan
@@ -28,8 +31,7 @@ image:
     pullPolicy: Always
   sonobuoy:
     repository: rancher/sonobuoy-sonobuoy
-    tag: v0.16.3 
-    
+    tag: v0.16.3
 
 nameOverride: ""
 fullnameOverride: ""
@@ -66,7 +68,8 @@ resources: {}
 
 nodeSelector: {}
 
-tolerations: []
+tolerations: 
+- operator: Exists
 
 affinity: {}
 
