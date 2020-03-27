@@ -23,6 +23,8 @@ spec:
       containers:
       - name: operator-init-crds
         image: {{ template "system_default_registry" . }}{{ .Values.image.repository }}:{{ .Values.image.tag }}
+        resources:
+{{ toYaml .Values.resources | indent 10 }}
         volumeMounts:
         - name: data-crds
           mountPath: /etc/operator-init
