@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: webhook-receiver
+  labels:
+    app: {{ template "app.name" . }}
+    chart: {{ template "app.version" . }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+spec:
+  type: ClusterIP
+  selector:
+    app: {{ template "app.name" . }}
+    chart: {{ template "app.version" . }}
+    release: {{ .Release.Name }}
+  ports:
+    - name: http
+      port: 9094
+      targetPort: 9094

@@ -1,0 +1,74 @@
+{{- if .Values.thanos.store.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: thanos-store-{{ .Release.Name }}
+  labels:
+    app: {{ template "app.fullname" . }}
+    chart: {{ .Chart.Name }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+    component: store
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ template "app.fullname" . }}
+      chart: {{ .Chart.Name }}
+      release: {{ .Release.Name }}
+      component: store
+  template:
+    metadata:
+      labels:
+        app: {{ template "app.fullname" . }}
+        chart: {{ .Chart.Name }}
+        release: {{ .Release.Name }}
+        component: store
+    spec:
+      containers:
+        - name: thanos
+          image: "{{ template "system_default_registry" . }}{{ .Values.thanos.image.repository }}:{{ .Values.thanos.image.tag }}"
+          imagePullPolicy: {{ .Values.thanos.image.pullPolicy }}
+          args:
+          - store
+          - --objstore.config-file
+          - /etc/thanos/config.yaml
+          - --grpc-address
+          - 0.0.0.0:10901
+          - --http-address
+          - 0.0.0.0:10902
+          ports:
+            - name: grpc
+              containerPort: 10901
+              protocol: TCP
+            - name: http
+              containerPort: 10902
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.thanos.store.resources | nindent 12 }}
+          volumeMounts:
+          - mountPath: /etc/thanos/config.yaml
+            name: objstore-config
+            subPath: config.yaml
+      nodeSelector:
+      {{- include "linux-node-selector" . | nindent 8 }}
+      {{- with .Values.thanos.store.nodeSelector }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.thanos.store.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      tolerations:
+      {{- include "linux-node-tolerations" . | nindent 8 }}
+      {{- with .Values.thanos.store.tolerations }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+      - secret:
+          items:
+          - key: config.yaml
+            path: config.yaml
+          secretName: objstore-config-{{ .Release.Name }}
+        name: objstore-config
+{{- end }}

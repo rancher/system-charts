@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: access-dashboard
+  labels:
+    app: {{ template "app.fullname" . }}
+    chart: {{ .Chart.Name }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+    component: ui
+    kubernetes.io/cluster-service: "true"
+spec:
+  type: {{ .Values.ui.service.type }}
+  ports:
+    - port: {{ .Values.ui.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app: {{ template "app.fullname" . }}
+    chart: {{ .Chart.Name }}
+    release: {{ .Release.Name }}
+    component: ui

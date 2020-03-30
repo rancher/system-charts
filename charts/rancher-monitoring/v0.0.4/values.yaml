@@ -4,10 +4,10 @@ operator:
   apiGroup: "monitoring.coreos.com"
   image:
     repository: rancher/coreos-prometheus-operator
-    tag: v0.29.0
+    tag: v0.32.0
     prometheusConfigReloader:
       repository: rancher/coreos-prometheus-config-reloader
-      tag: v0.29.0
+      tag: v0.32.0
     configmapReload:
       repository: rancher/coreos-configmap-reload
       tag: v0.0.1
@@ -170,8 +170,10 @@ exporter-node-windows:
   endpoints: []
   nodeSelectors: []
   image:
+    os: windows
     repository: rancher/wmi_exporter-package
-    tag: v0.0.2
+    tag: v0.0.3
+  resources: {}
   ports:
     metrics:
       name: windows-metrics

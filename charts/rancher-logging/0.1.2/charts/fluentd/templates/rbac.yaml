@@ -1,0 +1,78 @@
+{{- if .Values.rbac.create -}}
+kind: ClusterRole
+apiVersion: {{ template "rbac_api_version" . }}
+metadata:
+  name: {{ template "fluentd.fullname" . }}
+  labels:
+    app: {{ template "fluentd.name" . }}
+    chart: {{ template "fluentd.version" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - "namespaces"
+  - "pods"
+  verbs:
+  - "get"
+  - "watch"
+  - "list"
+---
+kind: ClusterRoleBinding
+apiVersion: {{ template "rbac_api_version" . }}
+metadata:
+  name: {{ template "fluentd.fullname" . }}
+  labels:
+    app: {{ template "fluentd.name" . }}
+    chart: {{ template "fluentd.version" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+subjects:
+- kind: ServiceAccount
+  name: {{ template "fluentd.serviceAccountName" . }}
+  namespace: {{ .Release.Namespace }}
+roleRef:
+  kind: ClusterRole
+  name: {{ template "fluentd.fullname" . }}
+  apiGroup: rbac.authorization.k8s.io
+{{- if .Values.global.podSecurityPolicy.enabled }}
+---
+kind: Role
+apiVersion: {{ template "rbac_api_version" . }}
+metadata:
+  name: {{ template "fluentd.fullname" . }}-psp-role
+  labels:
+    app: {{ template "fluentd.name" . }}
+    chart: {{ template "fluentd.version" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+rules:
+- apiGroups:
+  - "policy"
+  resources:
+  - "podsecuritypolicies"
+  resourceNames:
+  - {{ .Release.Name }}-psp
+  verbs:
+  - "use"
+---
+kind: RoleBinding
+apiVersion: {{ template "rbac_api_version" . }}
+metadata:
+  name: {{ template "fluentd.fullname" . }}-psp-rolebinding
+  labels:
+    app: {{ template "fluentd.name" . }}
+    chart: {{ template "fluentd.version" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+subjects:
+- kind: ServiceAccount
+  name: {{ template "fluentd.serviceAccountName" . }}
+  namespace: {{ .Release.Namespace }}
+roleRef:
+  kind: Role
+  name: {{ template "fluentd.fullname" . }}-psp-role
+  apiGroup: rbac.authorization.k8s.io
+{{- end -}}
+{{- end -}}

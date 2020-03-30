@@ -1,0 +1,204 @@
+apiVersion: {{ template "deployment_api_version" . }}
+kind: Deployment
+metadata:
+  labels:
+    app: {{ template "app.fullname" . }}
+    chart: {{ .Chart.Name }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+  name: {{ template "app.fullname" . }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ template "app.fullname" . }}
+      chart: {{ .Chart.Name }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "app.fullname" . }}
+        chart: {{ .Chart.Name }}
+        release: {{ .Release.Name }}
+    spec:
+      {{- if .Values.sidecar.datasources.enabled }}
+      initContainers:
+      - name: sc-datasources
+        image: "{{ template "system_default_registry" . }}{{ .Values.sidecar.image }}"
+        imagePullPolicy: {{ .Values.sidecar.imagePullPolicy }}
+        env:
+          - name: METHOD
+            value: LIST
+          - name: LABEL
+            value: "{{ .Values.sidecar.datasources.label }}"
+          - name: FOLDER
+            value: "/etc/grafana/provisioning/datasources"
+          - name: RESOURCE
+            value: "both"
+          {{- if .Values.sidecar.datasources.searchNamespace }}
+          - name: NAMESPACE
+            value: "{{ .Values.sidecar.datasources.searchNamespace }}"
+          {{- end }}
+          {{- if .Values.sidecar.skipTlsVerify }}
+          - name: SKIP_TLS_VERIFY
+            value: "{{ .Values.sidecar.skipTlsVerify }}"
+          {{- end }}
+        resources:
+        {{ toYaml .Values.sidecar.resources | indent 10 }}
+        volumeMounts:
+          - name: sc-datasources-volume
+            mountPath: "/etc/grafana/provisioning/datasources"
+      {{- end}}
+      containers:
+      {{- if .Values.sidecar.dashboards.enabled }}
+      - name: sc-dashboard
+        image: "{{ template "system_default_registry" . }}{{ .Values.sidecar.image }}"
+        imagePullPolicy: {{ .Values.sidecar.imagePullPolicy }}
+        env:
+          - name: LABEL
+            value: "{{ .Values.sidecar.dashboards.label }}"
+          - name: FOLDER
+            value: "{{ .Values.sidecar.dashboards.folder }}{{- with .Values.sidecar.dashboards.defaultFolderName }}/{{ . }}{{- end }}"
+          - name: RESOURCE
+            value: "both"
+          {{- if .Values.sidecar.dashboards.searchNamespace }}
+          - name: NAMESPACE
+            value: "{{ .Values.sidecar.dashboards.searchNamespace }}"
+          {{- end }}
+          {{- if .Values.sidecar.skipTlsVerify }}
+          - name: SKIP_TLS_VERIFY
+            value: "{{ .Values.sidecar.skipTlsVerify }}"
+          {{- end }}
+        resources:
+        {{ toYaml .Values.sidecar.resources | indent 10 }}
+        volumeMounts:
+          - name: sc-dashboard-volume
+            mountPath: {{ .Values.sidecar.dashboards.folder | quote }}
+      {{- end}}
+      - name: grafana
+        image: {{ template "system_default_registry" . }}{{ .Values.image.repository }}:{{ .Values.image.tag }}
+        env:
+        - name: GF_AUTH_BASIC_ENABLED
+          value: "true"
+        - name: GF_AUTH_ANONYMOUS_ENABLED
+          value: "true"
+{{- if .Values.extraVars }}
+{{ toYaml .Values.extraVars | indent 8 }}
+{{- end }}
+        volumeMounts:
+        - name: grafana-storage
+          mountPath: /var/lib/grafana
+        - name: grafana-dashboards
+          mountPath: /var/lib/grafana/rancher-dashboards
+        - name: grafana-provisionings
+          mountPath: /etc/grafana/provisioning/dashboards/all.yaml
+          subPath: dashboards.yaml
+        - name: grafana-provisionings
+          mountPath: /etc/grafana/provisioning/datasources/all.yaml
+          subPath: datasources.yaml
+        {{- if .Values.sidecar.dashboards.enabled }}
+        - name: sc-dashboard-volume
+          mountPath: {{ .Values.sidecar.dashboards.folder | quote }}
+        {{ if .Values.sidecar.dashboards.SCProvider }}
+        - name: sc-dashboard-provider
+          mountPath: "/etc/grafana/provisioning/dashboards/sc-dashboardproviders.yaml"
+          subPath: provider.yaml
+        {{- end}}
+        {{- end}}
+        {{- if .Values.sidecar.datasources.enabled }}
+        - name: sc-datasources-volume
+          mountPath: "/etc/grafana/provisioning/datasources"
+        {{- end}}
+        ports:
+        - name: web
+          containerPort: 3000
+          protocol: TCP
+        readinessProbe:
+          httpGet:
+            path: /api/health
+            port: 3000
+          periodSeconds: 1
+          timeoutSeconds: 1
+          successThreshold: 1
+          failureThreshold: 10
+        {{- if and .Values.resources .Values.resources.core }}
+        resources:
+{{ toYaml .Values.resources.core | indent 10 }}
+        {{- end }}
+      - name: grafana-proxy
+        image: {{ template "system_default_registry" . }}{{ .Values.image.proxy.repository }}:{{ .Values.image.proxy.tag }}
+        args:
+        - nginx
+        - -g
+        - daemon off;
+        - -c
+        - /nginx/nginx.conf
+        ports:
+        - name: http
+          containerPort: 8080
+          protocol: TCP
+        volumeMounts:
+        - mountPath: /nginx/
+          name: grafana-nginx
+        - mountPath: /var/cache/nginx
+          name: nginx-home
+        {{- if and .Values.resources .Values.resources.proxy }}
+        resources:
+{{ toYaml .Values.resources.proxy | indent 10 }}
+        securityContext:
+          runAsUser: 101
+          runAsGroup: 101
+        {{- end }}
+      nodeSelector:
+{{- include "linux-node-selector" . | nindent 8 }}
+      {{- with .Values.nodeSelector }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- if .Values.enabledRBAC }}
+      serviceAccountName: {{ default (default (include "app.fullname" .) .Values.serviceAccountName) .Values.serviceAccountNameOverride }}
+    {{- end }}
+      tolerations:
+{{- include "linux-node-tolerations" . | nindent 8 }}
+    {{- if .Values.tolerations }}
+{{ toYaml .Values.tolerations | indent 8 }}
+    {{- end }}
+      securityContext:
+        runAsUser: 472
+        runAsGroup: 472
+        fsGroup: 472
+      volumes:
+      - name: grafana-storage
+        {{- if or .Values.storageSpec .Values.persistence.enabled }}
+        persistentVolumeClaim:
+          claimName: {{ template "app.fullname" . }}
+        {{- else }}
+        emptyDir: {}
+        {{- end }}
+      - name: grafana-nginx
+        configMap:
+          name: {{ template "app.nginx.fullname" . }}
+          items:
+          - key: nginx.conf
+            mode: 438
+            path: nginx.conf
+      - name: grafana-dashboards
+        configMap:
+          name: {{ template "app.dashboards.fullname" . }}
+      - name: grafana-provisionings
+        configMap:
+          name: {{ template "app.provisionings.fullname" . }}
+      - name: nginx-home
+        emptyDir: {}
+      {{- if .Values.sidecar.dashboards.enabled }}
+      - name: sc-dashboard-volume
+        emptyDir: {}
+      {{- if .Values.sidecar.dashboards.SCProvider }}
+      - name: sc-dashboard-provider
+        configMap:
+          name: {{ template "app.fullname" . }}-config-dashboards
+      {{- end }}
+      {{- end }}
+      {{- if .Values.sidecar.datasources.enabled }}
+      - name: sc-datasources-volume
+        emptyDir: {}
+      {{- end -}}

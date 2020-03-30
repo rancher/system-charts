@@ -1,0 +1,57 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: proxy-{{ .Release.Name }}
+  labels:
+    app: {{ template "app.fullname" . }}
+    chart: {{ .Chart.Name }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+data:
+  default.conf: |-
+    # Obtain best http host
+    map $http_host $this_host {
+            default          $http_host;
+            ''               $host;
+    }
+    map $http_x_forwarded_host $best_http_host {
+            default          $http_x_forwarded_host;
+            ''               $this_host;
+    }
+
+    server {
+        listen       80 http2;
+        server_name  localhost;
+
+        location / {
+            grpc_pass grpcs://{{ $.Values.rancherHost }}{{- if not (contains ":" $.Values.rancherHost) -}}:443{{- end -}};
+            grpc_set_header "cluster-id" $best_http_host;
+            grpc_set_header "Authorization" "Bearer {{ $.Values.token }}";
+            {{- if .Values.privateCa }}
+            grpc_ssl_verify on;
+            grpc_ssl_trusted_certificate /etc/kubernetes/ssl/certs/serverca;
+            {{- end }}
+
+        }
+
+        error_page   500 502 503 504  /50x.html;
+        location = /50x.html {
+            root   /usr/share/nginx/html;
+        }
+    }
+
+    server {
+        listen       8081;
+
+        location / {
+            proxy_pass http://localhost:10902/;
+            sub_filter_types    text/html application/javascript;
+              sub_filter_once     off;
+              sub_filter          'var PATH_PREFIX = "";' 'var PATH_PREFIX = ".";';
+        }
+
+        error_page   500 502 503 504  /50x.html;
+        location = /50x.html {
+            root   /usr/share/nginx/html;
+        }
+    }

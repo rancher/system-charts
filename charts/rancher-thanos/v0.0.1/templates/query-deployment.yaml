@@ -1,0 +1,103 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: thanos-{{ .Release.Name }}
+  labels:
+    app: {{ template "app.fullname" . }}
+    chart: {{ .Chart.Name }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+    component: query
+spec:
+  replicas: {{ .Values.thanos.query.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "app.fullname" . }}
+      chart: {{ .Chart.Name }}
+      release: {{ .Release.Name }}
+      component: query
+  template:
+    metadata:
+      labels:
+        app: {{ template "app.fullname" . }}
+        chart: {{ .Chart.Name }}
+        release: {{ .Release.Name }}
+        component: query
+    spec:
+      containers:
+        - name: thanos
+          image: "{{ template "system_default_registry" . }}{{ .Values.thanos.image.repository }}:{{ .Values.thanos.image.tag }}"
+          imagePullPolicy: {{ .Values.thanos.image.pullPolicy }}
+          args:
+          - query
+          {{- if .Values.clusterIds }}
+          {{- range $clusterId := (split ":" .Values.clusterIds) }}
+          - --store
+          - "{{ $clusterId }}:80"
+          {{- end }}
+          {{- end }}
+          {{- if .Values.thanos.store.enabled }}
+          - --store
+          - thanos-store-{{ .Release.Name }}:10901
+          {{- end }}
+          ports:
+            - name: http
+              containerPort: 10902
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          resources:
+            {{- toYaml .Values.thanos.query.resources | nindent 12 }}
+        - name: nginx
+          image: "{{ template "system_default_registry" . }}{{ .Values.thanos.image.proxy.repository }}:{{ .Values.thanos.image.proxy.tag }}"
+          imagePullPolicy: {{ .Values.thanos.image.pullPolicy }}
+          resources:
+            {{- toYaml .Values.thanos.query.proxy.resources | nindent 12 }}
+          volumeMounts:
+          - mountPath: /etc/nginx/conf.d/default.conf
+            name: nginx-config
+            subPath: default.conf
+          {{- if .Values.privateCa }}
+          - mountPath: /etc/kubernetes/ssl/certs
+            name: ca-cert
+          {{- end }}
+      hostAliases:
+      {{- if .Values.clusterIds }}
+      - hostnames:
+      {{- range $clusterId := (split ":" .Values.clusterIds) }}
+        - {{ $clusterId }}
+      {{- end }}
+        ip: 127.0.0.1
+      {{- end }}
+      nodeSelector:
+      {{- include "linux-node-selector" . | nindent 8 }}
+      {{- with .Values.thanos.query.nodeSelector }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.thanos.query.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      tolerations:
+      {{- include "linux-node-tolerations" . | nindent 8 }}
+      {{- with .Values.thanos.query.tolerations }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+      - configMap:
+          items:
+          - key: default.conf
+            path: default.conf
+          name: proxy-{{ .Release.Name }}
+        name: nginx-config
+      {{- if .Values.privateCa }}
+      - name: ca-cert
+        hostPath:
+          path: /etc/kubernetes/ssl/certs
+      {{- end }}
