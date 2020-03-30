@@ -145,25 +145,25 @@ spec:
       terminationGracePeriodSeconds: 30
       volumes:
       - hostPath:
-          path: {{ .Values.cluster.custom }}
+          path: /var/lib/rancher/fluentd/etc/config/custom
         name: custom
       - hostPath:
           path: {{ .Values.cluster.dockerRoot }}
         name: dockerroot
       - hostPath:
-          path: {{ .Values.cluster.varlogcontainers }}
+          path: /var/log/containers
         name: varlogcontainers
       - hostPath:
-          path: {{ .Values.cluster.varlogpods }}
+          path: /var/log/pods
         name: varlogpods
       - hostPath:
-          path: {{ .Values.cluster.rkelog }}
+          path: /var/lib/rancher/rke/log
         name: rkelog
       - hostPath:
-          path: {{ .Values.cluster.customlog }}
+          path: /var/lib/rancher/log-volumes
         name: customlog
       - hostPath:
-          path: {{ .Values.cluster.fluentdlog }}
+          path: /var/lib/rancher/fluentd/log
         name: fluentdlog
       - name: config
         secret:
@@ -176,7 +176,7 @@ spec:
           secretName: {{ template "fluentd.fullname" . }}-ssl
       - name: libsystemddir
         hostPath:
-          path: {{ .Values.cluster.libsystemddir }}
+          path: /usr/lib64
 {{- if .Values.extraVolumes }}
 {{ toYaml .Values.extraVolumes | indent 6 }}
 {{- end }}
