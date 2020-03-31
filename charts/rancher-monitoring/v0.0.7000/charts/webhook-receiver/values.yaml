@@ -2,10 +2,10 @@ enabled: false
 replicas: 1 
 config: {}
 resources:
-limits:
+  limits:
     cpu: 200m
     memory: 256Mi
-requests:
+  requests:
     cpu: 100m
     memory: 128Mi
 nodeSelector: {}
