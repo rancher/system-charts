@@ -58,23 +58,9 @@ spec:
       name: web
       protocol: TCP
     livenessProbe:
-      failureThreshold: 6
-      httpGet:
-        path: /-/healthy
-        port: web
-        scheme: HTTP
-      periodSeconds: 10
-      successThreshold: 1
-      timeoutSeconds: 10
+{{ merge .Values.livenessProbe .Values.defaultLivenessProbe | toYaml | indent 6 }}
     readinessProbe:
-      failureThreshold: 10
-      httpGet:
-        path: /-/ready
-        port: web
-        scheme: HTTP
-      periodSeconds: 10
-      successThreshold: 1
-      timeoutSeconds: 10
+{{ merge .Values.readinessProbe .Values.defaultReadinessProbe | toYaml | indent 6 }}
     {{- if and .Values.resources .Values.resources.auth }}
     resources:
 {{ toYaml .Values.resources.auth | indent 6 }}
@@ -151,10 +137,13 @@ spec:
   serviceMonitorSelector:
 {{ toYaml .Values.serviceMonitorSelector | indent 4 }}
 {{- end }}
-{{- if and (eq .Values.level "project") (eq .Values.sync.mode "remote") }}
+{{- if .Values.remoteRead }}
   remoteRead:
-  - bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
-    url: {{ printf "%s%s" .Values.sync.target .Values.sync.path }}
+{{ toYaml .Values.remoteRead | indent 4 }}
+{{- end }}
+{{- if .Values.remoteWrite }}
+  remoteWrite:
+{{ toYaml .Values.remoteWrite | indent 4 }}
 {{- end }}
 {{ include "rule.namespace.selector" . | indent 2}}
 {{ include "rule.selector" . | indent 2 }}
