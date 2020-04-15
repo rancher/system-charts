@@ -1,0 +1,11 @@
+{{- if eq .Values.level "project" }}
+- static_configs: 
+  - targets: 
+    - {{ .Values.project.alertManagerTarget }}
+    labels: 
+      level: {{ .Values.level }}
+      project_id: {{ .Values.global.projectName }}
+      cluster_id: {{ .Values.global.clusterName }}
+      cluster_name: {{ .Values.project.clusterDisplayName }}
+      project_name: {{ .Values.project.projectDisplayName }}
+{{- end }}
