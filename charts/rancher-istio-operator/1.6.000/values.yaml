@@ -1,0 +1,7 @@
+hub: docker.io/istio
+tag: 1.6-dev
+operatorNamespace: istio-operator
+istioNamespace: istio-system
+
+# Rancher unique config
+
