@@ -4,4 +4,5 @@ operatorNamespace: istio-operator
 istioNamespace: istio-system
 
 # Rancher unique config
+operatorImage: operator
 
