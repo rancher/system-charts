@@ -16,7 +16,7 @@ spec:
       serviceAccountName: istio-operator
       containers:
         - name: istio-operator
-          image: {{.Values.hub}}/operator:{{.Values.tag}}
+          image: {{.Values.hub}}/{{.Values.operatorImage}}:{{.Values.tag}}
           command:
           - operator
           - server

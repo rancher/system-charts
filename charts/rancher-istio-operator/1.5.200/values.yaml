@@ -1,4 +1,7 @@
-hub: gcr.io/istio-testing
-tag: 1.5-dev
+hub: docker.io/istio
+tag: 1.5.2
 operatorNamespace: istio-operator
 istioNamespace: istio-system
+
+### Rancher custom options
+operatorImage: operator
