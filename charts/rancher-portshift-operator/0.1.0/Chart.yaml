@@ -1,0 +1,19 @@
+apiVersion: v1
+name: portshift-operator
+version: 0.1.0
+appVersion: v0.1.2
+#description: TODO
+#keywords:
+#  - monitoring
+#  - security
+#  - alerting
+#  - metric
+#  - troubleshooting
+#  - run-time
+home: https://www.portshift.io/
+#icon: TODO
+sources:
+  - https://console.portshift.io/
+maintainers:
+  - name: idan
+    email: idan@portshift.io

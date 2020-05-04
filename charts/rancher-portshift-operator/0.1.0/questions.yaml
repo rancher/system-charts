@@ -1,0 +1,49 @@
+labels:
+  io.rancher.certified: partner
+
+rancher_min_version: 2.3.0
+rancher_max_version: 2.3.99
+
+questions:
+#operator image configurations
+- variable: defaultImage
+  default: true
+  description: "Use default Portshift operator image or specify a custom one"
+  label: Use Default Portshift Image
+  type: boolean
+  show_subquestion_if: false
+  group: "Operator Container Images"
+  subquestions:
+    - variable: operator.image.repository
+      default: "gcr.io/development-infra-208909/k8s_operator"
+      description: "Portshift Operator Image Name"
+      type: string
+      label: Portshift Operator Image Name
+    - variable: operator.image.tag
+      default: "v0.1.2"
+      description: "Portshift Operator Image Tag"
+      type: string
+      label: Portshift Operator Image Tag
+#operator access configurations
+- variable: operator.secret.accessKey
+  default: ""
+  description: "Operator access key retrieved from Portshift console"
+  type: string # secret/password - https://rancher.com/docs/rancher/v2.x/en/catalog/creating-apps/#question-variable-reference
+  required: true
+  label: Portshift Operator Access Key
+  group: "Operator Access Configuration"
+- variable: operator.secret.secretKey
+  default: ""
+  description: "Operator secret key retrieved from Portshift console"
+  type: string # secret/password - https://rancher.com/docs/rancher/v2.x/en/catalog/creating-apps/#question-variable-reference
+  required: true
+  label: Portshift Operator Secret Key
+  group: "Operator Access Configuration"
+#installer configurations
+- varibale: installer.portshiftClusterId
+  default: ""
+  description: "Cluster id definition retrieved from Portshift console"
+  type: string
+  required: true
+  label: Portshift Cluster ID
+  group: "Installer Configuration"

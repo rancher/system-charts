@@ -1,0 +1,54 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: portshift-operator-secret
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: portshift-operator
+type: Opaque
+data:
+  accessKey: {{ required "A valid .Values.operator.secret.accessKey is required" .Values.operator.secret.accessKey | b64enc | quote }}
+  secretKey: {{ required "A valid .Values.operator.secret.secretKey is required" .Values.operator.secret.secretKey | b64enc | quote }}
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: portshift-operator
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: portshift-operator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: portshift-operator
+  template:
+    metadata:
+      labels:
+        app: portshift-operator
+    spec:
+      serviceAccountName: portshift-operator
+      containers:
+        - name: portshift-operator
+          image: "{{ .Values.operator.image.repository }}:{{ .Values.operator.image.tag }}"
+          command:
+          - portshift-operator
+          imagePullPolicy: "{{ .Values.operator.imagePullPolicy }}"
+          env:
+            - name: WATCH_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: OPERATOR_NAME
+              value: portshift-operator
+#            - name: RELATED_IMAGE_AGENT
+#              value: gcr.io/development-infra-208909/k8s_agent:stub
+#            - name: RELATED_IMAGE_AGENT_UPGRADER
+#              value: gcr.io/development-infra-208909/k8s_upgrader:stub
+#            - name: RELATED_IMAGE_AGENT_PASSIVE_DNS_DETECTOR
+#              value: gcr.io/development-infra-208909/gopassivedns:stub
