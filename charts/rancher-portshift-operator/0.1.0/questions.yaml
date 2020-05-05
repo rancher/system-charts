@@ -27,14 +27,14 @@ questions:
 - variable: operator.secret.accessKey
   default: ""
   description: "Operator access key retrieved from Portshift console"
-  type: string # secret/password - https://rancher.com/docs/rancher/v2.x/en/catalog/creating-apps/#question-variable-reference
+  type: secret # string/password - https://rancher.com/docs/rancher/v2.x/en/catalog/creating-apps/#question-variable-reference
   required: true
   label: Portshift Operator Access Key
   group: "Operator Access Configuration"
 - variable: operator.secret.secretKey
   default: ""
   description: "Operator secret key retrieved from Portshift console"
-  type: string # secret/password - https://rancher.com/docs/rancher/v2.x/en/catalog/creating-apps/#question-variable-reference
+  type: secret # string/password - https://rancher.com/docs/rancher/v2.x/en/catalog/creating-apps/#question-variable-reference
   required: true
   label: Portshift Operator Secret Key
   group: "Operator Access Configuration"
