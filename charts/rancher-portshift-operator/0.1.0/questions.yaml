@@ -39,6 +39,19 @@ questions:
   label: Portshift Operator Secret Key
   group: "Operator Access Configuration"
 #installer configurations
+- variable: defaultMgmtUrl
+  default: true
+  description: "Use default Portshift console url or specify a custom one"
+  label: Use Default Portshift Url
+  type: boolean
+  show_subquestion_if: false
+  group: "Installer Configuration"
+  subquestions:
+    - variable: installer.managementUrl
+      default: "console.portshift.io"
+      description: "Portshift Console Url"
+      type: string
+      label: Portshift Console Url
 - variable: installer.portshiftClusterId
   default: ""
   description: "Cluster id definition retrieved from Portshift console"
