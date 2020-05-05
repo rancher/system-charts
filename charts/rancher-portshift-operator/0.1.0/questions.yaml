@@ -39,7 +39,7 @@ questions:
   label: Portshift Operator Secret Key
   group: "Operator Access Configuration"
 #installer configurations
-- varibale: installer.portshiftClusterId
+- variable: installer.portshiftClusterId
   default: ""
   description: "Cluster id definition retrieved from Portshift console"
   type: string
