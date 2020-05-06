@@ -4,7 +4,10 @@ metadata:
   name: portshift-operator
   namespace: {{ .Release.Namespace }}
   labels:
-    app: portshift-operator
+    app: {{ template "portshift-operator.name" . }}
+    chart: {{ template "portshift-operator.chart" . }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole

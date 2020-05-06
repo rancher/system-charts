@@ -4,6 +4,12 @@ metadata:
   name: portshiftinstallers.portshift.io
   annotations:
     helm.sh/hook: crd-install
+    helm.sh/hook-delete-policy: before-hook-creation
+  labels:
+    app: {{ template "portshift-operator.name" . }}
+    chart: {{ template "portshift-operator.chart" . }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
 spec:
   group: portshift.io
   names:

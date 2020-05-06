@@ -23,6 +23,11 @@ questions:
       description: "Portshift Operator Image Tag"
       type: string
       label: Portshift Operator Image Tag
+    - variable: operator.image.pullPolicy
+      default: "IfNotPresent"
+      description: "Portshift Operator Image Pull Policy"
+      type: string
+      label: Portshift Operator Image Pull Policy
 #operator access configurations
 - variable: operator.secret.accessKey
   default: ""
@@ -38,24 +43,23 @@ questions:
   required: true
   label: Portshift Operator Secret Key
   group: "Operator Access Configuration"
-#installer configurations
 - variable: defaultMgmtUrl
   default: true
   description: "Use default Portshift console url or specify a custom one"
   label: Use Default Portshift Url
   type: boolean
   show_subquestion_if: false
-  group: "Installer Configuration"
+  group: "Operator Access Configuration"
   subquestions:
-    - variable: installer.managementUrl
+    - variable: operator.portshiftinstaller.managementUrl
       default: "console.portshift.io"
       description: "Portshift Console Url"
       type: string
       label: Portshift Console Url
-- variable: installer.portshiftClusterId
+- variable: operator.portshiftinstaller.portshiftClusterId
   default: ""
   description: "Cluster id definition retrieved from Portshift console"
   type: string
   required: true
   label: Portshift Cluster ID
-  group: "Installer Configuration"
+  group: "Operator Access Configuration"

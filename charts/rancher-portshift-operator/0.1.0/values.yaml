@@ -2,11 +2,11 @@ operator:
   image:
     repository: gcr.io/development-infra-208909/k8s_operator
     tag: v0.1.2
-  imagePullPolicy: Always
+    pullPolicy: IfNotPresent
   secret:
     accessKey: ""
     secretKey: ""
+  portshiftinstaller:
+    managementUrl: console.portshift.io
+    portshiftClusterId: ""
 
-installer:
-  managementUrl: console.portshift.io
-  portshiftClusterId: ""
