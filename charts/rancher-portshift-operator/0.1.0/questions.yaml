@@ -19,7 +19,7 @@ questions:
       type: string
       label: Portshift Operator Image Name
     - variable: operator.image.tag
-      default: "v0.1.2"
+      default: "v0.1.3"
       description: "Portshift Operator Image Tag"
       type: string
       label: Portshift Operator Image Tag
