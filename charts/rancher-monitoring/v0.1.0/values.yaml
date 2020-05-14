@@ -27,6 +27,8 @@ operator:
   ## Already exist ServiceAccount
   ##
   serviceAccountName: ""
+  prometheusInstanceNamespaces: []
+  alertmanagerInstanceNamespaces: []
 
 exporter-coredns:
   enabled: false
