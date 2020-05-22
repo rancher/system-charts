@@ -18,6 +18,8 @@ rules:
   - prometheuses
   - service-monitor
   - servicemonitors
+  - thanosrulers
+  - thanosrulers/finalizers
   - prometheusrules
   - prometheuses/finalizers
   - alertmanagers/finalizers
