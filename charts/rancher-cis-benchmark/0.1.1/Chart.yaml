@@ -1,0 +1,12 @@
+apiVersion: v1
+appVersion: "0.1.0"
+description: |
+  Run CIS benhmark tests
+name: rancher-cis-benchmark
+version: 0.1.0
+home: https://github.com/rancher/system-charts/charts/rancher-cis-benchmark
+sources:
+  - "https://github.com/rancher/system-charts/charts/rancher-cis-benchmark"
+maintainers:
+  - name: Murali Paluru
+    email: leodotcloud@gmail.com
