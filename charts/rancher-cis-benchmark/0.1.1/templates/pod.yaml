@@ -1,0 +1,105 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: security-scan-runner-{{ .Release.Name }}
+  {{- if ne .Values.owner "" }}
+  annotations:
+    field.cattle.io/clusterScanOwner: "{{ .Values.owner }}"
+  {{- end }}
+  labels:
+    app.kubernetes.io/name: {{ include "rancher-cis-benchmark.name" . }}
+    helm.sh/chart: {{ include "rancher-cis-benchmark.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    run: sonobuoy-master
+spec:
+  serviceAccountName: s-sa-{{ .Release.Name }}
+  terminationGracePeriodSeconds: 0
+  volumes:
+    - configMap:
+        name: s-config-cm-{{ .Release.Name }}
+      name: s-config-volume
+    - configMap:
+        name: s-plugins-cm-{{ .Release.Name }}
+      name: s-plugins-volume
+    - emptyDir: {}
+      name: output-volume
+    {{- if ne .Values.userSkipConfigMapName "" }}
+    - configMap:
+        name: {{ .Values.userSkipConfigMapName }}
+      name: user-skip-info-volume
+    {{- end }}
+    {{- if ne .Values.defaultSkipConfigMapName "" }}
+    - configMap:
+        name: {{ .Values.defaultSkipConfigMapName }}
+      name: default-skip-info-volume
+    {{- end }}
+    {{- if ne .Values.notApplicableConfigMapName "" }}
+    - configMap:
+        name: {{ .Values.notApplicableConfigMapName }}
+      name: not-applicable-info-volume
+    {{- end }}
+  containers:
+    - name: {{ .Chart.Name }}
+      restartPolicy: Never
+      env:
+        {{- if .Values.overrideBenchmarkVersion }}
+        - name: OVERRIDE_BENCHMARK_VERSION
+          value: {{ .Values.overrideBenchmarkVersion }}
+        {{- end }}
+        - name: SONOBUOY_NS
+          value: {{ .Release.Namespace }}
+        - name: SONOBUOY_POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: SONOBUOY_ADVERTISE_IP
+          value: {{ include "rancher-cis-benchmark.fullname" . }}
+        {{- if ne .Values.owner "" }}
+        - name: OUTPUT_CONFIGMAPNAME
+          value: {{ .Release.Name }}
+        {{- end }}
+        {{- if .Values.debugMaster }}
+        - name: DEBUG
+          value: "true"
+        - name: DEBUG_TIME_IN_SEC
+          value: {{ .Values.debugTime }}
+        {{- end }}
+      image: '{{ template "system_default_registry" . }}{{ .Values.image.securityScan.repository }}:{{ .Values.image.securityScan.tag }}'
+      imagePullPolicy: {{ .Values.image.securityScan.pullPolicy }}
+      ports:
+        - containerPort: 8080
+          protocol: TCP
+      volumeMounts:
+        - mountPath: /etc/sonobuoy
+          name: s-config-volume
+        - mountPath: /plugins.d
+          name: s-plugins-volume
+        - mountPath: /tmp/sonobuoy
+          name: output-volume
+        {{- if ne .Values.userSkipConfigMapName "" }}
+        - mountPath: /etc/kbs/userskip
+          name: user-skip-info-volume
+        {{- end }}
+        {{- if ne .Values.defaultSkipConfigMapName "" }}
+        - mountPath: /etc/kbs/defaultskip
+          name: default-skip-info-volume
+        {{- end }}
+        {{- if ne .Values.notApplicableConfigMapName "" }}
+        - mountPath: /etc/kbs/notapplicable
+          name: not-applicable-info-volume
+        {{- end }}
+      resources:
+        {{- toYaml .Values.resources | nindent 12 }}
+  {{- with .Values.nodeSelector }}
+  nodeSelector:
+    {{- toYaml . | nindent 8 }}
+  {{- end }}
+{{- with .Values.affinity }}
+  affinity:
+    {{- toYaml . | nindent 8 }}
+{{- end }}
+{{- with .Values.tolerations }}
+  tolerations:
+    {{- toYaml . | nindent 8 }}
+{{- end }}
