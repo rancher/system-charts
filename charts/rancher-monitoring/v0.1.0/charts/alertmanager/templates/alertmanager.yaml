@@ -78,5 +78,5 @@ spec:
   tolerations:
 {{- include "linux-node-tolerations" . | nindent 8 }}
 {{- if .Values.tolerations }}
-{{ toYaml .Values.tolerations | indent 4 }}
+{{ toYaml .Values.tolerations | indent 8 }}
 {{- end }}

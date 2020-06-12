@@ -73,5 +73,5 @@ spec:
               alertmanager: {{ .Release.Name }}
 {{- if .Values.tolerations }}
   tolerations:
-{{ toYaml .Values.tolerations | indent 4 }}
+{{ toYaml .Values.tolerations | indent 8 }}
 {{- end }}
