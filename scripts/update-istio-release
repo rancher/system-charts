@@ -4,20 +4,55 @@ set -e
 # Script to update istio release. This script will download istio and istio-init and combine them into a single rancher chart
 # To use this script, run
 #
-# ./scripts/update-istio ${istio_version}
+# ./scripts/update-istio ${most_recent_istio_version} ${new_istio_version}
 #
-# For example, to update istio 1.4.2, run
+# For example, to update istio 1.4.9, run
 #
-# ./scripts/update-istio 1.4.2
+# ./scripts/update-istio 1.4.8 1.4.9
+#
+# To validate the new version run:
+# ./scripts/update-istio 1.4.1 1.4.2 validate
 #
 # To just copy vanilla istio helm charts, run
-# VANILLA=true ./scripts/update-istio-release 1.4.2
+# VANILLA=true ./scripts/update-istio-release 1.4.1 1.4.2
 # ./
 # Requirement: yq(https://github.com/mikefarah/yq)
 
+OLD_R_VERSION="$1"00
+VERSION="$2"
+R_VERSION="$2"00  # this does the rancher style 1.4.300 version
+
+echo "making $R_VERSION from $OLD_R_VERSION"
+
+if [[ $3 == "validate" ]]; then
+	set +e
+	printf "==============\n\n Non-rancher image specs that need to be changed (likely duplicate listings):\n\n==============\n\n"
+	grep -r --color=always --include "*.yaml" Values.global.hub charts/rancher-istio/$R_VERSION/
+	grep -r --color=always --include "*.yaml" ".Values.image " charts/rancher-istio/$R_VERSION/
+	grep -r --color=always --include "*.yaml" ".Values.image}" charts/rancher-istio/$R_VERSION/
+	grep -r --color=always --include "*.yaml" --exclude "*injection-template.yaml" "image: \"{{ .Values" charts/rancher-istio/$R_VERSION/
+	grep -r --color=always --include "*.yaml" "image: \"{{ \\$" charts/rancher-istio/$R_VERSION/
+	exit 0
+fi
+
+if [ -z "$(git status --porcelain)" ]; then
+  echo "making copy and committing"
+  cp -r charts/rancher-istio/$OLD_R_VERSION charts/rancher-istio/$R_VERSION
+  git add charts/rancher-istio/$R_VERSION
+  git commit -m "copying istio for new version $VERSION"
+else
+  # Uncommitted changes
+  echo "Uncommitted changes, plese clean working directory"
+  exit 1
+fi
+
+# we have to delete first to ensure old files not in next release are removed
+echo "removing old chart"
+rm -rf charts/rancher-istio/$R_VERSION
+
 # Download istio release
-mkdir -p charts/rancher-istio/${1}
-curl -sL https://storage.googleapis.com/istio-release/releases/${1}/charts/istio-${1}.tgz | tar xvzf - -C charts/rancher-istio/${1} --strip 1
+mkdir -p charts/rancher-istio/$R_VERSION
+curl -sL https://storage.googleapis.com/istio-release/releases/$VERSION/charts/istio-$VERSION.tgz | tar xvzf - -C charts/rancher-istio/$R_VERSION --strip 1
 
 if [[ -n "$VANILLA" ]]; then
   exit 0
@@ -25,16 +60,18 @@ fi
 
 # Configure istio-init CRD
 # The following script downloads istio-init CRD helm charts, extract these into CRD templates and adds crd-install hooks.
-mkdir -p charts/rancher-istio/${1}/charts/istio-init
-curl -sL https://storage.googleapis.com/istio-release/releases/${1}/charts/istio-init-${1}.tgz | tar xvzf - -C charts/rancher-istio/${1}/charts/istio-init --strip 1
+mkdir -p charts/rancher-istio/$R_VERSION/charts/istio-init
+curl -sL https://storage.googleapis.com/istio-release/releases/$VERSION/charts/istio-init-$VERSION.tgz | tar xvzf - -C charts/rancher-istio/$R_VERSION/charts/istio-init --strip 1
 
-for file in charts/rancher-istio/${1}/charts/istio-init/files/*
+for file in charts/rancher-istio/$R_VERSION/charts/istio-init/files/*
 do
-sed -i '$d' ${file}
-yq w -d'*' ${file} metadata.annotations\[helm.sh/hook\] crd-install > charts/rancher-istio/${1}/templates/${file##*/}
+# remove newlines and any ending '---'
+sed -i '' -e :a -e '/^\n*$/{$d;N;};/\n$/ba' ${file}
+sed -i '' '$s/---//'  ${file}
+yq w -d'*' ${file} metadata.annotations\[helm.sh/hook\] crd-install,pre-upgrade > charts/rancher-istio/$R_VERSION/templates/${file##*/}
 done
 
-for file in charts/rancher-istio/${1}/templates/crd-certmanager-*.yaml
+for file in charts/rancher-istio/$R_VERSION/templates/crd-certmanager-*.yaml
 do
 content=$(cat $file)
 cat > ${file} << EOF
@@ -43,31 +80,71 @@ $content
 {{- end }}
 EOF
 done
-rm -r charts/rancher-istio/${1}/charts/istio-init
+rm -r charts/rancher-istio/$R_VERSION/charts/istio-init
 
 # Add question.yaml, make need to update minimum rancher version
-RANCHER_MIN_VERSION="2.3.4-rc1"
+RANCHER_MIN_VERSION="2.4.5-rc1"
 echo "Current rancher min version is set to $RANCHER_MIN_VERSION"
 
-cat > charts/rancher-istio/${1}/questions.yaml << EOF
+cat > charts/rancher-istio/$R_VERSION/questions.yaml << EOF
 labels:
-  rancher.istio.v${1}: ${1}
+  rancher.istio.v$R_VERSION: $VERSION
 rancher_min_version: $RANCHER_MIN_VERSION
 EOF
 
+# add helpers
+cat <<EOF >> charts/rancher-istio/$R_VERSION/templates/_helpers.tpl
+
+{{- define "system_default_registry" -}}
+{{- if .Values.global.systemDefaultRegistry -}}
+{{- printf "%s/" .Values.global.systemDefaultRegistry -}}
+{{- else -}}
+{{- "" -}}
+{{- end -}}
+{{- end -}}
+EOF
+
 # Replace the name of the chart
-sed -i 's/name: istio/name: rancher-istio/g' charts/rancher-istio/${1}/Chart.yaml
+sed -i '' 's/name: istio/name: rancher-istio/g' charts/rancher-istio/$R_VERSION/Chart.yaml
+sed -i '' "s/version: $VERSION/version: $R_VERSION/g" charts/rancher-istio/$R_VERSION/Chart.yaml
 
 # Update kiali
-cp ./scripts/istio/deployment.yaml charts/rancher-istio/${1}/charts/kiali/templates/
-cp ./scripts/istio/kiali-console-configmap.yaml charts/rancher-istio/${1}/charts/kiali/templates/
+cp ./scripts/istio/kiali-deployment.yaml charts/rancher-istio/$R_VERSION/charts/kiali/templates/deployment.yaml
+cp ./scripts/istio/kiali-console-configmap.yaml charts/rancher-istio/$R_VERSION/charts/kiali/templates/
+
+# Add migration script for istio 1.5
+# For more info see: https://github.com/istio/istio/issues/21648
+cp ./scripts/istio/istio-onefive-migration.yaml charts/rancher-istio/$R_VERSION/templates/
 
 # Replace istio kubectl images
-sed -i 's/"{{ .Values.global.hub }}\/kubectl:{{ .Values.global.tag }}"/"{{ .Values.global.hub }}\/istio-kubectl:{{ .Values.global.tag }}"/g' charts/rancher-istio/${1}/charts/security/templates/*.yaml
+sed -i '' 's/"{{ .Values.global.hub }}\/kubectl:{{ .Values.global.tag }}"/"{{ .Values.global.hub }}\/istio-kubectl:{{ .Values.global.tag }}"/g' charts/rancher-istio/$R_VERSION/charts/security/templates/*.yaml
+
+# replace coreDumpImage
+sed -i '' 's/{{ $.Values.global.proxy.enableCoreDumpImage }}/"{{ template "system_default_registry" $ }}{{ $.Values.global.proxy_init.repository }}:{{ $.Values.global.proxy_init.tag }}"/g' charts/rancher-istio/$R_VERSION/charts/gateways/templates/deployment.yaml
 
 # Istio-values.yaml is rancher specific customization yaml
-cat ./scripts/istio/istio-values.yaml > charts/rancher-istio/${1}/values.yaml
-cat ./scripts/istio/istio-service-rbac.yaml > charts/rancher-istio/${1}/templates/istio-service-rbac.yaml
+cat ./scripts/istio/istio-values.yaml > charts/rancher-istio/$R_VERSION/values.yaml
+cat ./scripts/istio/istio-service-rbac.yaml > charts/rancher-istio/$R_VERSION/templates/istio-service-rbac.yaml
 
-# Replace tag
-sed -i 's/tag: 1.4.2/tag: '"${1}"'/g' charts/rancher-istio/${1}/values.yaml
+# Replace tag inside values.yaml
+sed -i '' "s/tag: tagreplace/tag: $VERSION/g" charts/rancher-istio/$R_VERSION/values.yaml
+
+# remove unnecessary files
+rm -rf charts/rancher-istio/$R_VERSION/example-values/
+rm -rf charts/rancher-istio/$R_VERSION/values-istio-*.yaml
+
+echo "applying patch..."
+cp ./scripts/istio/patch-istio-images.patch ./scripts/istio/patch-istio-images-$R_VERSION.patch
+sed -i '' "s/tagreplace/$R_VERSION/g" ./scripts/istio/patch-istio-images-$R_VERSION.patch
+git apply --check ./scripts/istio/patch-istio-images-$R_VERSION.patch
+git apply < ./scripts/istio/patch-istio-images-$R_VERSION.patch
+rm ./scripts/istio/patch-istio-images-$R_VERSION.patch
+
+echo "How to complete a new chart:
+  * Running this command has generated a copy of old chart and committed, then added new changes (see instructions at top)
+  * check values.yaml for any changes from last release, as we copy a static file here
+  * Update min/max version in questions.yaml
+  * Run this command again with extra arg 'validate', then fix any non-rancher image specs listed.
+  * helm template to see if there are errors
+  * Commit changes. Now there are 2 commits, one for the copy and one for the changes.
+"
