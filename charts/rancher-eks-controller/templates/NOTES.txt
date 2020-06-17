@@ -1,0 +1,4 @@
+You have deployed the Rancher EKS controller
+Version: {{ .Chart.AppVersion }}
+Description: This controller provisions EKS clusters
+from EKSClusterConfig CRs.

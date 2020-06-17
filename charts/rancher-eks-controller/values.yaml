@@ -1,0 +1,12 @@
+global:
+  systemDefaultRegistry: ""
+
+eksController:
+  image:
+    repository: rancher/eks-controller
+    tag: v0.1.0-rc2
+
+kubectl:
+  image:
+    repository: rancher/kubectl
+    tag: v1.17.0

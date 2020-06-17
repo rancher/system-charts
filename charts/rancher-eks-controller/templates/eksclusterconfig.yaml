@@ -1,0 +1,142 @@
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  name: eksclusterconfigs.ke.cattle.io
+spec:
+  group: ke.cattle.io
+  names:
+    kind: EKSClusterConfig
+    plural: eksclusterconfigs
+    shortNames:
+    - ekscc
+  scope: Namespaced
+  subresources:
+    status: {}
+  validation:
+    openAPIV3Schema:
+      properties:
+        spec:
+          anyOf:
+          - required:
+            - imported
+            - cloudCredential
+            - displayName
+          - required:
+            - publicAccess
+            - privateAccess
+            - cloudCredential
+            - displayName
+          properties:
+            cloudCredential:
+              type: string
+            displayName:
+              type: string
+            imported:
+              enum:
+              - true
+              nullable: true
+              type: boolean
+            kmsKey:
+              type: string
+            kubernetesVersion:
+              type: string
+            loggingTypes:
+              items:
+                type: string
+              nullable: true
+              type: array
+            nodeGroups:
+              items:
+                properties:
+                  desiredSize:
+                    nullable: true
+                    type: integer
+                  diskSize:
+                    nullable: true
+                    type: integer
+                  ec2SshKey:
+                    nullable: true
+                    type: string
+                  gpu:
+                    type: boolean
+                  instanceType:
+                    nullable: true
+                    type: string
+                  labels:
+                    additionalProperties:
+                      type: string
+                    nullable: true
+                    type: object
+                  maxSize:
+                    nullable: true
+                    type: integer
+                  minSize:
+                    nullable: true
+                    type: integer
+                  nodegroupName:
+                    type: string
+                  sourceSecurityGroups:
+                    items:
+                      type: string
+                    nullable: true
+                    type: array
+                  subnets:
+                    items:
+                      type: string
+                    nullable: true
+                    type: array
+                  tags:
+                    additionalProperties:
+                      type: string
+                    nullable: true
+                    type: object
+                  version:
+                    nullable: true
+                    type: string
+                type: object
+              nullable: true
+              type: array
+            privateAccess:
+              type: boolean
+            publicAccess:
+              type: boolean
+            publicAccessSources:
+              items:
+                type: string
+              nullable: true
+              type: array
+            region:
+              type: string
+            secretsEncryption:
+              type: boolean
+            securityGroups:
+              items:
+                type: string
+              nullable: true
+              type: array
+            serviceRole:
+              type: string
+            subnets:
+              items:
+                type: string
+              nullable: true
+              type: array
+            tags:
+              additionalProperties:
+                type: string
+              nullable: true
+              type: object
+            virtualNetwork:
+              type: string
+          type: object
+        status:
+          properties:
+            phase:
+              type: string
+          type: object
+      type: object
+  version: v1
+  versions:
+  - name: v1
+    served: true
+    storage: true

@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: eks-config-controller
+  namespace: cattle-system
+spec:
+  selector:
+    matchLabels:
+      ke.cattle.io/controller: eks-config-controller
+  template:
+    metadata:
+      labels:
+        ke.cattle.io/controller: eks-config-controller
+    spec:
+      serviceAccountName: eks-config
+      containers:
+      - name: eks-controller
+        image: {{ template "system_default_registry" . }}{{ .Values.eksController.image.repository }}:{{ .Values.eksController.image.tag }}
+        imagePullPolicy: IfNotPresent
+        volumeMounts:
+        - name: tmp
+          mountPath: /tmp
+      volumes:
+      - name: tmp
+        emptyDir: {}
