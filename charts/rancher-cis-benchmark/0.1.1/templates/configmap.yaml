@@ -1,0 +1,117 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    app.kubernetes.io/name: {{ include "rancher-cis-benchmark.name" . }}
+    helm.sh/chart: {{ include "rancher-cis-benchmark.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+  name: s-config-cm-{{ .Release.Name }}
+data:
+  config.json: |
+    {
+        "Description": "kube-bench plugin for CIS benchmarks",
+        "Filters": {
+            "LabelSelector": "",
+            "Namespaces": "[^\\w-.]+"
+        },
+        "PluginNamespace": "{{ .Release.Namespace }}",
+        "Plugins": [
+            {
+                "name": "rancher-kube-bench"
+            }
+        ],
+        "PluginSearchPath": [
+          "/plugins.d"
+        ],
+        "Resources": [],
+        "ResultsDir": "/tmp/sonobuoy",
+        "Server": {
+            "advertiseaddress": "{{ include "rancher-cis-benchmark.fullname" . }}",
+            "bindaddress": "0.0.0.0",
+            "bindport": 443,
+            "timeoutseconds": 5400
+        },
+        "Namespace": "{{ .Release.Namespace }}",
+        "WorkerImage": "{{ template "system_default_registry" . }}{{ .Values.image.sonobuoy.repository }}:{{ .Values.image.sonobuoy.tag }}",
+        "Version": "{{ .Values.image.sonobuoy.tag }}"
+    }
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    app.kubernetes.io/name: {{ include "rancher-cis-benchmark.name" . }}
+    helm.sh/chart: {{ include "rancher-cis-benchmark.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+  name: s-plugins-cm-{{ .Release.Name }}
+data:
+  rancher-kube-bench.yaml: |
+    podSpec:
+      containers: []
+      dnsPolicy: ClusterFirstWithHostNet
+      hostIPC: true
+      hostNetwork: true
+      hostPID: true
+      serviceAccountName: s-sa-{{ .Release.Name }}
+      {{- if .Values.sonobuoy.tolerations }}
+      tolerations:
+{{ toYaml .Values.sonobuoy.tolerations | trim | indent 6 }}
+      {{- end }}
+      volumes:
+      - hostPath:
+          path: /
+        name: root
+      - hostPath:
+          path: /etc/passwd
+        name: etc-passwd
+      - hostPath:
+          path: /etc/group
+        name: etc-group
+    sonobuoy-config:
+      driver: DaemonSet
+      plugin-name: rancher-kube-bench
+      result-type: rancher-kube-bench
+      result-format: raw
+    spec:
+      name: rancher-kube-bench
+      image: '{{ template "system_default_registry" . }}{{ .Values.image.securityScan.repository }}:{{ .Values.image.securityScan.tag }}'
+      command: ["/bin/bash", "-c", "run_sonobuoy_plugin.sh && sleep 3600"]
+      env:
+      - name: SONOBUOY_NS
+        value: {{ .Release.Namespace }}
+      - name: NODE_NAME
+        valueFrom:
+          fieldRef:
+            fieldPath: spec.nodeName
+      - name: RESULTS_DIR
+        value: /tmp/results
+      - name: CHROOT_DIR
+        value: /node
+      {{- if .Values.overrideBenchmarkVersion }}
+      - name: OVERRIDE_BENCHMARK_VERSION
+        value: {{ .Values.overrideBenchmarkVersion }}
+      {{- end }}
+      {{- if .Values.debugWorker }}
+      - name: DEBUG
+        value: "true"
+      - name: DEBUG_TIME_IN_SEC
+        value: {{ .Values.debugTime }}
+      {{- end }}
+      imagePullPolicy: Always
+      securityContext:
+        privileged: true
+      volumeMounts:
+      - mountPath: /tmp/results
+        name: results
+        readOnly: false
+      - mountPath: /node
+        name: root
+        readOnly: true
+      - mountPath: /etc/passwd
+        name: etc-passwd
+        readOnly: true
+      - mountPath: /etc/group
+        name: etc-group
+        readOnly: true
