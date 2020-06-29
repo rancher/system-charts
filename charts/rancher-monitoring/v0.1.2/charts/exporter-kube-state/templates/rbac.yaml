@@ -9,7 +9,7 @@ metadata:
     release: {{ .Release.Name }}
   name: {{ template "app.fullname" . }}
 rules:
-- apiGroups: 
+- apiGroups:
   - ""
   resources:
   - namespaces
@@ -24,50 +24,50 @@ rules:
   - endpoints
   - configmaps
   - secrets
-  verbs: 
+  verbs:
   - "list"
   - "watch"
-- apiGroups: 
+- apiGroups:
   - "extensions"
   - "apps"
   resources:
   - daemonsets
   - deployments
   - replicasets
-  verbs: 
+  verbs:
   - "list"
   - "watch"
-- apiGroups: 
+- apiGroups:
   - "apps"
   resources:
   - statefulsets
   - deployments
-  verbs: 
+  verbs:
   - "list"
   - "watch"
-- apiGroups: 
+- apiGroups:
   - "batch"
   resources:
   - cronjobs
   - jobs
-  verbs: 
+  verbs:
   - "list"
   - "watch"
-- apiGroups: 
+- apiGroups:
   - "autoscaling"
   resources:
   - horizontalpodautoscalers
-  verbs: 
+  verbs:
   - "list"
   - "watch"
 - apiGroups:
   - "policy"
   resources:
   - "poddisruptionbudgets"
-  verbs: 
+  verbs:
   - "list"
   - "watch"
-- apiGroups: 
+- apiGroups:
   - "extensions"
   - "networking.k8s.io"
   resources:
@@ -75,18 +75,18 @@ rules:
   verbs:
   - "list"
   - "watch"
-- apiGroups: 
+- apiGroups:
   - "certificates.k8s.io"
   resources:
   - certificatesigningrequests
   verbs:
   - "list"
   - "watch"
-- apiGroups: 
+- apiGroups:
   - "storage.k8s.io"
   resources:
     - storageclasses
-  verbs: 
+  verbs:
   - "list"
   - "watch"
 
@@ -100,7 +100,7 @@ metadata:
     heritage: {{ .Release.Service }}
     release: {{ .Release.Name }}
   name: {{ template "app.fullname" . }}
-imagePullSecrets: 
+imagePullSecrets:
 {{ toYaml .Values.image.pullSecrets | indent 2 }}
 
 ---
