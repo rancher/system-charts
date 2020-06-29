@@ -3,4 +3,4 @@ appVersion: 2.8.0
 description: A Helm chart for Kubernetes
 name: prometheus
 tillerVersion: '>=2.7.2'
-version: 1.5.5
+version: 1.5.6
