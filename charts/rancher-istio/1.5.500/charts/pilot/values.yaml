@@ -9,6 +9,7 @@ autoscaleMax: 5
 # replicaCount: 1
 rollingMaxSurge: 100%
 rollingMaxUnavailable: 25%
+image: pilot
 sidecar: true
 traceSampling: 1.0
 # if protocol sniffing is enabled for outbound

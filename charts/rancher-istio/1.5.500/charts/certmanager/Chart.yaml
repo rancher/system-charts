@@ -3,4 +3,4 @@ appVersion: 0.6.2
 description: A Helm chart for Kubernetes
 name: certmanager
 tillerVersion: '>=2.7.2'
-version: 1.4.9
+version: 1.5.5

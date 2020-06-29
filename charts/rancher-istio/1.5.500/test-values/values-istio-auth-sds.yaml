@@ -17,8 +17,7 @@ global:
 
 nodeagent:
   enabled: true
-  repository: rancher/istio-node-agent-k8s
-  tag: 1.4.9
+  image: node-agent-k8s
   env:
     CA_PROVIDER: "Citadel"
     CA_ADDR: "istio-citadel:8060"

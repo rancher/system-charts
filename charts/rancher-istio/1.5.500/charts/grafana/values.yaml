@@ -3,6 +3,9 @@
 #
 enabled: false
 replicaCount: 1
+image:
+  repository: grafana/grafana
+  tag: 6.4.3
 ingress:
   enabled: false
   ## Used to create an Ingress record.

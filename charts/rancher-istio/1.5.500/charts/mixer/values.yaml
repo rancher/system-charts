@@ -1,6 +1,7 @@
 #
 # mixer configuration
 #
+image: mixer
 
 env:
   # max procs should be ceil(cpu limit + 1)

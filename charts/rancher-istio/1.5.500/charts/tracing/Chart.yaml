@@ -3,4 +3,4 @@ appVersion: 1.5.1
 description: A Helm chart for Kubernetes
 name: tracing
 tillerVersion: '>=2.7.2'
-version: 1.4.9
+version: 1.5.5
