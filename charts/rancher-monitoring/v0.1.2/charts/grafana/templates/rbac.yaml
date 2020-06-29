@@ -1,0 +1,13 @@
+{{- if and .Values.enabledRBAC (not .Values.serviceAccountName) }}
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    app: {{ template "app.name" . }}
+    chart: {{ template "app.version" . }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+  name: {{ template "app.fullname" . }}
+imagePullSecrets: 
+{{ toYaml .Values.image.pullSecrets | indent 2 }}
+{{- end }}
