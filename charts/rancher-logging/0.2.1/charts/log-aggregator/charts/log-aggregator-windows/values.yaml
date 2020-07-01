@@ -1,0 +1,27 @@
+nameOverride: log-aggregator
+
+labels: {}
+## Log Aggregator container image
+##
+image:
+  repository: rancher/log-aggregator
+  tag: v0.1.6
+
+nodeSelector: {}
+
+# updateStrategy:
+#   type: RollingUpdate
+
+tolerations:
+  - effect: NoSchedule
+    operator: Exists
+
+## Resource limits & requests
+## Ref: https://kubernetes.io/docs/user-guide/compute-resources/
+##
+resources: {}
+  # requests:
+  #   memory: 400Mi
+
+## flexvolume dir
+flexVolumeDir: C:/var/lib/kubelet/volumeplugins
