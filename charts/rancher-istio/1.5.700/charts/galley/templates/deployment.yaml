@@ -41,7 +41,7 @@ spec:
           image: "{{ template "system_default_registry" . }}{{ .Values.repository }}:{{ .Values.tag }}"
           imagePullPolicy: {{ .Values.global.imagePullPolicy }}
           ports:
-          - containerPort: 443
+          - containerPort: 9443
           - containerPort: {{ .Values.global.monitoringPort }}
           - containerPort: 9901
           command:
@@ -49,8 +49,8 @@ spec:
           - server
           - --meshConfigFile=/etc/mesh-config/mesh
           - --livenessProbeInterval=1s
-          - --livenessProbePath=/healthliveness
-          - --readinessProbePath=/healthready
+          - --livenessProbePath=/tmp/healthliveness
+          - --readinessProbePath=/tmp/healthready
           - --readinessProbeInterval=1s
           - --deployment-namespace={{ .Release.Namespace }}
 {{- if $.Values.global.controlPlaneSecurityEnabled}}
@@ -72,8 +72,6 @@ spec:
 {{- else }}
           - --enable-reconcileWebhookConfiguration=true
 {{- end }}
-          - --validation-webhook-config-file
-          - /etc/config/validatingwebhookconfiguration.yaml
           - --monitoringPort={{ .Values.global.monitoringPort }}
 {{- if $.Values.global.logging.level }}
           - --log_output_level={{ $.Values.global.logging.level }}
@@ -106,7 +104,7 @@ spec:
               command:
                 - /usr/local/bin/galley
                 - probe
-                - --probe-path=/healthliveness
+                - --probe-path=/tmp/healthliveness
                 - --interval=10s
             initialDelaySeconds: 5
             periodSeconds: 5
@@ -115,7 +113,7 @@ spec:
               command:
                 - /usr/local/bin/galley
                 - probe
-                - --probe-path=/healthready
+                - --probe-path=/tmp/healthready
                 - --interval=10s
             initialDelaySeconds: 5
             periodSeconds: 5
@@ -134,9 +132,10 @@ spec:
         secret:
           secretName: dns.istio-galley-service-account
 {{- end }}
+      # galley expects /etc/config to exist even though it doesn't include any files.
       - name: config
-        configMap:
-          name: istio-galley-configuration
+        emptyDir:
+          medium: Memory
       - name: mesh-config
         configMap:
           name: istio
