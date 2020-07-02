@@ -1,0 +1,452 @@
+diff --git a/charts/rancher-istio/tagreplace/charts/certmanager/templates/deployment.yaml b/charts/rancher-istio/tagreplace/charts/certmanager/templates/deployment.yaml
+index 48e4731..3232286 100755
+--- a/charts/rancher-istio/tagreplace/charts/certmanager/templates/deployment.yaml
++++ b/charts/rancher-istio/tagreplace/charts/certmanager/templates/deployment.yaml
+@@ -35,7 +35,7 @@ spec:
+ {{- end }}
+       containers:
+       - name: certmanager
+-        image: "{{ .Values.hub }}/{{ .Values.image }}:{{ .Values.tag }}"
++        image: "{{ template "system_default_registry" . }}{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+         imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+         args:
+         - --cluster-resource-namespace=$(POD_NAMESPACE)
+diff --git a/charts/rancher-istio/tagreplace/charts/galley/templates/deployment.yaml b/charts/rancher-istio/tagreplace/charts/galley/templates/deployment.yaml
+index ca54a6c..1110c9b 100755
+--- a/charts/rancher-istio/tagreplace/charts/galley/templates/deployment.yaml
++++ b/charts/rancher-istio/tagreplace/charts/galley/templates/deployment.yaml
+@@ -38,11 +38,7 @@ spec:
+ {{- end }}
+       containers:
+         - name: galley
+-{{- if contains "/" .Values.image }}
+-          image: "{{ .Values.image }}"
+-{{- else }}
+-          image: "{{ .Values.global.hub }}/{{ .Values.image }}:{{ .Values.global.tag }}"
+-{{- end }}
++          image: "{{ template "system_default_registry" . }}{{ .Values.repository }}:{{ .Values.tag }}"
+           imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+           ports:
+           - containerPort: 9443
+diff --git a/charts/rancher-istio/tagreplace/charts/gateways/templates/deployment.yaml b/charts/rancher-istio/tagreplace/charts/gateways/templates/deployment.yaml
+index 0225027..bb1b755 100755
+--- a/charts/rancher-istio/tagreplace/charts/gateways/templates/deployment.yaml
++++ b/charts/rancher-istio/tagreplace/charts/gateways/templates/deployment.yaml
+@@ -58,11 +58,7 @@ spec:
+ {{- if $spec.sds }}
+ {{- if $spec.sds.enabled }}
+         - name: ingress-sds
+-{{- if contains "/" $spec.sds.image }}
+-          image: "{{ $spec.sds.image }}"
+-{{- else }}
+-          image: "{{ $.Values.global.hub }}/{{ $spec.sds.image }}:{{ $.Values.global.tag }}"
+-{{- end }}
++          image: "{{ template "system_default_registry" $ }}{{ $.Values.global.nodeagent.repository }}:{{ $.Values.global.nodeagent.tag }}"
+           imagePullPolicy: {{ $.Values.global.imagePullPolicy }}
+           resources:
+ {{- if $spec.sds.resources }}
+@@ -86,11 +82,7 @@ spec:
+ {{- end }}
+ {{- end }}
+         - name: istio-proxy
+-{{- if contains "/" $.Values.global.proxy.image }}
+-          image: "{{ $.Values.global.proxy.image }}"
+-{{- else }}
+-          image: "{{ $.Values.global.hub }}/{{ $.Values.global.proxy.image }}:{{ $.Values.global.tag }}"
+-{{- end }}
++          image: "{{ template "system_default_registry" $ }}{{ $.Values.global.proxy.repository }}:{{ $.Values.global.proxy.tag }}"
+           imagePullPolicy: {{ $.Values.global.imagePullPolicy }}
+           ports:
+             {{- range $key, $val := $spec.ports }}
+diff --git a/charts/rancher-istio/tagreplace/charts/grafana/templates/create-custom-resources-job.yaml b/charts/rancher-istio/tagreplace/charts/grafana/templates/create-custom-resources-job.yaml
+index 50de864..64bf3e4 100755
+--- a/charts/rancher-istio/tagreplace/charts/grafana/templates/create-custom-resources-job.yaml
++++ b/charts/rancher-istio/tagreplace/charts/grafana/templates/create-custom-resources-job.yaml
+@@ -81,7 +81,7 @@ spec:
+       serviceAccountName: istio-grafana-post-install-account
+       containers:
+         - name: kubectl
+-          image: "{{ .Values.global.hub }}/kubectl:{{ .Values.global.tag }}"
++          image: "{{ template "system_default_registry" . }}{{ .Values.global.kubectl.repository }}:{{ .Values.global.kubectl.tag }}"
+           command: [ "/bin/bash", "/tmp/grafana/run.sh", "/tmp/grafana/custom-resources.yaml" ]
+           volumeMounts:
+             - mountPath: "/tmp/grafana"
+diff --git a/charts/rancher-istio/tagreplace/charts/grafana/templates/deployment.yaml b/charts/rancher-istio/tagreplace/charts/grafana/templates/deployment.yaml
+index ba3037e..9ad2a7f 100755
+--- a/charts/rancher-istio/tagreplace/charts/grafana/templates/deployment.yaml
++++ b/charts/rancher-istio/tagreplace/charts/grafana/templates/deployment.yaml
+@@ -38,7 +38,7 @@ spec:
+ {{- end }}
+       containers:
+         - name: {{ .Chart.Name }}
+-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
++          image: "{{ template "system_default_registry" . }}{{ .Values.repository }}:{{ .Values.tag }}"
+           imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+           ports:
+           - containerPort: 3000
+diff --git a/charts/rancher-istio/tagreplace/charts/grafana/templates/tests/test-grafana-connection.yaml b/charts/rancher-istio/tagreplace/charts/grafana/templates/tests/test-grafana-connection.yaml
+index e9268c4..7c8d194 100755
+--- a/charts/rancher-istio/tagreplace/charts/grafana/templates/tests/test-grafana-connection.yaml
++++ b/charts/rancher-istio/tagreplace/charts/grafana/templates/tests/test-grafana-connection.yaml
+@@ -19,7 +19,7 @@ spec:
+ {{- end }}
+   containers:
+     - name: "{{ template "grafana.fullname" . }}-test"
+-      image: pstauffer/curl:v1.0.3
++      image: "{{ template "system_default_registry" . }}{{ .Values.global.curl.repository }}:{{ .Values.global.curl.tag }}"
+       imagePullPolicy: "{{ .Values.global.imagePullPolicy }}"
+       command: ['curl']
+       args: ['http://grafana:{{ .Values.grafana.service.externalPort }}']
+diff --git a/charts/rancher-istio/tagreplace/charts/istiocoredns/templates/deployment.yaml b/charts/rancher-istio/tagreplace/charts/istiocoredns/templates/deployment.yaml
+index d5e0879..4af0a22 100755
+--- a/charts/rancher-istio/tagreplace/charts/istiocoredns/templates/deployment.yaml
++++ b/charts/rancher-istio/tagreplace/charts/istiocoredns/templates/deployment.yaml
+@@ -37,7 +37,7 @@ spec:
+ {{- end }}
+       containers:
+       - name: coredns
+-        image: {{ .Values.coreDNSImage }}:{{ .Values.coreDNSTag }}
++        image: "{{ template "system_default_registry" . }}{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+         imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+         args: [ "-conf", "/etc/coredns/Corefile" ]
+         volumeMounts:
+@@ -71,7 +71,7 @@ spec:
+       - name: istio-coredns-plugin
+         command:
+         - /usr/local/bin/plugin
+-        image: {{ .Values.coreDNSPluginImage }}
++        image: "{{ template "system_default_registry" . }}{{ .Values.pluginImage.repository }}:{{ .Values.pluginImage.tag }}"
+         imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+         ports:
+         - containerPort: 8053
+diff --git a/charts/rancher-istio/tagreplace/charts/kiali/templates/deployment.yaml b/charts/rancher-istio/tagreplace/charts/kiali/templates/deployment.yaml
+index 49a7315..d0624ef 100755
+--- a/charts/rancher-istio/tagreplace/charts/kiali/templates/deployment.yaml
++++ b/charts/rancher-istio/tagreplace/charts/kiali/templates/deployment.yaml
+@@ -36,7 +36,7 @@ spec:
+       priorityClassName: "{{ .Values.global.priorityClassName }}"
+ {{- end }}
+       containers:
+-      - image: "{{ .Values.hub }}/{{ .Values.image }}:{{ .Values.tag }}"
++      - image: "{{ template "system_default_registry" . }}{{ .Values.repository }}:{{ .Values.tag }}"
+         imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+         name: kiali
+         command:
+diff --git a/charts/rancher-istio/tagreplace/charts/kiali/templates/tests/test-kiali-connection.yaml b/charts/rancher-istio/tagreplace/charts/kiali/templates/tests/test-kiali-connection.yaml
+index d798f7f..e2a1ff6 100755
+--- a/charts/rancher-istio/tagreplace/charts/kiali/templates/tests/test-kiali-connection.yaml
++++ b/charts/rancher-istio/tagreplace/charts/kiali/templates/tests/test-kiali-connection.yaml
+@@ -19,7 +19,7 @@ spec:
+ {{- end }}
+   containers:
+     - name: "{{ template "kiali.fullname" . }}-test"
+-      image: pstauffer/curl:v1.0.3
++      image: "{{ template "system_default_registry" . }}{{ .Values.global.curl.repository }}:{{ .Values.global.curl.tag }}"
+       imagePullPolicy: "{{ .Values.global.imagePullPolicy }}"
+       command: ['curl']
+       args: ['http://kiali:20001']
+diff --git a/charts/rancher-istio/tagreplace/charts/mixer/templates/deployment.yaml b/charts/rancher-istio/tagreplace/charts/mixer/templates/deployment.yaml
+index b7a4088..5b7dc3a 100755
+--- a/charts/rancher-istio/tagreplace/charts/mixer/templates/deployment.yaml
++++ b/charts/rancher-istio/tagreplace/charts/mixer/templates/deployment.yaml
+@@ -39,11 +39,7 @@
+       {{- end }}
+       containers:
+       - name: mixer
+-{{- if contains "/" .Values.image }}
+-        image: "{{ .Values.image }}"
+-{{- else }}
+-        image: "{{ $.Values.global.hub }}/{{ $.Values.image }}:{{ $.Values.global.tag }}"
+-{{- end }}
++        image: "{{ template "system_default_registry" . }}{{ $.Values.repository }}:{{ $.Values.tag }}"
+         imagePullPolicy: {{ $.Values.global.imagePullPolicy }}
+         ports:
+         - containerPort: {{ .Values.global.monitoringPort }}
+@@ -111,11 +107,7 @@
+           initialDelaySeconds: 5
+           periodSeconds: 5
+       - name: istio-proxy
+-{{- if contains "/" $.Values.global.proxy.image }}
+-        image: "{{ $.Values.global.proxy.image }}"
+-{{- else }}
+-        image: "{{ $.Values.global.hub }}/{{ $.Values.global.proxy.image }}:{{ $.Values.global.tag }}"
+-{{- end }}
++        image: "{{ template "system_default_registry" . }}{{ $.Values.global.proxy.repository }}:{{ $.Values.global.proxy.tag }}"
+         imagePullPolicy: {{ $.Values.global.imagePullPolicy }}
+         ports:
+         - containerPort: 9091
+@@ -233,11 +225,7 @@
+       {{- end }}
+       containers:
+       - name: mixer
+-{{- if contains "/" .Values.image }}
+-        image: "{{ .Values.image }}"
+-{{- else }}
+-        image: "{{ $.Values.global.hub }}/{{ $.Values.image }}:{{ $.Values.global.tag }}"
+-{{- end }}
++        image: "{{ template "system_default_registry" . }}{{ $.Values.repository }}:{{ $.Values.tag }}"
+         imagePullPolicy: {{ $.Values.global.imagePullPolicy }}
+         ports:
+         - containerPort: {{ .Values.global.monitoringPort }}
+@@ -315,11 +303,7 @@
+           initialDelaySeconds: 5
+           periodSeconds: 5
+       - name: istio-proxy
+-{{- if contains "/" $.Values.global.proxy.image }}
+-        image: "{{ $.Values.global.proxy.image }}"
+-{{- else }}
+-        image: "{{ $.Values.global.hub }}/{{ $.Values.global.proxy.image }}:{{ $.Values.global.tag }}"
+-{{- end }}
++        image: "{{ template "system_default_registry" . }}{{ $.Values.global.proxy.repository }}:{{ $.Values.global.proxy.tag }}"
+         imagePullPolicy: {{ $.Values.global.imagePullPolicy }}
+         ports:
+         - containerPort: 9091
+diff --git a/charts/rancher-istio/tagreplace/charts/nodeagent/templates/daemonset.yaml b/charts/rancher-istio/tagreplace/charts/nodeagent/templates/daemonset.yaml
+index 58f1efb..a4d2463 100755
+--- a/charts/rancher-istio/tagreplace/charts/nodeagent/templates/daemonset.yaml
++++ b/charts/rancher-istio/tagreplace/charts/nodeagent/templates/daemonset.yaml
+@@ -30,11 +30,7 @@ spec:
+ {{- end }}
+       containers:
+       - name: nodeagent
+-{{- if contains "/" .Values.image }}
+-        image: "{{ .Values.image }}"
+-{{- else }}
+-        image: "{{ .Values.global.hub }}/{{ .Values.image }}:{{ .Values.global.tag }}"
+-{{- end }}
++        image: "{{ template "system_default_registry" . }}{{ $.Values.global.nodeagent.repository }}:{{ $.Values.global.nodeagent.tag }}"
+         imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+         volumeMounts:
+         - mountPath: /var/run/sds
+diff --git a/charts/rancher-istio/tagreplace/charts/pilot/templates/deployment.yaml b/charts/rancher-istio/tagreplace/charts/pilot/templates/deployment.yaml
+index 093bc06..7e7cd2b 100755
+--- a/charts/rancher-istio/tagreplace/charts/pilot/templates/deployment.yaml
++++ b/charts/rancher-istio/tagreplace/charts/pilot/templates/deployment.yaml
+@@ -45,11 +45,7 @@ spec:
+ {{- end }}
+       containers:
+         - name: discovery
+-{{- if contains "/" .Values.image }}
+-          image: "{{ .Values.image }}"
+-{{- else }}
+-          image: "{{ .Values.global.hub }}/{{ .Values.image }}:{{ .Values.global.tag }}"
+-{{- end }}
++          image: "{{ template "system_default_registry" . }}{{ .Values.repository }}:{{ .Values.tag }}"
+           imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+           args:
+           - "discovery"
+@@ -131,11 +127,7 @@ spec:
+ {{- end }}
+ {{- if .Values.sidecar }}
+         - name: istio-proxy
+-{{- if contains "/" .Values.global.proxy.image }}
+-          image: "{{ .Values.global.proxy.image }}"
+-{{- else }}
+-          image: "{{ .Values.global.hub }}/{{ .Values.global.proxy.image }}:{{ .Values.global.tag }}"
+-{{- end }}
++          image: "{{ template "system_default_registry" . }}{{ .Values.global.proxy.repository }}:{{ .Values.global.proxy.tag }}"
+           imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+           ports:
+           - containerPort: 15003
+diff --git a/charts/rancher-istio/tagreplace/charts/prometheus/templates/deployment.yaml b/charts/rancher-istio/tagreplace/charts/prometheus/templates/deployment.yaml
+index 64214e0..1033a2f 100755
+--- a/charts/rancher-istio/tagreplace/charts/prometheus/templates/deployment.yaml
++++ b/charts/rancher-istio/tagreplace/charts/prometheus/templates/deployment.yaml
+@@ -30,7 +30,7 @@ spec:
+ {{- end }}
+       containers:
+         - name: prometheus
+-          image: "{{ .Values.hub }}/{{ .Values.image }}:{{ .Values.tag }}"
++          image: "{{ template "system_default_registry" . }}{{ .Values.repository }}:{{ .Values.tag }}"
+           imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+           args:
+             - '--storage.tsdb.retention={{ .Values.retention }}'
+diff --git a/charts/rancher-istio/tagreplace/charts/prometheus/templates/tests/test-prometheus-connection.yaml b/charts/rancher-istio/tagreplace/charts/prometheus/templates/tests/test-prometheus-connection.yaml
+index 45b025e..c36ce3f 100755
+--- a/charts/rancher-istio/tagreplace/charts/prometheus/templates/tests/test-prometheus-connection.yaml
++++ b/charts/rancher-istio/tagreplace/charts/prometheus/templates/tests/test-prometheus-connection.yaml
+@@ -19,7 +19,7 @@ spec:
+ {{- end }}
+   containers:
+     - name: "{{ template "prometheus.fullname" . }}-test"
+-      image: pstauffer/curl:v1.0.3
++      image: {{ template "system_default_registry" . }}{{ .Values.global.curl.repository }}:{{ .Values.global.curl.tag }}
+       imagePullPolicy: "{{ .Values.global.imagePullPolicy }}"
+       command: ['sh', '-c', 'for i in 1 2 3; do curl http://prometheus:9090/-/ready && exit 0 || sleep 15; done; exit 1']
+   restartPolicy: Never
+diff --git a/charts/rancher-istio/tagreplace/charts/security/templates/create-custom-resources-job.yaml b/charts/rancher-istio/tagreplace/charts/security/templates/create-custom-resources-job.yaml
+index 033bb16..61e1156 100755
+--- a/charts/rancher-istio/tagreplace/charts/security/templates/create-custom-resources-job.yaml
++++ b/charts/rancher-istio/tagreplace/charts/security/templates/create-custom-resources-job.yaml
+@@ -85,7 +85,7 @@ spec:
+       serviceAccountName: istio-security-post-install-account
+       containers:
+         - name: kubectl
+-          image: "{{ .Values.global.hub }}/istio-kubectl:{{ .Values.global.tag }}"
++          image: "{{ template "system_default_registry" . }}{{ .Values.global.kubectl.repository }}:{{ .Values.global.kubectl.tag }}"
+           imagePullPolicy: IfNotPresent
+           command: [ "/bin/bash", "/tmp/security/run.sh", "/tmp/security/custom-resources.yaml" ]
+           volumeMounts:
+diff --git a/charts/rancher-istio/tagreplace/charts/security/templates/deployment.yaml b/charts/rancher-istio/tagreplace/charts/security/templates/deployment.yaml
+index 2b3c8fe..81d0c6b 100755
+--- a/charts/rancher-istio/tagreplace/charts/security/templates/deployment.yaml
++++ b/charts/rancher-istio/tagreplace/charts/security/templates/deployment.yaml
+@@ -39,11 +39,7 @@ spec:
+ {{- end }}
+       containers:
+         - name: citadel
+-{{- if contains "/" .Values.image }}
+-          image: "{{ .Values.image }}"
+-{{- else }}
+-          image: "{{ .Values.global.hub }}/{{ .Values.image }}:{{ .Values.global.tag }}"
+-{{- end }}
++          image: "{{ template "system_default_registry" . }}{{ .Values.repository }}:{{ .Values.tag }}"
+           imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+           args:
+           {{- if .Values.global.sds.enabled }}
+diff --git a/charts/rancher-istio/tagreplace/charts/security/templates/tests/test-citadel-connection.yaml b/charts/rancher-istio/tagreplace/charts/security/templates/tests/test-citadel-connection.yaml
+index 6fc742a..481b486 100755
+--- a/charts/rancher-istio/tagreplace/charts/security/templates/tests/test-citadel-connection.yaml
++++ b/charts/rancher-istio/tagreplace/charts/security/templates/tests/test-citadel-connection.yaml
+@@ -19,7 +19,7 @@ spec:
+ {{- end }}
+   containers:
+     - name: "{{ template "security.fullname" . }}-test"
+-      image: pstauffer/curl:v1.0.3
++      image: "{{ template "system_default_registry" . }}{{ .Values.global.curl.repository }}:{{ .Values.global.curl.tag }}"
+       imagePullPolicy: "{{ .Values.global.imagePullPolicy }}"
+       command: ['sh', '-c', 'for i in 1 2 3; do curl http://istio-citadel:{{ .Values.global.monitoringPort }}/version && exit 0 || sleep 15; done; exit 1']
+   restartPolicy: Never
+diff --git a/charts/rancher-istio/tagreplace/charts/sidecarInjectorWebhook/templates/deployment.yaml b/charts/rancher-istio/tagreplace/charts/sidecarInjectorWebhook/templates/deployment.yaml
+index 26ca347..b0ddf13 100755
+--- a/charts/rancher-istio/tagreplace/charts/sidecarInjectorWebhook/templates/deployment.yaml
++++ b/charts/rancher-istio/tagreplace/charts/sidecarInjectorWebhook/templates/deployment.yaml
+@@ -38,11 +38,7 @@ spec:
+ {{- end }}
+       containers:
+         - name: sidecar-injector-webhook
+-{{- if contains "/" .Values.image }}
+-          image: "{{ .Values.image }}"
+-{{- else }}
+-          image: "{{ .Values.global.hub }}/{{ .Values.image }}:{{ .Values.global.tag }}"
+-{{- end }}
++          image: "{{ template "system_default_registry" . }}{{ .Values.repository }}:{{ .Values.tag }}"
+           imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+           args:
+             - --caCertFile=/etc/istio/certs/root-cert.pem
+diff --git a/charts/rancher-istio/tagreplace/charts/tracing/templates/deployment-jaeger.yaml b/charts/rancher-istio/tagreplace/charts/tracing/templates/deployment-jaeger.yaml
+index 916c25c..da54eeb 100755
+--- a/charts/rancher-istio/tagreplace/charts/tracing/templates/deployment-jaeger.yaml
++++ b/charts/rancher-istio/tagreplace/charts/tracing/templates/deployment-jaeger.yaml
+@@ -40,7 +40,7 @@ spec:
+ {{- end }}
+       containers:
+         - name: jaeger
+-          image: "{{ .Values.jaeger.hub }}/{{ .Values.jaeger.image }}:{{ .Values.jaeger.tag }}"
++          image: "{{ template "system_default_registry" . }}{{ .Values.jaeger.repository }}:{{ .Values.jaeger.tag }}"
+           imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+           ports:
+             - containerPort: 9411
+diff --git a/charts/rancher-istio/tagreplace/charts/tracing/templates/deployment-zipkin.yaml b/charts/rancher-istio/tagreplace/charts/tracing/templates/deployment-zipkin.yaml
+index da779bf..eef24fc 100755
+--- a/charts/rancher-istio/tagreplace/charts/tracing/templates/deployment-zipkin.yaml
++++ b/charts/rancher-istio/tagreplace/charts/tracing/templates/deployment-zipkin.yaml
+@@ -39,7 +39,7 @@ spec:
+ {{- end }}
+       containers:
+         - name: zipkin
+-          image: "{{ .Values.zipkin.hub }}/{{ .Values.zipkin.image }}:{{ .Values.zipkin.tag }}"
++          image: "{{ template "system_default_registry" . }}{{ .Values.zipkin.repository }}:{{ .Values.zipkin.tag }}"
+           imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+           ports:
+             - containerPort: {{ .Values.zipkin.queryPort }}
+diff --git a/charts/rancher-istio/tagreplace/charts/tracing/templates/tests/test-tracing-connection.yaml b/charts/rancher-istio/tagreplace/charts/tracing/templates/tests/test-tracing-connection.yaml
+index b87f487..64248e8 100755
+--- a/charts/rancher-istio/tagreplace/charts/tracing/templates/tests/test-tracing-connection.yaml
++++ b/charts/rancher-istio/tagreplace/charts/tracing/templates/tests/test-tracing-connection.yaml
+@@ -18,7 +18,7 @@ spec:
+ {{- end }}
+   containers:
+     - name: "{{ .Values.provider }}-test"
+-      image: pstauffer/curl:v1.0.3
++      image: "{{ template "system_default_registry" . }}{{ .Values.global.curl.repository }}:{{ .Values.global.curl.tag }}"
+       imagePullPolicy: "{{ .Values.global.imagePullPolicy }}"
+       command: ['curl']
+       {{- if eq .Values.provider "jaeger" }}
+diff --git a/charts/rancher-istio/tagreplace/files/injection-template.yaml b/charts/rancher-istio/tagreplace/files/injection-template.yaml
+index d085989..795edc1 100755
+--- a/charts/rancher-istio/tagreplace/files/injection-template.yaml
++++ b/charts/rancher-istio/tagreplace/files/injection-template.yaml
+@@ -6,10 +6,10 @@ initContainers:
+ {{ else -}}
+ - name: istio-init
+ {{ end -}}
+-{{- if contains "/" .Values.global.proxy_init.image }}
+-  image: "{{ .Values.global.proxy_init.image }}"
++{{- if .Values.global.systemDefaultRegistry }}
++  image: "{{ .Values.global.systemDefaultRegistry }}/{{ .Values.global.proxy_init.repository }}:{{ .Values.global.proxy_init.tag }}"
+ {{- else }}
+-  image: "{{ .Values.global.hub }}/{{ .Values.global.proxy_init.image }}:{{ .Values.global.tag }}"
++  image: "{{ .Values.global.proxy_init.repository }}:{{ .Values.global.proxy_init.tag }}"
+ {{- end }}
+   command:
+   - istio-iptables
+@@ -79,7 +79,11 @@ initContainers:
+   - sysctl -w kernel.core_pattern=/var/lib/istio/core.proxy && ulimit -c unlimited
+   command:
+     - /bin/sh
+-  image: {{ $.Values.global.proxy.enableCoreDumpImage }}
++  {{- if .Values.global.systemDefaultRegistry }}
++  image: "{{ .Values.global.systemDefaultRegistry }}/{{ .Values.global.proxy.enableCoreDumpImage }}"
++  {{- else }}
++  image: "{{ .Values.global.proxy.enableCoreDumpImage }}"
++  {{- end }}
+   imagePullPolicy: IfNotPresent
+   resources: {}
+   securityContext:
+@@ -97,10 +101,14 @@ initContainers:
+ {{ end }}
+ containers:
+ - name: istio-proxy
+-{{- if contains "/" (annotation .ObjectMeta `sidecar.istio.io/proxyImage` .Values.global.proxy.image) }}
++{{- if contains "/" (annotation .ObjectMeta `sidecar.istio.io/proxyImage` "") }} # if custom pod then use that
+   image: "{{ annotation .ObjectMeta `sidecar.istio.io/proxyImage` .Values.global.proxy.image }}"
+ {{- else }}
+-  image: "{{ annotation .ObjectMeta `sidecar.istio.io/proxyImage` .Values.global.hub }}/{{ .Values.global.proxy.image }}:{{ .Values.global.tag }}"
++  {{- if .Values.global.systemDefaultRegistry }}
++  image: "{{ .Values.global.systemDefaultRegistry }}/{{ .Values.global.proxy.repository }}:{{ .Values.global.proxy.tag }}"
++  {{- else }}
++  image: "{{ .Values.global.proxy.repository }}:{{ .Values.global.proxy.tag }}"
++  {{- end }}
+ {{- end }}
+   ports:
+   - containerPort: 15090
+diff --git a/charts/rancher-istio/tagreplace/values.yaml b/charts/rancher-istio/tagreplace/values.yaml
+index 5e50f52..9682361 100755
+--- a/charts/rancher-istio/tagreplace/values.yaml
++++ b/charts/rancher-istio/tagreplace/values.yaml
+@@ -15,7 +15,7 @@ gateways:
+   enabled: true
+   istio-ingressgateway:
+     labels:
+-      release: cluster-istio
++      release: cluster-istio # The release name must be cluster-istio
+ 
+ #
+ # sidecar-injector webhook configuration, refer to the
+diff --git a/charts/rancher-istio/tagreplace/charts/certmanager/values.yaml b/charts/rancher-istio/tagreplace/charts/certmanager/values.yaml
+index 01e565c..2dbff4b 100755
+--- a/charts/rancher-istio/tagreplace/charts/certmanager/values.yaml
++++ b/charts/rancher-istio/tagreplace/charts/certmanager/values.yaml
+@@ -6,7 +6,7 @@
+ enabled: false
+ replicaCount: 1
+ hub: quay.io/jetstack
+-image: cert-manager-controller
++# image: cert-manager-controller
+ tag: v0.8.1
+ resources: {}
+ nodeSelector: {}
+-- 
+2.23.0
+
