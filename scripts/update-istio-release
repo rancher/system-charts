@@ -83,7 +83,7 @@ done
 rm -r charts/rancher-istio/$R_VERSION/charts/istio-init
 
 # Add question.yaml, make need to update minimum rancher version
-RANCHER_MIN_VERSION="2.3.4-rc1"
+RANCHER_MIN_VERSION="2.4.5-rc1"
 echo "Current rancher min version is set to $RANCHER_MIN_VERSION"
 
 cat > charts/rancher-istio/$R_VERSION/questions.yaml << EOF

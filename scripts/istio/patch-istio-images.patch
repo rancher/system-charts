@@ -434,6 +434,20 @@ index 5e50f52..9682361 100755
  
  #
  # sidecar-injector webhook configuration, refer to the
+diff --git a/charts/rancher-istio/tagreplace/charts/grafana/values.yaml b/charts/rancher-istio/tagreplace/charts/grafana/values.yaml
+index 2c272bf..7b977c1 100755
+--- a/charts/rancher-istio/tagreplace/charts/grafana/values.yaml
++++ b/charts/rancher-istio/tagreplace/charts/grafana/values.yaml
+@@ -3,9 +3,6 @@
+ #
+ enabled: false
+ replicaCount: 1
+-image:
+-  repository: grafana/grafana
+-  tag: 6.4.3
+ ingress:
+   enabled: false
+   ## Used to create an Ingress record.
 diff --git a/charts/rancher-istio/tagreplace/charts/certmanager/values.yaml b/charts/rancher-istio/tagreplace/charts/certmanager/values.yaml
 index 01e565c..2dbff4b 100755
 --- a/charts/rancher-istio/tagreplace/charts/certmanager/values.yaml
