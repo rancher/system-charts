@@ -75,8 +75,9 @@ nodeagent:
 # addon grafana configuration
 #
 grafana:
+  # note that this does not get used by default, instead we use monitorings grafana
   repository: rancher/grafana-grafana
-  tag: 6.3.6
+  tag: 6.7.4
   enabled: false
 
 #
@@ -149,7 +150,7 @@ istiocoredns:
 onefiveMigration:
   enabled: true
   repository: rancher/istio-1.5-migration
-  tag: 0.1.0
+  tag: 0.1.1
 
 # Common settings used among istio subcharts.
 global:
