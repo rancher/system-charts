@@ -186,7 +186,9 @@ data:
     - address: istio-galley.{{ $.Release.Namespace }}.svc:9901
       {{- if .Values.pilot.configSource.subscribedResources }}
       subscribedResources:
-        - {{ .Values.pilot.configSource.subscribedResources }}
+        {{- range .Values.pilot.configSource.subscribedResources }}
+        - {{ . }}
+        {{- end }}
       {{- end}}
     {{- if $.Values.global.controlPlaneSecurityEnabled}}
       tlsSettings:
@@ -245,8 +247,10 @@ data:
           accessToken: {{ .Values.global.tracer.lightstep.accessToken }}
           # Whether communication with the Satellite pool should be secure
           secure: {{ .Values.global.tracer.lightstep.secure }}
+          {{- if .Values.global.tracer.lightstep.secure }}
           # Path to the file containing the cacert to use when verifying TLS
           cacertPath: {{ .Values.global.tracer.lightstep.cacertPath }}
+          {{- end }}
       {{- else if eq .Values.global.proxy.tracer "zipkin" }}
       tracing:
         zipkin:
@@ -312,7 +316,7 @@ data:
       controlPlaneAuthPolicy: MUTUAL_TLS
       #
       # Address where istio Pilot service is running
-      {{- if or .Values.global.remotePilotCreateSvcEndpoint .Values.global.createRemoteSvcEndpoints }}
+      {{- if .Values.global.remotePilotAddress }}
       discoveryAddress: {{ $defPilotHostname }}:15011
       {{- else }}
       discoveryAddress: {{ $pilotAddress }}:15011
@@ -323,7 +327,7 @@ data:
       controlPlaneAuthPolicy: NONE
       #
       # Address where istio Pilot service is running
-      {{- if or .Values.global.remotePilotCreateSvcEndpoint .Values.global.createRemoteSvcEndpoints }}
+      {{- if .Values.global.remotePilotAddress }}
       discoveryAddress: {{ $defPilotHostname }}:15010
       {{- else }}
       discoveryAddress: {{ $pilotAddress }}:15010

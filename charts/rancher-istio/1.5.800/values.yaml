@@ -15,7 +15,7 @@ gateways:
   enabled: true
   istio-ingressgateway:
     labels:
-      release: cluster-istio
+      release: cluster-istio # The release name must be cluster-istio
 
 #
 # sidecar-injector webhook configuration, refer to the
@@ -23,7 +23,7 @@ gateways:
 #
 sidecarInjectorWebhook:
   repository: rancher/istio-sidecar_injector
-  tag: 1.4.10
+  tag: 1.5.8
   enabled: true
 
 #
@@ -32,7 +32,7 @@ sidecarInjectorWebhook:
 #
 galley:
   repository: rancher/istio-galley
-  tag: 1.4.10
+  tag: 1.5.8
   enabled: true
 
 #
@@ -41,7 +41,7 @@ galley:
 # @see charts/mixer/values.yaml for all values
 mixer:
   repository: rancher/istio-mixer
-  tag: 1.4.10
+  tag: 1.5.8
   policy:
     # if policy is enabled the global.disablePolicyChecks has affect.
     enabled: true
@@ -54,7 +54,7 @@ mixer:
 # @see charts/pilot/values.yaml
 pilot:
   repository: rancher/istio-pilot
-  tag: 1.4.10
+  tag: 1.5.8
   enabled: true
 
 #
@@ -62,11 +62,11 @@ pilot:
 #
 security:
   repository: rancher/istio-citadel
-  tag: 1.4.10
+  tag: 1.5.8
   enabled: true
 
 #
-# nodeagent configuration
+# nodeagent configuration, see global.nodeagent for setting images
 #
 nodeagent:
   enabled: false
@@ -75,8 +75,9 @@ nodeagent:
 # addon grafana configuration
 #
 grafana:
+  # note that this does not get used by default, instead we use monitorings grafana
   repository: rancher/grafana-grafana
-  tag: 6.3.6
+  tag: 6.7.4
   enabled: false
 
 #
@@ -91,13 +92,13 @@ prometheus:
 # addon jaeger tracing configuration
 #
 tracing:
+  enabled: false
   jaeger:
     repository: rancher/jaegertracing-all-in-one
     tag: 1.14
   zipkin:
     repository: rancher/openzipkin-zipkin
     tag: 2.14.2
-  enabled: false
 
 #
 # addon kiali tracing configuration
@@ -109,6 +110,7 @@ kiali:
   dashboard:
     jaegerURL: http://tracing.istio-system:80
     grafanaURL: http://access-grafana.cattle-prometheus:80
+    grafanaInClusterURL: http://access-grafana.cattle-prometheus:80
     auth:
       strategy: anonymous
   enabled: false
@@ -118,10 +120,10 @@ kiali:
 # addon certmanager configuration
 #
 certmanager:
-  enabled: false
   image:
     repository: rancher/jetstack-cert-manager-controller
     tag: v0.8.1
+  enabled: false
 
 #
 # Istio CNI plugin enabled
@@ -131,8 +133,6 @@ certmanager:
 #
 istio_cni:
   enabled: false
-  repair:
-    enabled: true
 
 # addon Istio CoreDNS configuration
 #
@@ -144,6 +144,13 @@ istiocoredns:
     repository: rancher/istio-coredns-plugin
     tag: 0.2-istio-1.1
   enabled: false
+
+# Job to move from 1.4 to 1.5
+#
+onefiveMigration:
+  enabled: true
+  repository: rancher/istio-1.5-migration
+  tag: 0.1.1
 
 # Common settings used among istio subcharts.
 global:
@@ -161,7 +168,7 @@ global:
   hub: docker.io/rancher
 
   # Default tag for Istio images.
-  tag: 1.4.10
+  tag: 1.5.8
 
   # Comma-separated minimum per-scope logging level of messages to output, in the form of <scope>:<level>,<scope>:<level>
   # The control plane has different scopes depending on component, but can configure default log level across all components
@@ -171,7 +178,7 @@ global:
 
   kubectl:
     repository: rancher/istio-kubectl
-    tag: 1.4.10
+    tag: 1.5.8
 
   # monitoring port used by mixer, pilot, galley and sidecar injector
   monitoringPort: 15014
@@ -194,18 +201,9 @@ global:
     tag: v1.0.3
 
   proxy:
-    # Configuration for the proxy init container
-    init:
-      resources:
-        limits:
-          cpu: 100m
-          memory: 50Mi
-        requests:
-          cpu: 10m
-          memory: 10Mi
     # use fully qualified image names for alternate path to proxy.
     repository: rancher/istio-proxyv2
-    tag: 1.4.10
+    tag: 1.5.8
 
     # cluster domain. Default value is "cluster.local".
     clusterDomain: "cluster.local"
@@ -265,6 +263,9 @@ global:
     # Configure the DNS refresh rate for Envoy cluster of type STRICT_DNS
     # This must be given it terms of seconds. For example, 300s is valid but 5m is invalid.
     dnsRefreshRate: 300s
+
+    # Specifies the path to the outlier event log.
+    outlierLogPath: # example: /dev/stdout
 
     # Automatic protocol detection uses a set of heuristics to
     # determine whether the connection is using TLS or not (on the
@@ -364,7 +365,16 @@ global:
   proxy_init:
     # Base name for the istio-init container, used to configure iptables.
     repository: rancher/istio-proxyv2
-    tag: 1.4.10
+    tag: 1.5.8
+    # Configuration for the proxy init container
+    init:
+      resources:
+        limits:
+          cpu: 100m
+          memory: 50Mi
+        requests:
+          cpu: 10m
+          memory: 10Mi
 
   # imagePullPolicy is applied to istio control plane components.
   # local tests require IfNotPresent, to avoid uploading to dockerhub.
@@ -429,7 +439,7 @@ global:
     # or its DestinationRule does not have TLSSettings specified, Istio configures client side
     # TLS configuration automatically, based on the server side mTLS authentication policy and the
     # availibity of sidecars.
-    auto: false
+    auto: true
 
   # Lists the secrets you need to use to pull Istio images from a private registry.
   imagePullSecrets: []
@@ -512,7 +522,7 @@ global:
   # enable pod distruption budget for the control plane, which is used to
   # ensure Istio control plane components are gradually upgraded or recovered.
   defaultPodDisruptionBudget:
-    enabled: false
+    enabled: true
     # The values aren't mutable due to a current PodDisruptionBudget limitation
     # minAvailable: 1
 
@@ -590,9 +600,13 @@ global:
   # defaultConfigVisibilitySettings:
   #- '*'
 
+  #
+  # nodeagent configuration
+  #
   nodeagent:
     repository: rancher/istio-node-agent-k8s
-    tag: 1.4.10
+    tag: 1.5.8
+
   sds:
     # SDS enabled. IF set to true, mTLS certificates for the sidecars will be
     # distributed through the SecretDiscoveryService instead of using K8S secrets to mount the certificates.
