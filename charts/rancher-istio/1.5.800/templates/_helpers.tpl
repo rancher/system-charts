@@ -38,7 +38,6 @@ Create a fully qualified configmap name.
 {{- printf "%s-%s" .Release.Name "istio-mesh-config" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
-
 {{- define "system_default_registry" -}}
 {{- if .Values.global.systemDefaultRegistry -}}
 {{- printf "%s/" .Values.global.systemDefaultRegistry -}}

@@ -5,6 +5,7 @@ enabled: true
 replicaCount: 1
 rollingMaxSurge: 100%
 rollingMaxUnavailable: 25%
+image: galley
 nodeSelector: {}
 tolerations: []
 podAnnotations: {}
