@@ -4,5 +4,5 @@ description: Enables a k3s cluster to update itself by reacting to Plan CRs.
 home: https://github.com/rancher/system-charts/charts/system-upgrade-controller
 sources:
   - "https://github.com/rancher/system-charts/charts/system-upgrade-controller"
-version: 0.1.0
-appVersion: v0.4.0
+version: 0.2.0
+appVersion: v0.6.2
