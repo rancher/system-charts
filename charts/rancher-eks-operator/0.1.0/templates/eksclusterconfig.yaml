@@ -22,7 +22,6 @@ spec:
             displayName:
               type: string
             imported:
-              nullable: true
               type: boolean
             kmsKey:
               type: string
@@ -118,11 +117,11 @@ spec:
               nullable: true
               type: object
           required:
-          - privateAccess
           - amazonCredentialSecret
           - displayName
-          - publicAccess
           - region
+          - publicAccess
+          - privateAccess
           type: object
         status:
           properties:
