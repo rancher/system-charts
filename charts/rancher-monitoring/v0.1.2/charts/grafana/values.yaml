@@ -1,4 +1,5 @@
 enabledRBAC: true
+reportingEnabled: true
 
 ## Tolerations for use with node taints
 ## Ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
