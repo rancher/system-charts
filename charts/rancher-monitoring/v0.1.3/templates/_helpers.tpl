@@ -149,3 +149,9 @@ beta.kubernetes.io/os: linux
 kubernetes.io/os: linux
 {{- end -}}
 {{- end -}}
+
+{{- define "webhook-receiver.labels" -}}
+app: {{ template "app.name" . }}
+chart: {{ template "app.version" . }}
+release: {{ .Release.Name }}
+{{- end -}}
