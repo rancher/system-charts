@@ -81,8 +81,8 @@ spec:
                     nullable: true
                     type: string
                 required:
-                - instanceType
                 - nodegroupName
+                - instanceType
                 type: object
               nullable: true
               type: array
@@ -117,29 +117,31 @@ spec:
               nullable: true
               type: object
           required:
-          - amazonCredentialSecret
+          - publicAccess
           - displayName
           - region
-          - publicAccess
+          - amazonCredentialSecret
           - privateAccess
           type: object
         status:
           properties:
             failureMessage:
               type: string
-            generatedSecurityGroups:
-              items:
-                type: string
-              nullable: true
-              type: array
-            generatedSubnets:
-              items:
-                type: string
-              nullable: true
-              type: array
-            generatedVirtualNetwork:
+            networkFieldsSource:
               type: string
             phase:
+              type: string
+            securityGroups:
+              items:
+                type: string
+              nullable: true
+              type: array
+            subnets:
+              items:
+                type: string
+              nullable: true
+              type: array
+            virtualNetwork:
               type: string
           type: object
       type: object
