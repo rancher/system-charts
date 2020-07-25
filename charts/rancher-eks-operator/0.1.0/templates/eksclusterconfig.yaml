@@ -62,11 +62,6 @@ spec:
                     type: integer
                   nodegroupName:
                     type: string
-                  sourceSecurityGroups:
-                    items:
-                      type: string
-                    nullable: true
-                    type: array
                   subnets:
                     items:
                       type: string
@@ -117,11 +112,11 @@ spec:
               nullable: true
               type: object
           required:
+          - amazonCredentialSecret
           - publicAccess
+          - privateAccess
           - displayName
           - region
-          - amazonCredentialSecret
-          - privateAccess
           type: object
         status:
           properties:
