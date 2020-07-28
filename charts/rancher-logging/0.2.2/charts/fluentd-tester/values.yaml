@@ -1,0 +1,34 @@
+labels: {}
+
+image:
+  repository: rancher/fluentd
+  tag: v0.1.19
+  pullPolicy: IfNotPresent
+
+resources: {}
+  # limits:
+  #   cpu: 100m
+  #   memory: 500Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 200Mi
+# env:
+
+command: '["sh", "-c", "tail -f /dev/null"]'
+
+rbac:
+  create: true
+
+serviceAccount:
+  create: true
+
+annotations: {}
+
+# updateStrategy:
+#   type: RollingUpdate
+
+tolerations:
+  - effect: NoSchedule
+    operator: Exists
+
+nodeSelector: {}
