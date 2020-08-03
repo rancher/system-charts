@@ -40,7 +40,9 @@ spec:
       name: not-applicable-info-volume
     {{- end }}
     - name: rke2
-      hostPath: /var/lib/rancher
+      hostPath:
+        path: /var/lib/rancher
+        type: Directory
   containers:
     - name: {{ .Chart.Name }}
       restartPolicy: Never
