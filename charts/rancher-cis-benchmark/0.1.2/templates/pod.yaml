@@ -39,6 +39,8 @@ spec:
         name: {{ .Values.notApplicableConfigMapName }}
       name: not-applicable-info-volume
     {{- end }}
+    - name: rke2
+      hostPath: /var/lib/rancher
   containers:
     - name: {{ .Chart.Name }}
       restartPolicy: Never
@@ -89,6 +91,8 @@ spec:
         - mountPath: /etc/kbs/notapplicable
           name: not-applicable-info-volume
         {{- end }}
+        - mountPath: /var/lib/rancher
+          name: rke2
       resources:
         {{- toYaml .Values.resources | nindent 12 }}
   {{- with .Values.nodeSelector }}

@@ -14,7 +14,7 @@ defaultSkipConfigMapName: ""
 notApplicableConfigMapName: ""
 # overrideBenchmarkVersion is used to override the default benchmark version used for
 # a particular k8s version
-overrideBenchmarkVersion: "rke2-cis-1.5"
+overrideBenchmarkVersion: ""
 
 # when debug=true, the plugin pods sleep for the time specified
 debugMaster: false
