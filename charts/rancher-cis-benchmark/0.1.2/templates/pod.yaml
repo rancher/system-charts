@@ -13,6 +13,7 @@ metadata:
     app.kubernetes.io/managed-by: {{ .Release.Service }}
     run: sonobuoy-master
 spec:
+  shareProcessNamespace: true
   serviceAccountName: s-sa-{{ .Release.Name }}
   terminationGracePeriodSeconds: 0
   volumes:
@@ -45,6 +46,10 @@ spec:
         type: Directory
   containers:
     - name: {{ .Chart.Name }}
+      securityContext:
+        capabilities:
+          add:
+          - SYS_PTRACE
       restartPolicy: Never
       env:
         {{- if .Values.overrideBenchmarkVersion }}
