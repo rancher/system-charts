@@ -25,6 +25,15 @@ data:
       updateIntervalSeconds: 0 #never
       options:
         path: /var/lib/grafana/rancher-istio-dashboards
+    - name: CUSTOM_MONITORING
+      orgId: 3
+      folder: 'custom'
+      type: file
+      disableDeletion: false
+      updateIntervalSeconds: 10
+      allowUiUpdates: false
+      options:
+        path: /var/lib/grafana/custom-dashboards
 
 
   datasources.yaml: |+

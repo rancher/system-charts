@@ -8,6 +8,7 @@ Installs [prometheus-operator](https://github.com/coreos/prometheus-operator) to
 
 * 0.1.3
     * Added chart webhook-receiver to support recipients that are not directly supported by Prometheus
+    * Added functionality to automatically load custom grafana dashboards from correclty labeled configmaps
 
 ## Prerequisites
   - >= Rancher 2.3.3

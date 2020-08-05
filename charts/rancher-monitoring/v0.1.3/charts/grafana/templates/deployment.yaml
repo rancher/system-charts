@@ -49,6 +49,25 @@ spec:
         - name: grafana-static-contents
           mountPath: /host
       containers:
+      {{- if .Values.customDashboards.enabled }}
+      - name: grafana-sc-dashboard
+        image: "kiwigrid/k8s-sidecar:0.1.151"
+        imagePullPolicy: IfNotPresent
+        env:
+          - name: METHOD
+            value:
+          - name: LABEL
+            value: "{{ .Values.customDashboards.label }}"
+          - name: FOLDER
+            value: "/var/lib/grafana/custom-dashboards"
+          - name: RESOURCE
+            value: "both"
+        resources:
+          {}
+        volumeMounts:
+          - name: sc-custom-dashboards
+            mountPath: "/var/lib/grafana/custom-dashboards"
+      {{- end }}
       - name: grafana
         image: {{ template "system_default_registry" . }}{{ .Values.image.repository }}:{{ .Values.image.tag }}
         env:
@@ -69,6 +88,10 @@ spec:
           mountPath: /var/lib/grafana/rancher-dashboards
         - name: grafana-istio-dashboards
           mountPath: /var/lib/grafana/rancher-istio-dashboards
+        {{- if .Values.customDashboards.enabled }}
+        - name: sc-custom-dashboards
+          mountPath: /var/lib/grafana/custom-dashboards
+        {{- end }}
         - name: grafana-provisionings
           mountPath: /etc/grafana/provisioning/dashboards/all.yaml
           subPath: dashboards.yaml
@@ -169,3 +192,7 @@ spec:
           name: {{ template "app.provisionings.fullname" . }}
       - name: nginx-home
         emptyDir: {}
+      {{- if .Values.customDashboards.enabled }}
+      - name: sc-custom-dashboards
+        emptyDir: {}
+      {{- end }}
