@@ -5,4 +5,4 @@ home: https://github.com/rancher/eks-operator
 sources:
   - "https://github.com/rancher/eks-operator"
 version: 0.1.0
-appVersion: v0.1.0-rc23
+appVersion: v0.1.0-rc24
