@@ -1,8 +1,9 @@
 apiVersion: v1
 name: rancher-k3s-upgrader
-description: Enables a k3s cluster to update itself by reacting to Plan CRs.
-home: https://github.com/rancher/system-charts/charts/system-upgrade-controller
+description: Enables a k3s or rke2 cluster to update itself by reacting to Plan CRs.
+  Users do not need to manualy upgrade this app. It will be autaomtically upgraded to the latest version when upgrading a cluster.
+home: https://github.com/rancher/system-charts/tree/dev-v2.5/charts/rancher-k3s-upgrader
 sources:
-  - "https://github.com/rancher/system-charts/charts/system-upgrade-controller"
+  - "https://github.com/rancher/system-charts/tree/dev-v2.5/charts/rancher-k3s-upgrader"
 version: 0.2.0
 appVersion: v0.6.2
