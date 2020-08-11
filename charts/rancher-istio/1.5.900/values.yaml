@@ -23,7 +23,7 @@ gateways:
 #
 sidecarInjectorWebhook:
   repository: rancher/istio-sidecar_injector
-  tag: 1.5.8
+  tag: 1.5.9
   enabled: true
 
 #
@@ -32,7 +32,7 @@ sidecarInjectorWebhook:
 #
 galley:
   repository: rancher/istio-galley
-  tag: 1.5.8
+  tag: 1.5.9
   enabled: true
 
 #
@@ -41,7 +41,7 @@ galley:
 # @see charts/mixer/values.yaml for all values
 mixer:
   repository: rancher/istio-mixer
-  tag: 1.5.8
+  tag: 1.5.9
   policy:
     # if policy is enabled the global.disablePolicyChecks has affect.
     enabled: true
@@ -54,7 +54,7 @@ mixer:
 # @see charts/pilot/values.yaml
 pilot:
   repository: rancher/istio-pilot
-  tag: 1.5.8
+  tag: 1.5.9
   enabled: true
 
 #
@@ -62,7 +62,7 @@ pilot:
 #
 security:
   repository: rancher/istio-citadel
-  tag: 1.5.8
+  tag: 1.5.9
   enabled: true
 
 #
@@ -168,7 +168,7 @@ global:
   hub: docker.io/rancher
 
   # Default tag for Istio images.
-  tag: 1.5.8
+  tag: 1.5.9
 
   # Comma-separated minimum per-scope logging level of messages to output, in the form of <scope>:<level>,<scope>:<level>
   # The control plane has different scopes depending on component, but can configure default log level across all components
@@ -178,7 +178,7 @@ global:
 
   kubectl:
     repository: rancher/istio-kubectl
-    tag: 1.5.8
+    tag: 1.5.9
 
   # monitoring port used by mixer, pilot, galley and sidecar injector
   monitoringPort: 15014
@@ -203,7 +203,7 @@ global:
   proxy:
     # use fully qualified image names for alternate path to proxy.
     repository: rancher/istio-proxyv2
-    tag: 1.5.8
+    tag: 1.5.9
 
     # cluster domain. Default value is "cluster.local".
     clusterDomain: "cluster.local"
@@ -365,7 +365,7 @@ global:
   proxy_init:
     # Base name for the istio-init container, used to configure iptables.
     repository: rancher/istio-proxyv2
-    tag: 1.5.8
+    tag: 1.5.9
     # Configuration for the proxy init container
     init:
       resources:
@@ -605,7 +605,7 @@ global:
   #
   nodeagent:
     repository: rancher/istio-node-agent-k8s
-    tag: 1.5.8
+    tag: 1.5.9
 
   sds:
     # SDS enabled. IF set to true, mTLS certificates for the sidecars will be
