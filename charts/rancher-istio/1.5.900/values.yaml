@@ -105,7 +105,7 @@ tracing:
 #
 kiali:
   repository: rancher/kiali-kiali
-  tag: v1.15
+  tag: v1.17
   contextPath: /
   dashboard:
     jaegerURL: http://tracing.istio-system:80
