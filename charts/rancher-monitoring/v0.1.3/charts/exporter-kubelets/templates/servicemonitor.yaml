@@ -77,11 +77,6 @@ spec:
     metricRelabelings:
     - action: labeldrop
       regex: (^id$|^image$|^name$|^cpu$)
-    - action: replace
-      regex: (.+)
-      sourceLabels:
-      - exported_namespace
-      targetLabel: namespace
     {{- if semverCompare ">=1.16-0" .Capabilities.KubeVersion.GitVersion }}
     - action: replace
       regex: (.+)
@@ -119,11 +114,6 @@ spec:
       sourceLabels:
       - pod
       targetLabel: pod_name
-    - action: replace
-      regex: (.+)
-      sourceLabels:
-      - exported_namespace
-      targetLabel: namespace
   {{- else }}
   - port: http-metrics
     relabelings:
@@ -164,11 +154,6 @@ spec:
     metricRelabelings:
     - action: labeldrop
       regex: (^id$|^image$|^name$|^cpu$)
-    - action: replace
-      regex: (.+)
-      sourceLabels:
-      - exported_namespace
-      targetLabel: namespace
     {{- if semverCompare ">=1.16-0" .Capabilities.KubeVersion.GitVersion }}
     - action: replace
       regex: (.+)
@@ -199,9 +184,4 @@ spec:
       sourceLabels:
       - pod
       targetLabel: pod_name
-    - action: replace
-      regex: (.+)
-      sourceLabels:
-      - exported_namespace
-      targetLabel: namespace
   {{- end }}
