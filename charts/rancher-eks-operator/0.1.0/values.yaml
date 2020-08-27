@@ -1,0 +1,7 @@
+global:
+  systemDefaultRegistry: ""
+
+eksOperator:
+  image:
+    repository: rancher/eks-operator
+    tag: v0.1.0-rc24

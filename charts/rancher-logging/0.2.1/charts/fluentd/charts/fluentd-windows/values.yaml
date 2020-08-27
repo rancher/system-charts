@@ -1,0 +1,52 @@
+nameOverride: fluentd
+labels: {}
+
+image:
+  os: windows
+  repository: rancher/fluentd
+  tag: v0.1.19
+  pullPolicy: IfNotPresent
+
+resources: {}
+  # limits:
+  #   cpu: 100m
+  #   memory: 500Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 200Mi
+# env:
+
+command: '["powershell", "-command",  "fluentd", "-c", "/fluentd/etc/config/entry/fluent.conf"]'
+
+livenessProbe:
+  enabled: true
+
+annotations: {}
+
+# updateStrategy:
+#   type: RollingUpdate
+
+tolerations:
+  - effect: NoSchedule
+    operator: Exists
+
+
+nodeSelector: {}
+
+cluster:
+  dockerRoot: C:\ProgramData\docker
+
+service:
+  ports:
+    - name: metric
+      port: 24231
+      targetPort: metric
+
+configmapReload:
+  name: reloader
+  image:
+    os: windows
+    repository: rancher/configmap-reload
+    tag: v0.3.0-rancher2
+    pullPolicy: IfNotPresent
+  resources: {}
