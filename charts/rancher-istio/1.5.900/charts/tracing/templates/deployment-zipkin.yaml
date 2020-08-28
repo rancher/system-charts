@@ -28,6 +28,7 @@ spec:
 {{ toYaml .Values.zipkin.podAnnotations | indent 8 }}
 {{- end }}
     spec:
+      serviceAccountName: istio-tracing-service-account
 {{- if .Values.global.priorityClassName }}
       priorityClassName: "{{ .Values.global.priorityClassName }}"
 {{- end }}
