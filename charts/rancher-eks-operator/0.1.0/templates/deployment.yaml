@@ -4,6 +4,7 @@ metadata:
   name: eks-config-operator
   namespace: cattle-system
 spec:
+  replicas: 1
   selector:
     matchLabels:
       ke.cattle.io/operator: eks
