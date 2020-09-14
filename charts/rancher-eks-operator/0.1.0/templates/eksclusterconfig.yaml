@@ -24,8 +24,10 @@ spec:
             imported:
               type: boolean
             kmsKey:
+              nullable: true
               type: string
             kubernetesVersion:
+              nullable: true
               type: string
             loggingTypes:
               items:
@@ -45,6 +47,7 @@ spec:
                     nullable: true
                     type: string
                   gpu:
+                    nullable: true
                     type: boolean
                   instanceType:
                     nullable: true
@@ -61,6 +64,7 @@ spec:
                     nullable: true
                     type: integer
                   nodegroupName:
+                    nullable: true
                     type: string
                   subnets:
                     items:
@@ -82,8 +86,10 @@ spec:
               nullable: true
               type: array
             privateAccess:
+              nullable: true
               type: boolean
             publicAccess:
+              nullable: true
               type: boolean
             publicAccessSources:
               items:
@@ -93,6 +99,7 @@ spec:
             region:
               type: string
             secretsEncryption:
+              nullable: true
               type: boolean
             securityGroups:
               items:
@@ -100,6 +107,7 @@ spec:
               nullable: true
               type: array
             serviceRole:
+              nullable: true
               type: string
             subnets:
               items:
@@ -111,12 +119,6 @@ spec:
                 type: string
               nullable: true
               type: object
-          required:
-          - amazonCredentialSecret
-          - publicAccess
-          - privateAccess
-          - displayName
-          - region
           type: object
         status:
           properties:
