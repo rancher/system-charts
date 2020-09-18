@@ -84,7 +84,7 @@ spec:
         name: alertmanager-operated
         port: http
 {{- end }}
-  baseImage: {{ template "system_default_registry" . }}{{ .Values.image.repository }}
+  image: {{ template "system_default_registry" . }}{{ .Values.image.repository }}:{{ .Values.image.tag }}
 {{- if or (.Values.externalLabels) (eq .Values.level "project") }}
   externalLabels:
 {{- if and (eq .Values.level "project") }}
@@ -96,7 +96,7 @@ spec:
 {{- end }}
 {{- if .Values.thanos.enabled }}
   thanos: 
-    baseImage: {{ template "system_default_registry" . }}{{ .Values.image.thanos.repository }}
+    image: {{ template "system_default_registry" . }}{{ .Values.image.thanos.repository }}:{{ .Values.image.thanos.tag }}
     version: {{ .Values.image.thanos.tag }}
     objectStorageConfig:
       key: thanos.yaml
