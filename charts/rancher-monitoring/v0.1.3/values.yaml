@@ -259,7 +259,7 @@ grafana:
       repository: rancher/prometheus-auth
       tag: v0.2.0
     proxy:
-      repository: rancher/nginx
+      repository: rancher/library-nginx
       tag: 1.19.2-alpine
   nodeSelectors: []
   resources:
