@@ -12,11 +12,8 @@ rules:
 - apiGroups: 
   - {{ template "operator_api_group" . }}
   resources: 
-  - alertmanager
   - alertmanagers
-  - prometheus
   - prometheuses
-  - service-monitor
   - servicemonitors
   - thanosrulers
   - thanosrulers/finalizers
@@ -57,8 +54,14 @@ rules:
 - apiGroups: [""]
   resources:
   - nodes
+  verbs:
+  - list
+  - watch
+- apiGroups: [""]
+  resources:
   - namespaces
-  verbs: 
+  verbs:
+  - get
   - list
   - watch
 
@@ -72,6 +75,7 @@ metadata:
     heritage: {{ .Release.Service }}
     release: {{ .Release.Name }}
   name: {{ template "app.fullname" . }}
+  namespace: {{ .Release.Namespace }}
 imagePullSecrets: 
 {{ toYaml .Values.imagePullSecrets | indent 2 }}
 
