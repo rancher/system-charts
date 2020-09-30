@@ -4,4 +4,4 @@ global:
 eksOperator:
   image:
     repository: rancher/eks-operator
-    tag: v0.1.0-rc31
+    tag: v1.0.0
