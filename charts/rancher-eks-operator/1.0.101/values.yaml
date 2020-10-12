@@ -5,3 +5,7 @@ eksOperator:
   image:
     repository: rancher/eks-operator
     tag: v1.0.1
+
+httpProxy: ""
+httpsProxy: ""
+noProxy: ""

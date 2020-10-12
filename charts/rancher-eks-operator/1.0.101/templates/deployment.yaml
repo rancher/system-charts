@@ -18,3 +18,10 @@ spec:
       - name: eks-operator
         image: {{ template "system_default_registry" . }}{{ .Values.eksOperator.image.repository }}:{{ .Values.eksOperator.image.tag }}
         imagePullPolicy: IfNotPresent
+        env:
+        - name: HTTP_PROXY
+          value: {{ .Values.httpProxy }}
+        - name: HTTPS_PROXY
+          value: {{ .Values.httpsProxy }}
+        - name: NO_PROXY
+          value: {{ .Values.noProxy }}
