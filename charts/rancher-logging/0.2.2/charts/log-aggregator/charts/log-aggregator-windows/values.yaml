@@ -5,7 +5,7 @@ labels: {}
 ##
 image:
   repository: rancher/log-aggregator
-  tag: v0.1.6
+  tag: v0.1.7
 
 nodeSelector: {}
 
