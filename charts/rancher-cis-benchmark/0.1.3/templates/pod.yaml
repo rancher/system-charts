@@ -13,6 +13,8 @@ metadata:
     app.kubernetes.io/managed-by: {{ .Release.Service }}
     run: sonobuoy-master
 spec:
+  hostPID: true
+  hostIPC: true
   serviceAccountName: s-sa-{{ .Release.Name }}
   terminationGracePeriodSeconds: 0
   volumes:
@@ -39,6 +41,10 @@ spec:
         name: {{ .Values.notApplicableConfigMapName }}
       name: not-applicable-info-volume
     {{- end }}
+    - name: rke2
+      hostPath:
+        path: /var/lib/rancher
+        type: Directory
   containers:
     - name: {{ .Chart.Name }}
       restartPolicy: Never
@@ -89,6 +95,8 @@ spec:
         - mountPath: /etc/kbs/notapplicable
           name: not-applicable-info-volume
         {{- end }}
+        - mountPath: /var/lib/rancher
+          name: rke2
       resources:
         {{- toYaml .Values.resources | nindent 12 }}
   {{- with .Values.nodeSelector }}
