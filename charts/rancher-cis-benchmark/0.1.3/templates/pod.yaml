@@ -45,6 +45,10 @@ spec:
       hostPath:
         path: /var/lib/rancher
         type: Directory
+    - name: rke2-cni
+      hostPath:
+        path: /etc/cni/net.d
+        type: Directory
   containers:
     - name: {{ .Chart.Name }}
       restartPolicy: Never
@@ -97,6 +101,8 @@ spec:
         {{- end }}
         - mountPath: /var/lib/rancher
           name: rke2
+        - mountPath:
+          name: rke2-cni
       resources:
         {{- toYaml .Values.resources | nindent 12 }}
   {{- with .Values.nodeSelector }}
