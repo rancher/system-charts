@@ -9,5 +9,3 @@ Installs [prometheus-operator](https://github.com/coreos/prometheus-operator) to
 * 0.1.2
     * Added chart webhook-receiver to support recipients that are not directly supported by Prometheus
 
-## Prerequisites
-  - >= Rancher 2.3.3
