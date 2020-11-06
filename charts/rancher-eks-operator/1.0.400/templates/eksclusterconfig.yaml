@@ -1,0 +1,151 @@
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  name: eksclusterconfigs.eks.cattle.io
+  annotations:
+    "helm.sh/resource-policy": keep
+spec:
+  group: eks.cattle.io
+  names:
+    kind: EKSClusterConfig
+    plural: eksclusterconfigs
+    shortNames:
+    - ekscc
+  scope: Namespaced
+  subresources:
+    status: {}
+  validation:
+    openAPIV3Schema:
+      properties:
+        spec:
+          properties:
+            amazonCredentialSecret:
+              type: string
+            displayName:
+              type: string
+            imported:
+              type: boolean
+            kmsKey:
+              nullable: true
+              type: string
+            kubernetesVersion:
+              nullable: true
+              type: string
+            loggingTypes:
+              items:
+                type: string
+              nullable: true
+              type: array
+            nodeGroups:
+              items:
+                properties:
+                  desiredSize:
+                    nullable: true
+                    type: integer
+                  diskSize:
+                    nullable: true
+                    type: integer
+                  ec2SshKey:
+                    nullable: true
+                    type: string
+                  gpu:
+                    nullable: true
+                    type: boolean
+                  instanceType:
+                    nullable: true
+                    type: string
+                  labels:
+                    additionalProperties:
+                      type: string
+                    nullable: true
+                    type: object
+                  maxSize:
+                    nullable: true
+                    type: integer
+                  minSize:
+                    nullable: true
+                    type: integer
+                  nodegroupName:
+                    nullable: true
+                    type: string
+                  subnets:
+                    items:
+                      type: string
+                    nullable: true
+                    type: array
+                  tags:
+                    additionalProperties:
+                      type: string
+                    nullable: true
+                    type: object
+                  version:
+                    nullable: true
+                    type: string
+                required:
+                - nodegroupName
+                - instanceType
+                type: object
+              nullable: true
+              type: array
+            privateAccess:
+              nullable: true
+              type: boolean
+            publicAccess:
+              nullable: true
+              type: boolean
+            publicAccessSources:
+              items:
+                type: string
+              nullable: true
+              type: array
+            region:
+              type: string
+            secretsEncryption:
+              nullable: true
+              type: boolean
+            securityGroups:
+              items:
+                type: string
+              nullable: true
+              type: array
+            serviceRole:
+              nullable: true
+              type: string
+            subnets:
+              items:
+                type: string
+              nullable: true
+              type: array
+            tags:
+              additionalProperties:
+                type: string
+              nullable: true
+              type: object
+          type: object
+        status:
+          properties:
+            failureMessage:
+              type: string
+            networkFieldsSource:
+              type: string
+            phase:
+              type: string
+            securityGroups:
+              items:
+                type: string
+              nullable: true
+              type: array
+            subnets:
+              items:
+                type: string
+              nullable: true
+              type: array
+            virtualNetwork:
+              type: string
+          type: object
+      type: object
+  version: v1
+  versions:
+  - name: v1
+    served: true
+    storage: true
