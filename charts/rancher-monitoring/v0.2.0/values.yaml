@@ -22,8 +22,6 @@ operator:
   tolerations: []
   logFormat: "logfmt"
   logLevel: "info"
-  manageCRDs: false
-  withValidation: true
   ## Already exist ServiceAccount
   ##
   serviceAccountName: ""

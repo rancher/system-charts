@@ -48,8 +48,6 @@ spec:
             - --prometheus-config-reloader={{ template "system_default_registry" . }}{{ .Values.image.prometheusConfigReloader.repository }}:{{ .Values.image.prometheusConfigReloader.tag }}
             - --config-reloader-image={{ template "system_default_registry" . }}{{ .Values.image.configmapReload.repository }}:{{ .Values.image.configmapReload.tag }}
             - --labels={{ .Values.apiGroup }}=true
-            - --manage-crds={{ .Values.manageCRDs }}
-            - --with-validation={{ .Values.withValidation }}
           ports:
           - containerPort: 8080
             name: http
