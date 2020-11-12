@@ -17,7 +17,7 @@ operator:
       memory: 500Mi
     requests:
       cpu: 100m
-      memory: 50Mi
+      memory: 100Mi
   nodeSelectors: []
   tolerations: []
   logFormat: "logfmt"
