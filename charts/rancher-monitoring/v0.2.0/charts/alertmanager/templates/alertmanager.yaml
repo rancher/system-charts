@@ -45,6 +45,7 @@ spec:
 {{- end }}
 {{- if or .Values.storageSpec .Values.persistence.enabled }}
   storage:
+    disableMountSubPath: {{ .Values.disableMountSubPath }}
     volumeClaimTemplate:
       {{- if .Values.persistence.name }}
       metadata:

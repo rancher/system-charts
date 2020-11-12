@@ -44,6 +44,10 @@ logFormat: "logfmt"
 scrapeInterval: "60s"
 evaluationInterval: "60s"
 
+## DisableMountSubPath allows to remove any subPath usage in volume mounts.
+## Deprecated: subPath usage will be disabled by default in a future release, this option will become unnecessary.
+disableMountSubPath: true
+
 ## Prometheus StorageSpec for persistent data
 ## Ref: https://github.com/coreos/prometheus-operator/blob/master/Documentation/user-guides/storage.md
 ##

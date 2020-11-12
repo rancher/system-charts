@@ -149,6 +149,7 @@ spec:
 {{ include "rule.selector" . | indent 2 }}
 {{- if or .Values.storageSpec .Values.persistence.enabled }}
   storage:
+    disableMountSubPath: {{ .Values.disableMountSubPath }}
     volumeClaimTemplate:
       metadata:
         creationTimestamp: {{ now | date "2006-01-02T15:04:05Z" | quote }}
