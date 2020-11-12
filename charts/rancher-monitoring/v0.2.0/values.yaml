@@ -4,10 +4,10 @@ operator:
   apiGroup: "monitoring.coreos.com"
   image:
     repository: rancher/coreos-prometheus-operator
-    tag: v0.38.1
+    tag: v0.39.0
     prometheusConfigReloader:
       repository: rancher/coreos-prometheus-config-reloader
-      tag: v0.38.1
+      tag: v0.39.0
     configmapReload:
       repository: rancher/jimmidyson-configmap-reload
       tag: v0.3.0
