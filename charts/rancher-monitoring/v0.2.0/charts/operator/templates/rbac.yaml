@@ -57,8 +57,14 @@ rules:
 - apiGroups: [""]
   resources:
   - nodes
-  - namespaces
   verbs: 
+  - list
+  - watch
+- apiGroups: [""]
+  resources:
+  - namespaces
+  verbs:
+  - get
   - list
   - watch
 
