@@ -3,7 +3,7 @@
 #
 enabled: true
 autoscaleEnabled: true
-autoscaleMin: 1
+autoscaleMin: 2
 autoscaleMax: 5
 # specify replicaCount when autoscaleEnabled: false
 # replicaCount: 1
