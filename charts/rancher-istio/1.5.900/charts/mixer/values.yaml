@@ -10,9 +10,9 @@ env:
 policy:
   # if policy is enabled, global.disablePolicyChecks has affect.
   enabled: false
-  replicaCount: 1
+  replicaCount: 2
   autoscaleEnabled: true
-  autoscaleMin: 1
+  autoscaleMin: 2
   autoscaleMax: 5
   cpu:
     targetAverageUtilization: 80
@@ -21,9 +21,9 @@ policy:
 
 telemetry:
   enabled: true
-  replicaCount: 1
+  replicaCount: 2
   autoscaleEnabled: true
-  autoscaleMin: 1
+  autoscaleMin: 2
   autoscaleMax: 5
   cpu:
     targetAverageUtilization: 80
