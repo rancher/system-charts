@@ -2,7 +2,7 @@
 # galley configuration
 #
 enabled: true
-replicaCount: 1
+replicaCount: 2
 rollingMaxSurge: 100%
 rollingMaxUnavailable: 25%
 image: galley
