@@ -80,6 +80,9 @@ spec:
           {{- if .Values.google.project }}
             - --google-project={{ .Values.google.project }}
           {{- end }}
+          {{- if eq .Values.provider "aws" }}
+            - --aws-batch-change-size={{ .Values.aws.batchChangeSize }}
+          {{- end }}
           {{- if eq .Values.provider "infoblox" }}
             - --infoblox-grid-host={{ .Values.infoblox.gridHost }}
             {{- if .Values.infoblox.domainFilter }}
