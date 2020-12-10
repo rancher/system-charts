@@ -1,0 +1,43 @@
+{{- if .Values.global.podSecurityPolicy.enabled }}
+apiVersion: policy/v1beta1
+kind: PodSecurityPolicy
+metadata:
+  name: {{ .Release.Name }}-psp
+  labels:
+    app: {{ template "logging.name" . }}
+    chart: {{ template "logging.version" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+{{- if .Values.global.privileged }}
+  privileged: true
+{{- else }}
+  allowPrivilegeEscalation: false
+{{- end }}
+  fsGroup:
+    ranges:
+    - max: 65535
+      min: 1
+    rule: MustRunAs
+  requiredDropCapabilities:
+  - ALL
+  runAsUser:
+    rule: RunAsAny
+  seLinux:
+    rule: RunAsAny
+  supplementalGroups:
+    ranges:
+    - max: 65535
+      min: 1
+    rule: MustRunAs
+  volumes:
+  - configMap
+  - emptyDir
+  - projected
+  - secret
+  - downwardAPI
+  - persistentVolumeClaim
+  - hostPath
+  allowedHostPaths:
+    - pathPrefix: /
+{{- end }}

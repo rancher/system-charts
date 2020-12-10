@@ -1,0 +1,38 @@
+{{- if .Values.global.podSecurityPolicy.enabled -}}
+kind: Role
+apiVersion: {{ template "rbac_api_version" . }}
+metadata:
+  name: {{ template "log-aggregator.fullname" . }}-psp-role
+  labels:
+    app: {{ template "log-aggregator.name" . }}
+    chart: {{ template "log-aggregator.version" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+rules:
+- apiGroups:
+  - "policy"
+  resources:
+  - "podsecuritypolicies"
+  resourceNames:
+  - {{ .Release.Name }}-psp
+  verbs:
+  - "use"
+---
+kind: RoleBinding
+apiVersion: {{ template "rbac_api_version" . }}
+metadata:
+  name: {{ template "log-aggregator.fullname" . }}-psp-rolebinding
+  labels:
+    app: {{ template "log-aggregator.name" . }}
+    chart: {{ template "log-aggregator.version" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+subjects:
+- kind: ServiceAccount
+  name: {{ template "log-aggregator.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+roleRef:
+  kind: Role
+  name: {{ template "log-aggregator.fullname" . }}-psp-role
+  apiGroup: rbac.authorization.k8s.io
+{{- end -}}
