@@ -35,16 +35,6 @@ spec:
 {{- end }}
     spec:
       serviceAccountName: {{ template "fluentd.fullname" . }}
-      initContainers:
-      - name: init-{{ template "fluentd.fullname" . }}
-        image:  {{ template "system_default_registry" . }}{{ .Values.image.repository }}:{{ .Values.image.tag }}
-        command:
-          - 'powershell'
-          - '-command'
-          - 'New-Item -ItemType Directory -Force -Path /var/lib/rancher/fluentd/log'
-        volumeMounts:
-        - mountPath: /var/lib/rancher
-          name: rancher
       containers:
       - name: {{ template "fluentd.fullname" . }}
         image:  {{ template "system_default_registry" . }}{{ .Values.image.repository }}:{{ .Values.image.tag }}
@@ -126,21 +116,27 @@ spec:
       volumes:
       - hostPath:
           path: {{ .Values.cluster.dockerRoot }}
+          type: DirectoryOrCreate
         name: dockerroot
       - hostPath:
           path: /var/log/containers
+          type: DirectoryOrCreate
         name: varlogcontainers
       - hostPath:
           path: /var/log/pods
+          type: DirectoryOrCreate
         name: varlogpods
       - hostPath:
           path: /var/lib/rancher/rke/log
+          type: DirectoryOrCreate
         name: rkelog
       - hostPath:
           path: /var/lib/rancher/fluentd/log
+          type: DirectoryOrCreate
         name: fluentdlog
       - hostPath:
           path: /var/lib/rancher
+          type: DirectoryOrCreate
         name: rancher
       - name: config
         secret:
