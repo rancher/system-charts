@@ -1,0 +1,15 @@
+dependencies:
+  - name: fluentd
+    version: 0.0.2
+    condition: fluentd.enabled
+    repository: "file://./charts/fluentd/"
+
+  - name: log-aggregator
+    version: 0.0.2
+    condition: log-aggregator.enabled
+    repository: "file://./charts/log-aggregator/"
+
+  - name: fluentd-tester
+    version: 0.0.2
+    condition: fluentd-tester.enabled
+    repository: "file://./charts/fluentd-tester/"
