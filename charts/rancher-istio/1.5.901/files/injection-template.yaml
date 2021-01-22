@@ -370,7 +370,7 @@ containers:
   {{- end }}
 {{- else }}
   {{- if .Values.global.proxy.resources }}
-      {{ toYaml .Values.global.proxy.resources | indent 4 }}
+    {{ toYaml .Values.global.proxy.resources | indent 4 }}
   {{- end }}
 {{- end }}
   volumeMounts:
