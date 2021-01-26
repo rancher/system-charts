@@ -20,8 +20,10 @@ spec:
         spec:
           properties:
             amazonCredentialSecret:
+              nullable: true
               type: string
             displayName:
+              nullable: true
               type: string
             imported:
               type: boolean
@@ -33,6 +35,7 @@ spec:
               type: string
             loggingTypes:
               items:
+                nullable: true
                 type: string
               nullable: true
               type: array
@@ -51,13 +54,30 @@ spec:
                   gpu:
                     nullable: true
                     type: boolean
+                  imageId:
+                    nullable: true
+                    type: string
                   instanceType:
                     nullable: true
                     type: string
                   labels:
                     additionalProperties:
+                      nullable: true
                       type: string
                     nullable: true
+                    type: object
+                  launchTemplate:
+                    nullable: true
+                    properties:
+                      id:
+                        nullable: true
+                        type: string
+                      name:
+                        nullable: true
+                        type: string
+                      version:
+                        nullable: true
+                        type: integer
                     type: object
                   maxSize:
                     nullable: true
@@ -68,22 +88,41 @@ spec:
                   nodegroupName:
                     nullable: true
                     type: string
+                  requestSpotInstances:
+                    nullable: true
+                    type: boolean
+                  resourceTags:
+                    additionalProperties:
+                      nullable: true
+                      type: string
+                    nullable: true
+                    type: object
+                  spotInstanceTypes:
+                    items:
+                      nullable: true
+                      type: string
+                    nullable: true
+                    type: array
                   subnets:
                     items:
+                      nullable: true
                       type: string
                     nullable: true
                     type: array
                   tags:
                     additionalProperties:
+                      nullable: true
                       type: string
                     nullable: true
                     type: object
+                  userData:
+                    nullable: true
+                    type: string
                   version:
                     nullable: true
                     type: string
                 required:
                 - nodegroupName
-                - instanceType
                 type: object
               nullable: true
               type: array
@@ -95,16 +134,19 @@ spec:
               type: boolean
             publicAccessSources:
               items:
+                nullable: true
                 type: string
               nullable: true
               type: array
             region:
+              nullable: true
               type: string
             secretsEncryption:
               nullable: true
               type: boolean
             securityGroups:
               items:
+                nullable: true
                 type: string
               nullable: true
               type: array
@@ -113,11 +155,13 @@ spec:
               type: string
             subnets:
               items:
+                nullable: true
                 type: string
               nullable: true
               type: array
             tags:
               additionalProperties:
+                nullable: true
                 type: string
               nullable: true
               type: object
@@ -125,22 +169,43 @@ spec:
         status:
           properties:
             failureMessage:
+              nullable: true
               type: string
+            managedLaunchTemplateID:
+              nullable: true
+              type: string
+            managedLaunchTemplateVersions:
+              additionalProperties:
+                nullable: true
+                type: string
+              nullable: true
+              type: object
             networkFieldsSource:
+              nullable: true
               type: string
             phase:
+              nullable: true
               type: string
             securityGroups:
               items:
+                nullable: true
                 type: string
               nullable: true
               type: array
             subnets:
               items:
+                nullable: true
+                type: string
+              nullable: true
+              type: array
+            templateVersionsToDelete:
+              items:
+                nullable: true
                 type: string
               nullable: true
               type: array
             virtualNetwork:
+              nullable: true
               type: string
           type: object
       type: object
