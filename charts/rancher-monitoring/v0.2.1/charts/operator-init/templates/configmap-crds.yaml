@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: {{ .Release.Namespace }}
+  name: {{ template "app.fullname" . }}
+  labels:
+    app: {{ template "app.name" . }}
+    chart: {{ template "app.version" . }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+data:
+{{ (.Files.Glob "files/crd-*.yaml").AsConfig | indent 2 }}
