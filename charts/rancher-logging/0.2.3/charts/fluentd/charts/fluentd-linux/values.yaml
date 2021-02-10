@@ -51,6 +51,6 @@ configmapReload:
   name: reloader
   image:
     repository: rancher/configmap-reload
-    tag: v0.3.0-rancher3
+    tag: v0.3.0-rancher4
     pullPolicy: IfNotPresent
   resources: {}
