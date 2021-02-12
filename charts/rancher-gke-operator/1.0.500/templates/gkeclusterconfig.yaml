@@ -86,6 +86,24 @@ spec:
                 type: string
               nullable: true
               type: array
+            masterAuthorizedNetowrks:
+              nullable: true
+              properties:
+                cidrBlocks:
+                  items:
+                    properties:
+                      cidrBlock:
+                        nullable: true
+                        type: string
+                      displayName:
+                        nullable: true
+                        type: string
+                    type: object
+                  nullable: true
+                  type: array
+                enabled:
+                  type: boolean
+              type: object
             networkConfig:
               nullable: true
               properties:
