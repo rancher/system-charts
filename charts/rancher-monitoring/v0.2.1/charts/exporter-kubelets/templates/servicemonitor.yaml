@@ -87,7 +87,7 @@ spec:
     {{- end }}
   - port: https-metrics
     scheme: https
-    path: /metrics/resource/v1alpha1
+    path: {{ include "kubelet.serviceMonitor.resourcePath" . }}
     honorLabels: true
     bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
     tlsConfig:
@@ -157,7 +157,7 @@ spec:
       targetLabel: pod_name
     {{- end }}
   - port: http-metrics
-    path: /metrics/resource/v1alpha1
+    path: {{ include "kubelet.serviceMonitor.resourcePath" . }}
     honorLabels: true
     metricRelabelings:
     - action: replace
