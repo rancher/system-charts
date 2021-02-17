@@ -172,7 +172,7 @@ exporter-node-windows:
   image:
     os: windows
     repository: rancher/wmi_exporter-package
-    tag: v0.0.5
+    tag: v0.0.7
   resources: {}
   ports:
     metrics:
