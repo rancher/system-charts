@@ -16,7 +16,7 @@ spec:
       serviceAccountName: gke-operator
       containers:
       - name: gke-operator
-        image: {{ template "system_default_registry" . }}{{ .Values.eksOperator.image.repository }}:{{ .Values.eksOperator.image.tag }}
+        image: {{ template "system_default_registry" . }}{{ .Values.gkeOperator.image.repository }}:{{ .Values.gkeOperator.image.tag }}
         imagePullPolicy: IfNotPresent
         env:
         - name: HTTP_PROXY

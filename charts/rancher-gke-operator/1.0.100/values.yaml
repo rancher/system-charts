@@ -1,10 +1,10 @@
 global:
   systemDefaultRegistry: ""
 
-eksOperator:
+gkeOperator:
   image:
     repository: rancher/gke-operator
-    tag: v1.0.5
+    tag: v1.0.1-rc1
 
 httpProxy: ""
 httpsProxy: ""
