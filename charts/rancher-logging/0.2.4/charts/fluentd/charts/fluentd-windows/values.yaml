@@ -4,7 +4,7 @@ labels: {}
 image:
   os: windows
   repository: rancher/fluentd
-  tag: v0.1.22
+  tag: v0.1.24
   pullPolicy: IfNotPresent
 
 resources: {}
@@ -47,6 +47,6 @@ configmapReload:
   image:
     os: windows
     repository: rancher/configmap-reload
-    tag: v0.3.0-rancher3
+    tag: v0.3.0-rancher4
     pullPolicy: IfNotPresent
   resources: {}
