@@ -1,0 +1,2 @@
+# Tolerations for use with node taints
+tolerations: []

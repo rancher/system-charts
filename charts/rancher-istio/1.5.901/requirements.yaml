@@ -1,0 +1,40 @@
+dependencies:
+  - name: sidecarInjectorWebhook
+    version: 1.5.9
+    condition: sidecarInjectorWebhook.enabled
+  - name: security
+    version: 1.5.9
+    condition: security.enabled
+  - name: gateways
+    version: 1.5.9
+    condition: gateways.enabled
+  - name: mixer
+    version: 1.5.9
+    condition: or mixer.policy.enabled mixer.telemetry.enabled
+  - name: nodeagent
+    version: 1.5.9
+    condition: nodeagent.enabled
+  - name: pilot
+    version: 1.5.9
+    condition: pilot.enabled
+  - name: grafana
+    version: 1.5.9
+    condition: grafana.enabled
+  - name: prometheus
+    version: 1.5.9
+    condition: prometheus.enabled
+  - name: tracing
+    version: 1.5.9
+    condition: tracing.enabled
+  - name: galley
+    version: 1.5.9
+    condition: galley.enabled
+  - name: kiali
+    version: 1.5.9
+    condition: kiali.enabled
+  - name: istiocoredns
+    version: 1.5.9
+    condition: istiocoredns.enabled
+  - name: certmanager
+    version: 1.5.9
+    condition: certmanager.enabled

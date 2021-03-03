@@ -1,0 +1,12 @@
+apiVersion: v1
+description: Rancher logging helm chart to support logging function in rancher
+icon: https://raw.githubusercontent.com/fluent/fluentd-docs/master/public/logo/Fluentd_square.png
+name: rancher-logging
+version: 0.2.4
+appVersion: 1.6.3
+home: https://www.fluentd.org/
+sources:
+- https://www.fluentd.org/
+maintainers:
+- name: Michelia
+  email: support@rancher.com
