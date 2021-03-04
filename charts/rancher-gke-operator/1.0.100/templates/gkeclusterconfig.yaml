@@ -1,0 +1,238 @@
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    helm.sh/resource-policy: keep
+  name: gkeclusterconfigs.gke.cattle.io
+spec:
+  group: gke.cattle.io
+  names:
+    kind: GKEClusterConfig
+    plural: gkeclusterconfigs
+    shortNames:
+    - gkecc
+  scope: Namespaced
+  subresources:
+    status: {}
+  validation:
+    openAPIV3Schema:
+      properties:
+        spec:
+          properties:
+            clusterAddons:
+              properties:
+                horizontalPodAutoscaling:
+                  nullable: true
+                  type: boolean
+                httpLoadBalancing:
+                  nullable: true
+                  type: boolean
+                networkPolicyConfig:
+                  nullable: true
+                  type: boolean
+              type: object
+            clusterIpv4Cidr:
+              nullable: true
+              type: string
+            clusterName:
+              nullable: true
+              type: string
+            credentialContent:
+              nullable: true
+              type: string
+            description:
+              nullable: true
+              type: string
+            enableAlphaFeature:
+              nullable: true
+              type: boolean
+            imported:
+              type: boolean
+            ipAllocationPolicy:
+              nullable: true
+              properties:
+                clusterIpv4CidrBlock:
+                  nullable: true
+                  type: string
+                clusterSecondaryRangeName:
+                  nullable: true
+                  type: string
+                createSubnetwork:
+                  type: boolean
+                nodeIpv4CidrBlock:
+                  nullable: true
+                  type: string
+                servicesIpv4CidrBlock:
+                  nullable: true
+                  type: string
+                servicesSecondaryRangeName:
+                  nullable: true
+                  type: string
+                subnetworkName:
+                  nullable: true
+                  type: string
+                useIpAliases:
+                  type: boolean
+              type: object
+            kubernetesVersion:
+              nullable: true
+              type: string
+            loggingService:
+              nullable: true
+              type: string
+            masterAuthorizedNetowrks:
+              nullable: true
+              properties:
+                cidrBlocks:
+                  items:
+                    properties:
+                      cidrBlock:
+                        nullable: true
+                        type: string
+                      displayName:
+                        nullable: true
+                        type: string
+                    type: object
+                  nullable: true
+                  type: array
+                enabled:
+                  type: boolean
+              type: object
+            networkConfig:
+              nullable: true
+              properties:
+                network:
+                  nullable: true
+                  type: string
+                subnetwork:
+                  nullable: true
+                  type: string
+              type: object
+            networkPolicy:
+              nullable: true
+              properties:
+                enabled:
+                  nullable: true
+                  type: boolean
+                provider:
+                  nullable: true
+                  type: string
+              type: object
+            nodePools:
+              items:
+                properties:
+                  autoscaling:
+                    nullable: true
+                    properties:
+                      enabled:
+                        nullable: true
+                        type: boolean
+                      maxNodeCount:
+                        nullable: true
+                        type: integer
+                      minNodeCount:
+                        nullable: true
+                        type: integer
+                    type: object
+                  config:
+                    nullable: true
+                    properties:
+                      diskSizeGb:
+                        nullable: true
+                        type: integer
+                      diskType:
+                        nullable: true
+                        type: string
+                      imageType:
+                        nullable: true
+                        type: string
+                      labels:
+                        additionalProperties:
+                          nullable: true
+                          type: string
+                        nullable: true
+                        type: object
+                      localSsdCount:
+                        nullable: true
+                        type: integer
+                      machineType:
+                        nullable: true
+                        type: string
+                      preemptible:
+                        nullable: true
+                        type: boolean
+                      taints:
+                        items:
+                          properties:
+                            effect:
+                              nullable: true
+                              type: string
+                            key:
+                              nullable: true
+                              type: string
+                            value:
+                              nullable: true
+                              type: string
+                          type: object
+                        nullable: true
+                        type: array
+                    type: object
+                  initialNodeCount:
+                    nullable: true
+                    type: integer
+                  maxPodsConstraint:
+                    nullable: true
+                    type: integer
+                  name:
+                    nullable: true
+                    type: string
+                  version:
+                    nullable: true
+                    type: string
+                type: object
+              nullable: true
+              type: array
+            privateClusterConfig:
+              nullable: true
+              properties:
+                enablePrivateEndpoint:
+                  nullable: true
+                  type: boolean
+                enablePrivateNodes:
+                  nullable: true
+                  type: boolean
+                masterIpv4CidrBlock:
+                  nullable: true
+                  type: string
+                privateEndpoint:
+                  nullable: true
+                  type: string
+                publicEndpoint:
+                  nullable: true
+                  type: string
+              type: object
+            projectID:
+              nullable: true
+              type: string
+            region:
+              nullable: true
+              type: string
+            zone:
+              nullable: true
+              type: string
+          type: object
+        status:
+          properties:
+            failureMessage:
+              nullable: true
+              type: string
+            phase:
+              nullable: true
+              type: string
+          type: object
+      type: object
+  version: v1
+  versions:
+  - name: v1
+    served: true
+    storage: true
