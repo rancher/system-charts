@@ -20,15 +20,13 @@ spec:
         spec:
           properties:
             clusterAddons:
+              nullable: true
               properties:
                 horizontalPodAutoscaling:
-                  nullable: true
                   type: boolean
                 httpLoadBalancing:
-                  nullable: true
                   type: boolean
                 networkPolicyConfig:
-                  nullable: true
                   type: boolean
               type: object
             clusterIpv4Cidr:
@@ -46,6 +44,16 @@ spec:
             enableAlphaFeature:
               nullable: true
               type: boolean
+            gkeClusterNetworkConfig:
+              nullable: true
+              properties:
+                network:
+                  nullable: true
+                  type: string
+                subnetwork:
+                  nullable: true
+                  type: string
+              type: object
             imported:
               type: boolean
             ipAllocationPolicy:
@@ -80,7 +88,7 @@ spec:
             loggingService:
               nullable: true
               type: string
-            masterAuthorizedNetowrks:
+            masterAuthorizedNetworks:
               nullable: true
               properties:
                 cidrBlocks:
@@ -98,26 +106,12 @@ spec:
                 enabled:
                   type: boolean
               type: object
-            networkConfig:
+            monitoringService:
               nullable: true
-              properties:
-                network:
-                  nullable: true
-                  type: string
-                subnetwork:
-                  nullable: true
-                  type: string
-              type: object
-            networkPolicy:
+              type: string
+            networkPolicyEnabled:
               nullable: true
-              properties:
-                enabled:
-                  nullable: true
-                  type: boolean
-                provider:
-                  nullable: true
-                  type: string
-              type: object
+              type: boolean
             nodePools:
               items:
                 properties:
@@ -125,20 +119,16 @@ spec:
                     nullable: true
                     properties:
                       enabled:
-                        nullable: true
                         type: boolean
                       maxNodeCount:
-                        nullable: true
                         type: integer
                       minNodeCount:
-                        nullable: true
                         type: integer
                     type: object
                   config:
                     nullable: true
                     properties:
                       diskSizeGb:
-                        nullable: true
                         type: integer
                       diskType:
                         nullable: true
@@ -153,13 +143,17 @@ spec:
                         nullable: true
                         type: object
                       localSsdCount:
-                        nullable: true
                         type: integer
                       machineType:
                         nullable: true
                         type: string
-                      preemptible:
+                      oauthScopes:
+                        items:
+                          nullable: true
+                          type: string
                         nullable: true
+                        type: array
+                      preemptible:
                         type: boolean
                       taints:
                         items:
