@@ -5,4 +5,4 @@ home: https://github.com/rancher/gke-operator
 sources:
   - "https://github.com/rancher/gke-operator"
 version: 1.0.100
-appVersion: v1.0.1-rc1
+appVersion: v1.0.1-rc2
