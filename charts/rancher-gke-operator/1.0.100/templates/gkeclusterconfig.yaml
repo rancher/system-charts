@@ -35,25 +35,15 @@ spec:
             clusterName:
               nullable: true
               type: string
-            credentialContent:
-              nullable: true
-              type: string
             description:
               nullable: true
               type: string
-            enableAlphaFeature:
+            enableKubernetesAlpha:
               nullable: true
               type: boolean
-            gkeClusterNetworkConfig:
+            googleCredentialSecret:
               nullable: true
-              properties:
-                network:
-                  nullable: true
-                  type: string
-                subnetwork:
-                  nullable: true
-                  type: string
-              type: object
+              type: string
             imported:
               type: boolean
             ipAllocationPolicy:
@@ -107,6 +97,9 @@ spec:
                   type: boolean
               type: object
             monitoringService:
+              nullable: true
+              type: string
+            network:
               nullable: true
               type: string
             networkPolicyEnabled:
@@ -190,10 +183,8 @@ spec:
               nullable: true
               properties:
                 enablePrivateEndpoint:
-                  nullable: true
                   type: boolean
                 enablePrivateNodes:
-                  nullable: true
                   type: boolean
                 masterIpv4CidrBlock:
                   nullable: true
@@ -209,6 +200,9 @@ spec:
               nullable: true
               type: string
             region:
+              nullable: true
+              type: string
+            subnetwork:
               nullable: true
               type: string
             zone:
