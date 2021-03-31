@@ -75,7 +75,16 @@ spec:
             kubernetesVersion:
               nullable: true
               type: string
+            locations:
+              items:
+                nullable: true
+                type: string
+              nullable: true
+              type: array
             loggingService:
+              nullable: true
+              type: string
+            maintenanceWindow:
               nullable: true
               type: string
             masterAuthorizedNetworks:
@@ -167,6 +176,14 @@ spec:
                   initialNodeCount:
                     nullable: true
                     type: integer
+                  management:
+                    nullable: true
+                    properties:
+                      autoRepair:
+                        type: boolean
+                      autoUpgrade:
+                        type: boolean
+                    type: object
                   maxPodsConstraint:
                     nullable: true
                     type: integer
