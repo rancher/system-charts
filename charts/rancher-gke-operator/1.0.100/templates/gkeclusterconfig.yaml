@@ -206,12 +206,6 @@ spec:
                 masterIpv4CidrBlock:
                   nullable: true
                   type: string
-                privateEndpoint:
-                  nullable: true
-                  type: string
-                publicEndpoint:
-                  nullable: true
-                  type: string
               type: object
             projectID:
               nullable: true
