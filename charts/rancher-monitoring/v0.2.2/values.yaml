@@ -257,8 +257,8 @@ grafana:
       repository: rancher/prometheus-auth
       tag: v0.2.1
     proxy:
-      repository: rancher/library-nginx
-      tag: 1.19.2-alpine
+      repository: rancher/mirrored-library-nginx
+      tag: 1.19.9-alpine
   nodeSelectors: []
   resources:
     inits:
@@ -317,7 +317,7 @@ prometheus:
       repository: rancher/prometheus-auth
       tag: v0.2.1
     proxy:
-      repository: rancher/library-nginx
+      repository: rancher/mirrored-library-nginx
       tag: 1.19.9-alpine
     thanos:
       repository: rancher/thanosio-thanos
