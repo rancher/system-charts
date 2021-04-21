@@ -1,8 +1,0 @@
-apiVersion: v1
-name: rancher-aks-operator
-description: A Helm chart for provisioning AKS clusters
-home: https://github.com/rancher/aks-operator
-sources:
-  - "https://github.com/rancher/aks-operator"
-version: 1.0.100
-appVersion: v1.0.1-rc1
