@@ -4,7 +4,7 @@ global:
 eksOperator:
   image:
     repository: rancher/eks-operator
-    tag: v1.0.8-rc2
+    tag: v1.0.8
 
 httpProxy: ""
 httpsProxy: ""
