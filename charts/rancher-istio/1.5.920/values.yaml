@@ -22,7 +22,7 @@ gateways:
 # charts/sidecarInjectorWebhook/values.yaml for detailed configuration
 #
 sidecarInjectorWebhook:
-  repository: rancher/istio-sidecar_injector
+  repository: rancher/mirrored-istio-sidecar_injector
   tag: 1.5.9
   enabled: true
 
@@ -31,7 +31,7 @@ sidecarInjectorWebhook:
 # for detailed configuration
 #
 galley:
-  repository: rancher/istio-galley
+  repository: rancher/mirrored-istio-galley
   tag: 1.5.9
   enabled: true
 
@@ -40,7 +40,7 @@ galley:
 #
 # @see charts/mixer/values.yaml for all values
 mixer:
-  repository: rancher/istio-mixer
+  repository: rancher/mirrored-istio-mixer
   tag: 1.5.9
   policy:
     # if policy is enabled the global.disablePolicyChecks has affect.
@@ -53,7 +53,7 @@ mixer:
 #
 # @see charts/pilot/values.yaml
 pilot:
-  repository: rancher/istio-pilot
+  repository: rancher/mirrored-istio-pilot
   tag: 1.5.9
   enabled: true
 
@@ -61,7 +61,7 @@ pilot:
 # security configuration
 #
 security:
-  repository: rancher/istio-citadel
+  repository: rancher/mirrored-istio-citadel
   tag: 1.5.9
   enabled: true
 
@@ -76,7 +76,7 @@ nodeagent:
 #
 grafana:
   # note that this does not get used by default, instead we use monitorings grafana
-  repository: rancher/grafana-grafana
+  repository: rancher/mirrored-grafana-grafana
   tag: 6.7.4
   enabled: false
 
@@ -84,7 +84,7 @@ grafana:
 # addon prometheus configuration
 #
 prometheus:
-  repository: rancher/prom-prometheus
+  repository: rancher/mirrored-prom-prometheus
   tag: v2.12.0
   enabled: false
 
@@ -94,17 +94,17 @@ prometheus:
 tracing:
   enabled: false
   jaeger:
-    repository: rancher/jaegertracing-all-in-one
+    repository: rancher/mirrored-jaegertracing-all-in-one
     tag: 1.14
   zipkin:
-    repository: rancher/openzipkin-zipkin
+    repository: rancher/mirrored-openzipkin-zipkin
     tag: 2.14.2
 
 #
 # addon kiali tracing configuration
 #
 kiali:
-  repository: rancher/kiali-kiali
+  repository: rancher/mirrored-kiali-kiali
   tag: v1.17
   contextPath: /
   dashboard:
@@ -121,7 +121,7 @@ kiali:
 #
 certmanager:
   image:
-    repository: rancher/jetstack-cert-manager-controller
+    repository: rancher/mirrored-jetstack-cert-manager-controller
     tag: v0.8.1
   enabled: false
 
@@ -138,10 +138,10 @@ istio_cni:
 #
 istiocoredns:
   image:
-    repository: rancher/coredns-coredns
+    repository: rancher/mirrored-coredns-coredns
     tag: 1.6.2
   pluginImage:
-    repository: rancher/istio-coredns-plugin
+    repository: rancher/mirrored-istio-coredns-plugin
     tag: 0.2-istio-1.1
   enabled: false
 
@@ -177,7 +177,7 @@ global:
     level: "default:info"
 
   kubectl:
-    repository: rancher/istio-kubectl
+    repository: rancher/mirrored-istio-kubectl
     tag: 1.5.9
 
   # monitoring port used by mixer, pilot, galley and sidecar injector
@@ -197,12 +197,12 @@ global:
     enableHttps: false
 
   curl:
-    repository: rancher/pstauffer-curl
+    repository: rancher/mirrored-pstauffer-curl
     tag: v1.0.3
 
   proxy:
     # use fully qualified image names for alternate path to proxy.
-    repository: rancher/istio-proxyv2
+    repository: rancher/mirrored-istio-proxyv2
     tag: 1.5.9
 
     # cluster domain. Default value is "cluster.local".
@@ -364,7 +364,7 @@ global:
 
   proxy_init:
     # Base name for the istio-init container, used to configure iptables.
-    repository: rancher/istio-proxyv2
+    repository: rancher/mirrored-istio-proxyv2
     tag: 1.5.9
     # Configuration for the proxy init container
     init:
@@ -604,7 +604,7 @@ global:
   # nodeagent configuration
   #
   nodeagent:
-    repository: rancher/istio-node-agent-k8s
+    repository: rancher/mirrored-istio-node-agent-k8s
     tag: 1.5.9
 
   sds:
