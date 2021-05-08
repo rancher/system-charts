@@ -75,6 +75,12 @@ spec:
             kubernetesVersion:
               nullable: true
               type: string
+            labels:
+              additionalProperties:
+                nullable: true
+                type: string
+              nullable: true
+              type: object
             locations:
               items:
                 nullable: true
