@@ -19,9 +19,6 @@ spec:
       properties:
         spec:
           properties:
-            adminUsername:
-              nullable: true
-              type: string
             authBaseUrl:
               nullable: true
               type: string
@@ -52,6 +49,9 @@ spec:
             imported:
               type: boolean
             kubernetesVersion:
+              nullable: true
+              type: string
+            linuxAdminUsername:
               nullable: true
               type: string
             loadBalancerSku:
@@ -132,9 +132,6 @@ spec:
             subnet:
               nullable: true
               type: string
-            subscriptionId:
-              nullable: true
-              type: string
             tags:
               additionalProperties:
                 nullable: true
@@ -148,6 +145,12 @@ spec:
               nullable: true
               type: string
             virtualNetworkResourceGroup:
+              nullable: true
+              type: string
+            windowsAdminPassword:
+              nullable: true
+              type: string
+            windowsAdminUsername:
               nullable: true
               type: string
           type: object
