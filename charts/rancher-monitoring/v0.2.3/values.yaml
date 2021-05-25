@@ -207,8 +207,8 @@ alertmanager:
   enabled: false
   apiGroup: "monitoring.coreos.com"
   image:
-    repository: rancher/mirrored-prom-alertmanager
-    tag: v0.21.0
+    repository: rancher/mirrored-prometheus-alertmanager
+    tag: v0.22.0
   nodeSelectors: []
   resources:
     core:
