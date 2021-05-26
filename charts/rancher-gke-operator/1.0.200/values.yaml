@@ -9,3 +9,4 @@ gkeOperator:
 httpProxy: ""
 httpsProxy: ""
 noProxy: ""
+additionalTrustedCAs: false
