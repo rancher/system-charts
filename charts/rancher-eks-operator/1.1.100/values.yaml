@@ -1,0 +1,11 @@
+global:
+  systemDefaultRegistry: ""
+
+eksOperator:
+  image:
+    repository: rancher/eks-operator
+    tag: v1.0.8-rc2
+
+httpProxy: ""
+httpsProxy: ""
+noProxy: ""
