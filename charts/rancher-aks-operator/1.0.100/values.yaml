@@ -9,3 +9,4 @@ aksOperator:
 httpProxy: ""
 httpsProxy: ""
 noProxy: ""
+additionalTrustedCAs: false
