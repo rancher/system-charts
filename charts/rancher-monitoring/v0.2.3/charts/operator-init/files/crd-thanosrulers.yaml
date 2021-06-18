@@ -1,9 +1,8 @@
-# https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/d8d7949edf839ffb7fae859992c05c894b373862/bundle.yaml
+# https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/v0.40.0/bundle.yaml
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    helm.sh/hook: crd-install
     controller-gen.kubebuilder.io/version: v0.2.4
   creationTimestamp: null
   name: thanosrulers.monitoring.coreos.com
@@ -3000,6 +2999,27 @@ spec:
               priorityClassName:
                 description: Priority class assigned to the Pods
                 type: string
+              prometheusRulesExcludedFromEnforce:
+                description: PrometheusRulesExcludedFromEnforce - list of Prometheus
+                  rules to be excluded from enforcing of adding namespace labels.
+                  Works only if enforcedNamespaceLabel set to true. Make sure both
+                  ruleNamespace and ruleName are set for each pair
+                items:
+                  description: PrometheusRuleExcludeConfig enables users to configure
+                    excluded PrometheusRule names and their namespaces to be ignored
+                    while enforcing namespace label for alerts and metrics.
+                  properties:
+                    ruleName:
+                      description: RuleNamespace - name of excluded rule
+                      type: string
+                    ruleNamespace:
+                      description: RuleNamespace - namespace of excluded rule
+                      type: string
+                  required:
+                  - ruleName
+                  - ruleNamespace
+                  type: object
+                type: array
               queryConfig:
                 description: Define configuration for connecting to thanos query instances.
                   If this is defined, the QueryEndpoints field will be ignored. Maps
