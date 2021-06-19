@@ -93,7 +93,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "min(sum(kube_node_status_allocatable_cpu_cores) by (instance))",
+          "expr": "min(sum(kube_node_status_allocatable{resource=\"cpu\", unit=\"cores\"}) by (instance))",
           "hide": false,
           "intervalFactor": 2,
           "legendFormat": "allocatable",
@@ -101,7 +101,7 @@
           "step": 20
         },
         {
-          "expr": "max(sum(kube_pod_container_resource_requests_cpu_cores) by (instance))",
+          "expr": "max(sum(kube_pod_container_resource_requests{resource=\"cpu\", unit=\"cores\"}) by (instance))",
           "hide": false,
           "intervalFactor": 2,
           "legendFormat": "requested",
@@ -208,7 +208,7 @@
       "tableColumn": "",
       "targets": [
         {
-          "expr": "max(sum(kube_pod_container_resource_requests_cpu_cores) by (instance)) / min(sum(kube_node_status_allocatable_cpu_cores) by (instance)) * 100",
+          "expr": "max(sum(kube_pod_container_resource_requests{resource=\"cpu\", unit=\"cores\"}) by (instance)) / min(sum(kube_node_status_allocatable{resource=\"cpu\", unit=\"cores\"}) by (instance)) * 100",
           "intervalFactor": 2,
           "legendFormat": "",
           "refId": "A",
@@ -278,7 +278,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "min(sum(kube_node_status_allocatable_memory_bytes) by (instance))",
+          "expr": "min(sum(kube_node_status_allocatable{resource=\"memory\", unit=\"bytes\"}) by (instance))",
           "hide": false,
           "intervalFactor": 2,
           "legendFormat": "allocatable",
@@ -286,7 +286,7 @@
           "step": 20
         },
         {
-          "expr": "max(sum(kube_pod_container_resource_requests_memory_bytes) by (instance))",
+          "expr": "max(sum(kube_pod_container_resource_requests{resource=\"memory\", unit=\"bytes\"}) by (instance))",
           "hide": false,
           "intervalFactor": 2,
           "legendFormat": "requested",
@@ -393,7 +393,7 @@
       "tableColumn": "",
       "targets": [
         {
-          "expr": "max(sum(kube_pod_container_resource_requests_memory_bytes) by (instance)) / min(sum(kube_node_status_allocatable_memory_bytes) by (instance)) * 100",
+          "expr": "max(sum(kube_pod_container_resource_requests{resource=\"memory\", unit=\"bytes\"}) by (instance)) / min(sum(kube_node_status_allocatable{resource=\"memory\", unit=\"bytes\"}) by (instance)) * 100",
           "intervalFactor": 2,
           "legendFormat": "",
           "refId": "A",

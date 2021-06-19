@@ -80,20 +80,20 @@
           "step": 15
         },
         {
-          "expr": "kube_pod_container_resource_requests_memory_bytes{namespace=\"$namespace\",pod=\"$pod\",container=~\"$container\"}",
+          "expr": "kube_pod_container_resource_requests{resource=\"memory\", unit=\"bytes\", namespace=\"$namespace\",pod=\"$pod\",container=~\"$container\"}",
           "interval": "10s",
           "intervalFactor": 2,
           "legendFormat": "Requested: {{ container }}",
-          "metric": "kube_pod_container_resource_requests_memory_bytes",
+          "metric": "kube_pod_container_resource_requests{resource=\"memory\", unit=\"bytes\"}",
           "refId": "B",
           "step": 20
         },
         {
-          "expr": "kube_pod_container_resource_limits_memory_bytes{namespace=\"$namespace\",pod=\"$pod\",container=~\"$container\"}",
+          "expr": "kube_pod_container_resource_limits{resource=\"memory\", unit=\"bytes\", namespace=\"$namespace\",pod=\"$pod\",container=~\"$container\"}",
           "interval": "10s",
           "intervalFactor": 2,
           "legendFormat": "Limit: {{ container }}",
-          "metric": "kube_pod_container_resource_limits_memory_bytes",
+          "metric": "kube_pod_container_resource_limits{resource=\"memory\", unit=\"bytes\"}",
           "refId": "C",
           "step": 20
         }
@@ -193,20 +193,20 @@
           "step": 30
         },
         {
-          "expr": "kube_pod_container_resource_requests_cpu_cores{namespace=\"$namespace\",pod=\"$pod\",container=~\"$container\"}",
+          "expr": "kube_pod_container_resource_requests{resource=\"cpu\", unit=\"cores\", namespace=\"$namespace\",pod=\"$pod\",container=~\"$container\"}",
           "interval": "10s",
           "intervalFactor": 2,
           "legendFormat": "Requested: {{ container }}",
-          "metric": "kube_pod_container_resource_requests_cpu_cores",
+          "metric": "kube_pod_container_resource_requests{resource=\"cpu\", unit=\"cores\"}",
           "refId": "B",
           "step": 20
         },
         {
-          "expr": "kube_pod_container_resource_limits_cpu_cores{namespace=\"$namespace\",pod=\"$pod\",container=~\"$container\"}",
+          "expr": "kube_pod_container_resource_limits{resource=\"cpu\", unit=\"cores\", namespace=\"$namespace\",pod=\"$pod\",container=~\"$container\"}",
           "interval": "10s",
           "intervalFactor": 2,
           "legendFormat": "Limit: {{ container }}",
-          "metric": "kube_pod_container_resource_limits_memory_bytes",
+          "metric": "kube_pod_container_resource_limits{resource=\"cpu\", unit=\"cores\"}",
           "refId": "C",
           "step": 20
         }
