@@ -4,10 +4,10 @@ operator:
   apiGroup: "monitoring.coreos.com"
   image:
     repository: rancher/mirrored-coreos-prometheus-operator
-    tag: v0.39.0
+    tag: v0.40.0
     prometheusConfigReloader:
       repository: rancher/mirrored-coreos-prometheus-config-reloader
-      tag: v0.39.0
+      tag: v0.40.0
     configmapReload:
       repository: rancher/mirrored-jimmidyson-configmap-reload
       tag: v0.3.0
@@ -183,8 +183,8 @@ exporter-kube-state:
   enabled: false
   apiGroup: "monitoring.coreos.com"
   image:
-    repository: rancher/mirrored-coreos-kube-state-metrics
-    tag: v1.9.7
+    repository: rancher/mirrored-kube-state-metrics-kube-state-metrics
+    tag: v2.0.0
   nodeSelectors: []
   resources:
     limits:
@@ -252,10 +252,10 @@ grafana:
   apiGroup: "monitoring.coreos.com"
   image:
     repository: rancher/mirrored-grafana-grafana
-    tag: 7.1.5
+    tag: 7.5.8
     tool:
       repository: rancher/prometheus-auth
-      tag: v0.2.1
+      tag: v0.2.2
     proxy:
       repository: rancher/mirrored-library-nginx
       tag: 1.19.9-alpine
@@ -315,13 +315,13 @@ prometheus:
     tag: v2.18.2
     auth:
       repository: rancher/prometheus-auth
-      tag: v0.2.1
+      tag: v0.2.2
     proxy:
       repository: rancher/mirrored-library-nginx
       tag: 1.19.9-alpine
     thanos:
       repository: rancher/mirrored-thanosio-thanos
-      tag: v0.15.0
+      tag: v0.21.1
   nodeSelectors: []
   resources:
     core:
@@ -405,4 +405,4 @@ webhook-receiver:
   enabled: false
   image:
     repository: rancher/webhook-receiver
-    tag: v0.2.4
+    tag: v0.2.5
