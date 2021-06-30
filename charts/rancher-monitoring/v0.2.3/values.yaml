@@ -258,7 +258,7 @@ grafana:
       tag: v0.2.2
     proxy:
       repository: rancher/mirrored-library-nginx
-      tag: 1.19.9-alpine
+      tag: 1.21.0-alpine
   nodeSelectors: []
   resources:
     inits:
@@ -318,7 +318,7 @@ prometheus:
       tag: v0.2.2
     proxy:
       repository: rancher/mirrored-library-nginx
-      tag: 1.19.9-alpine
+      tag: 1.21.0-alpine
     thanos:
       repository: rancher/mirrored-thanosio-thanos
       tag: v0.21.1
