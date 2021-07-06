@@ -17,7 +17,7 @@ spec:
       app: {{ template "app.name" . }}
       chart: {{ template "app.version" . }}
       release: {{ .Release.Name }}
-  image: {{ template "system_default_registry" . }}{{ .Values.image.repository }}
+  image: {{ template "system_default_registry" . }}{{ .Values.image.repository }}:{{ .Values.image.tag }}
   nodeSelector:
 {{- include "linux-node-selector" . | nindent 4 }}
     {{- range .Values.nodeSelectors }}
