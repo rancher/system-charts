@@ -1,0 +1,29 @@
+name: Lint and Test Charts
+on:
+  pull_request:
+    branches:
+      - dev-v2.6
+
+jobs:
+  validate-chart-questions:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Validate all charts have a questions file
+        run: >
+          chart_dirs=$(find charts -type d -mindepth 2 -maxdepth 2)
+
+          for chart in $chart_dirs; do
+            if [[ ! -f $chart/questions.yaml ]] && [[ ! -f $chart/questions.yml ]]; then
+              echo "$chart is missing a questions chart file"
+              exit 1
+            fi
+          done
+
+      - name: Validate all questions files have a `rancher_min_version` set
+        run: >
+          questions_files=$(find charts -type f -name questions.y\*ml)
+
+          grep -rL "rancher_min_version" $questions_files | sed 's/$/ is missing a rancher_min_version constraint/' | (! grep .)
