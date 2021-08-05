@@ -5,7 +5,7 @@ labels: {}
 ##
 image:
   repository: rancher/log-aggregator
-  tag: v0.1.7
+  tag: v0.1.8
 
 nodeSelector: {}
 
@@ -24,4 +24,4 @@ resources: {}
   #   memory: 400Mi
 
 ## flexvolume dir
-flexVolumeDir: /usr/libexec/kubernetes/kubelet-plugins/volume/exec
+flexVolumeDir: C:/var/lib/kubelet/volumeplugins
