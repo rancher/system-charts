@@ -1,0 +1,60 @@
+apiVersion: {{ template "daemonset_api_version" . }}
+kind: DaemonSet
+metadata:
+  name: {{ template "log-aggregator.fullname" . }}-linux
+  labels:
+    app: {{ template "log-aggregator.name" . }}
+    chart: {{ template "log-aggregator.version" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+{{- if .Values.labels }}
+{{ toYaml .Values.labels | indent 4 }}
+{{- end }}
+spec:
+{{- if .Values.updateStrategy }}
+  updateStrategy:
+{{ toYaml .Values.updateStrategy | indent 4 }}
+{{- end }}
+  selector:
+    matchLabels:
+      app: {{ template "log-aggregator.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "log-aggregator.name" . }}
+        chart: {{ template "log-aggregator.version" . }}
+        release: {{ .Release.Name }}
+    spec:
+      serviceAccountName: {{ template "log-aggregator.fullname" . }}
+      containers:
+      - name: log-aggregator
+        image: {{ template "system_default_registry" . }}{{ .Values.image.repository }}:{{ .Values.image.tag }}
+        imagePullPolicy: "{{ .Values.image.pullPolicy }}"
+{{- if .Values.global.privileged }}
+        securityContext:
+          privileged: true
+{{- end }}
+        volumeMounts:
+        - name: flexvolume-driver
+          mountPath: /flexmnt
+{{- if .Values.env }}
+        env:
+{{ toYaml .Values.env | indent 10 }}
+{{- end }}
+        resources:
+{{ toYaml .Values.resources | indent 10 }}
+      terminationGracePeriodSeconds: 10
+      nodeSelector:
+{{- include "linux-node-selector" . | nindent 8 }}
+    {{- if .Values.nodeSelector }}
+{{ toYaml .Values.nodeSelector | indent 8 }}
+    {{- end }}
+      tolerations:
+    {{- if .Values.tolerations }}
+{{ toYaml .Values.tolerations | indent 8 }}
+    {{- end }}
+      volumes:
+      - name: flexvolume-driver
+        hostPath:
+          path: {{ .Values.flexVolumeDir }}
