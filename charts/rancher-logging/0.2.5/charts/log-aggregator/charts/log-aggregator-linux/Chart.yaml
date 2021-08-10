@@ -1,0 +1,15 @@
+name: log-aggregator-linux
+version: 0.0.1
+appVersion: 0.1.5
+home: https://github.com/rancher/log-aggregator
+description: Deploy flexvolume driver log-aggregator to collect log.
+icon: https://raw.githubusercontent.com/fluent/fluentd-docs/master/public/logo/Fluentd_square.png
+keywords:
+- fluentd
+- flexvolume driver
+- logging
+- linux
+maintainers:
+- name: michelia
+  email: support@rancher.com
+engine: gotpl
