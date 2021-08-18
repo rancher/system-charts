@@ -6,4 +6,4 @@ home: https://github.com/rancher/system-charts/blob/dev-v2.6/charts/rancher-k3s-
 sources:
   - "https://github.com/rancher/system-charts/blob/dev-v2.6/charts/rancher-k3s-upgrader"
 version: 0.3.0
-appVersion: v0.7.3
+appVersion: v0.7.4
