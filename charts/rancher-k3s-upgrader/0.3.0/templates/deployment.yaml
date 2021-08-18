@@ -14,10 +14,21 @@ spec:
     spec:
       affinity:
         nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              - matchExpressions:
-                  - {key: "node-role.kubernetes.io/master", operator: In, values: ["true"]}
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - preference:
+              matchExpressions:
+                - key: node-role.kubernetes.io/control-plane
+                  operator: In
+                  values:
+                    - "true"
+            weight: 100
+          - preference:
+              matchExpressions:
+                - key: node-role.kubernetes.io/master
+                  operator: In
+                  values:
+                    - "true"
+            weight: 100
       serviceAccountName: system-upgrade
       containers:
         - name: system-upgrade-controller
