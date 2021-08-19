@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: default-controller-env
+  name: system-upgrade-controller-config
   namespace: cattle-system
 data:
   SYSTEM_UPGRADE_CONTROLLER_DEBUG: {{ .Values.systemUpgradeControllerDebug | default "false" | quote }}

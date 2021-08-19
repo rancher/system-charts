@@ -29,6 +29,8 @@ spec:
                   values:
                     - "true"
             weight: 100
+      tolerations:
+        operator: "Exists"
       serviceAccountName: system-upgrade
       containers:
         - name: system-upgrade-controller
@@ -36,7 +38,7 @@ spec:
           imagePullPolicy: IfNotPresent
           envFrom:
             - configMapRef:
-                name: default-controller-env
+                name: system-upgrade-controller-config
           env:
             - name: SYSTEM_UPGRADE_CONTROLLER_NAME
               valueFrom:
