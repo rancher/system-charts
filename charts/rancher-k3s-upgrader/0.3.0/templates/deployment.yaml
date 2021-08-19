@@ -29,6 +29,8 @@ spec:
                   values:
                     - "true"
             weight: 100
+      tolerations:
+        operator: "Exists"
       serviceAccountName: system-upgrade
       containers:
         - name: system-upgrade-controller
