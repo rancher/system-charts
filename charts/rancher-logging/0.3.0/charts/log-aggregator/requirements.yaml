@@ -1,0 +1,10 @@
+dependencies:
+  - name: log-aggregator-linux
+    version: 0.0.1
+    condition: log-aggregator.log-aggregator-linux.enabled
+    repository: "file://./charts/log-aggregator-linux"
+
+  - name: log-aggregator-windows
+    version: 0.0.1
+    condition: log-aggregator.log-aggregator-windows.enabled
+    repository: "file://./charts/log-aggregator-window"
