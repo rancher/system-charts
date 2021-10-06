@@ -4,5 +4,5 @@ description: A Helm chart for provisioning GKE clusters
 home: https://github.com/rancher/gke-operator
 sources:
   - "https://github.com/rancher/gke-operator"
-version: 1.1.200
-appVersion: v1.1.2-rc1
+version: 1.1.100
+appVersion: v1.1.1
