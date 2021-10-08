@@ -1,0 +1,64 @@
+apiVersion: {{ template "operator_api_version" . }}
+kind: PrometheusRule
+metadata:
+  labels:
+    app: {{ template "app.name" . }}
+    chart: {{ template "app.version" . }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+    source: rancher-monitoring
+  name: {{ template "app.fullname" . }}
+spec:
+  groups:
+  - name: exporter-kube-state-relabel.rules
+    rules:
+    - record: kube_pod_container_resource_requests
+      expr: kube_pod_container_resource_requests_cpu_cores
+      labels:
+        resource: cpu
+        unit: cores
+    - record: kube_pod_container_resource_limits
+      expr: kube_pod_container_resource_limits_cpu_cores
+      labels:
+        resource: cpu
+        unit: cores
+    - record: kube_pod_container_resource_requests
+      expr: kube_pod_container_resource_requests_memory_bytes
+      labels:
+        resource: memory
+        unit: bytes
+    - record: kube_pod_container_resource_limits
+      expr: kube_pod_container_resource_limits_memory_bytes
+      labels:
+        resource: memory
+        unit: bytes
+    - record: kube_node_status_capacity
+      expr: kube_node_status_capacity_pods
+      labels:
+        resource: pods
+        unit: integer
+    - record: kube_node_status_capacity
+      expr: kube_node_status_capacity_cpu_cores
+      labels:
+        resource: cpu
+        unit: cores
+    - record: kube_node_status_capacity
+      expr: kube_node_status_capacity_memory_bytes
+      labels:
+        resource: memory
+        unit: bytes
+    - record: kube_node_status_allocatable
+      expr: kube_node_status_allocatable_pods
+      labels:
+        resource: pods
+        unit: integer
+    - record: kube_node_status_allocatable
+      expr: kube_node_status_allocatable_cpu_cores
+      labels:
+        resource: cpu
+        unit: cores
+    - record: kube_node_status_allocatable
+      expr: kube_node_status_allocatable_memory_bytes
+      labels:
+        resource: memory
+        unit: bytes
