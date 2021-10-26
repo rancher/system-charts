@@ -6,7 +6,8 @@ version: 0.2.0
 appVersion: 1.6.3
 home: https://www.fluentd.org/
 sources:
-- https://www.fluentd.org/
+  - https://www.fluentd.org/
 maintainers:
-- name: Michelia
-  email: support@rancher.com
+  - name: Michelia
+    email: support@rancher.com
+kubeVersion: <1.21
