@@ -10,4 +10,4 @@ sources:
 maintainers:
   - name: Michelia
     email: support@rancher.com
-kubeVersion: <1.21
+kubeVersion: <1.21.0-0
