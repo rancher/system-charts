@@ -1,0 +1,46 @@
+name: CI-pullrequest
+on:
+  pull_request:
+    branches:
+      - dev-v2.6
+
+jobs:
+  validate-chart-questions:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Validate all charts have a questions file
+        run: >
+          failed=false
+
+          chart_dirs=$(find charts -type d -mindepth 2 -maxdepth 2)
+
+          for chart in $chart_dirs; do
+            if [[ ! -f $chart/questions.yaml ]] && [[ ! -f $chart/questions.yml ]]; then
+              echo "$chart is missing a questions file"
+              failed=true
+            fi
+          done
+
+          if [[ $failed == true ]]; then
+            exit 1
+          fi
+
+      - name: Validate all questions files have a `rancher_min_version` defined
+        run: >
+          failed=false
+
+          questions_files=$(find charts -type f -name questions.y\*ml)
+
+          questions_without_min=$(grep -rL "rancher_min_version" $questions_files) || true
+
+          for questions in $questions_without_min; do
+            echo "$questions does not have a rancher_min_version constraint defined"
+            failed=true
+          done
+
+          if [[ $failed == true ]]; then
+            exit 1
+          fi
