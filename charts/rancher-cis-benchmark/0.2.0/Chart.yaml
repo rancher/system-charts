@@ -10,3 +10,4 @@ sources:
 maintainers:
   - name: Murali Paluru
     email: leodotcloud@gmail.com
+kubeVersion: '< 1.22.0-0'
