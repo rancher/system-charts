@@ -12,3 +12,4 @@ engine: gotpl
 maintainers:
 - name: rabadin
   email: rabadin@cisco.com
+kubeVersion: '< 1.22.0-0'
