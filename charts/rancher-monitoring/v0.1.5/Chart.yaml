@@ -14,3 +14,4 @@ keywords:
 - operator
 - prometheus
 icon: https://coreos.com/sites/default/files/inline-images/Overview-prometheus_0.png
+kubeVersion: "< 1.22.0-0"
