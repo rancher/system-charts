@@ -7,10 +7,12 @@ spec:
   selector:
     matchLabels:
       upgrade.cattle.io/controller: system-upgrade-controller
+      app: system-upgrade-controller
   template:
     metadata:
       labels:
         upgrade.cattle.io/controller: system-upgrade-controller # necessary to avoid drain
+        app: system-upgrade-controller
     spec:
       affinity:
         nodeAffinity:
