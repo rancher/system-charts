@@ -6,5 +6,5 @@ home: https://github.com/rancher/system-charts/blob/dev-v2.6/charts/rancher-k3s-
 sources:
   - "https://github.com/rancher/system-charts/blob/dev-v2.6/charts/rancher-k3s-upgrader"
 version: 0.3.2
-appVersion: v0.8.1
+appVersion: v0.9.1
 kubeVersion: '>= 1.16.0-0'
