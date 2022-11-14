@@ -1,3 +1,4 @@
 labels:
   rancher.istio.v1.5.920: 1.5.9
 rancher_min_version: 2.6.0-alpha1
+rancher_max_version: 2.6.99
