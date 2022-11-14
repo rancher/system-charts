@@ -3,6 +3,9 @@ on:
   pull_request:
     branches:
       - dev-v2.6
+      - release-v2.6
+      - dev-v2.7
+      - release-v2.7
 
 jobs:
   validate-chart-questions:
