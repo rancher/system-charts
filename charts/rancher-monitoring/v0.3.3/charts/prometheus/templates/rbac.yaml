@@ -66,6 +66,12 @@ rules:
   - subjectaccessreviews
   verbs:
   - "create"
+- apiGroups:
+  - authentication.k8s.io
+  resources:
+  - tokenreviews
+  verbs:
+  - "create"
 
 ---
 apiVersion: {{ template "rbac_api_version" . }}
