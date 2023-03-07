@@ -1,0 +1,93 @@
+apiVersion: {{ template "operator_api_version" . }}
+kind: ServiceMonitor
+metadata:
+  labels:
+    app: {{ template "app.name" . }}
+    chart: {{ template "app.version" . }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+    source: rancher-monitoring
+  name: {{ template "app.fullname" . }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ template "app.name" . }}
+      chart: {{ template "app.version" . }}
+      release: {{ .Release.Name }}
+      {{ .Values.apiGroup }}: "true"
+  namespaceSelector:
+    matchNames:
+    - {{ .Release.Namespace | quote }}
+  endpoints:
+{{- range list "http" "http-metrics" }}
+  - port: {{ . }}
+    honorLabels: true
+    relabelings:
+    - sourceLabels:
+      - __meta_kubernetes_pod_host_ip
+      targetLabel: host_ip
+      action: replace
+      regex: (.+)
+      replacement: $1
+    - sourceLabels:
+      - __meta_kubernetes_pod_node_name
+      targetLabel: node
+      action: replace
+      regex: (.+)
+      replacement: $1
+    metricRelabeings:
+    - sourceLabels:
+      - __name__
+      target_label: resource
+      action: replace
+      regex: kube_pod_container_resource_(requests|limits)_(cpu|memory)_(cores|bytes)
+      replacement: $2
+    - sourceLabels:
+      - __name__
+      target_label: resource
+      action: replace
+      regex: kube_node_status_(capacity|allocatable)_(cpu|memory)_(cores|bytes)
+      replacement: $2
+    - sourceLabels:
+      - __name__
+      target_label: resource
+      action: replace
+      regex: kube_node_status_(capacity|allocatable)_(pods)
+      replacement: $2
+    - sourceLabels:
+      - __name__
+      target_label: unit
+      action: replace
+      regex: kube_pod_container_resource_(requests|limits)_(cpu|memory)_(cores|bytes)
+      replacement: $3
+    - sourceLabels:
+      - __name__
+      target_label: unit
+      action: replace
+      regex: kube_node_status_(capacity|allocatable)_(cpu|memory)_(cores|bytes)
+      replacement: $3
+    - sourceLabels:
+      - __name__
+      target_label: unit
+      action: replace
+      regex: kube_node_status_(capacity|allocatable)_(pods)
+      replacement: integer
+    - sourceLabels:
+      - __name__
+      target_label: __name__
+      action: replace
+      regex: kube_pod_container_resource_(requests|limits)_(cpu|memory)_(cores|bytes)
+      replacement: kube_pod_container_resource_($1)
+    - sourceLabels:
+      - __name__
+      target_label: __name__
+      action: replace
+      regex: kube_node_status_(capacity|allocatable)_(cpu|memory)_(cores|bytes)
+      replacement: kube_node_status_($1)
+    - sourceLabels:
+      - __name__
+      target_label: __name__
+      action: replace
+      regex: kube_node_status_(capacity|allocatable)_(pods)
+      replacement: kube_node_status_($1)
+{{- end -}}
