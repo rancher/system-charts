@@ -1,4 +1,0 @@
-enabledRBAC: true
-
-# Get more details on https://github.com/martinlindhe/wmi_exporter
-enabledCollectors: "net,os,service,system,cpu,cs,logical_disk,tcp,memory,container"
