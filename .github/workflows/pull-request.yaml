@@ -6,6 +6,8 @@ on:
       - release-v2.6
       - dev-v2.7
       - release-v2.7
+      - dev-v2.8
+      - release-v2.8
 
 jobs:
   validate-chart-questions:
