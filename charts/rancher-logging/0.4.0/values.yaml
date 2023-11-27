@@ -1,9 +1,3 @@
-fluentd:
-  enabled: false
-fluentd-tester:
-  enabled: false
-log-aggregator:
-  enabled: false
 global:
   systemDefaultRegistry: ""
   podSecurityPolicy:
