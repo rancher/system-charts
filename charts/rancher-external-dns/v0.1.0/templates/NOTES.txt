@@ -1,3 +1,0 @@
-To verify that external-dns has started, run:
-
-  kubectl --namespace={{ .Release.Namespace }} get pods -l "app={{ template "external-dns.name" . }},release={{ .Release.Name }}"
