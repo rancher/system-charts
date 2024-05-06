@@ -7,4 +7,4 @@ sources:
   - "https://github.com/rancher/system-charts/blob/dev-v2.9/charts/rancher-k3s-upgrader"
 version: 0.7.0
 appVersion: v0.13.1
-kubeVersion: '>= 1.23.0-0'
+kubeVersion: '>= 1.25.0-0'

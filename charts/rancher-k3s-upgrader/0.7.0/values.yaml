@@ -1,8 +1,6 @@
 global:
   cattle:
     systemDefaultRegistry: ""
-    psp:
-      enabled: true
 
 systemUpgradeController:
   image:
