@@ -1,0 +1,6 @@
+# Release team is the new owner of the repository
+
+/.github/* @rancher/release-team
+
+# Hostbusters is the chart owner for k3s upgrader
+/charts/rancher-k3s-upgrader/* @rancher/rancher-team-2-hostbusters-dev
