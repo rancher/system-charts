@@ -5,6 +5,6 @@ description: Enables a k3s or rke2 cluster to update itself by reacting to Plan 
 home: https://github.com/rancher/system-charts/blob/dev-v2.8/charts/rancher-k3s-upgrader
 sources:
   - "https://github.com/rancher/system-charts/blob/dev-v2.8/charts/rancher-k3s-upgrader"
-version: 0.6.0
-appVersion: v0.13.1
+version: 0.7.0
+appVersion: v0.13.4
 kubeVersion: '>= 1.23.0-0'
